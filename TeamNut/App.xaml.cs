@@ -12,6 +12,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using TeamNut.Views;
+using TeamNut.Views.UserView;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.Foundation;
@@ -47,9 +48,14 @@ namespace TeamNut
             _window = new MainWindow();
 
             Frame rootFrame = new Frame();
+<<<<<<< HEAD
             _window.Content = rootFrame;
 
             rootFrame.Navigate(typeof(MealsPage));
+=======
+            _window = new MainWindow();
+            _window.Content = new UserView();
+>>>>>>> main
 
             _window.Activate();
         }
