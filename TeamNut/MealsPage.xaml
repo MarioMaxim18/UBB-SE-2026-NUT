@@ -15,21 +15,10 @@
          Margin="0,0,0,10"
          KeyDown="txtSearch_KeyDown"/>
 
-		<ComboBox x:Name="cmbFilter"
-          SelectionChanged="cmbFilter_SelectionChanged"
-          Margin="0,0,0,10"
-          PlaceholderText="Select filter">
-
-			<ComboBoxItem Content="All"/>
-			<ComboBoxItem Content="Vegan"/>
-			<ComboBoxItem Content="Keto"/>
-			<ComboBoxItem Content="Gluten Free"/>
-			<ComboBoxItem Content="Lactose Free"/>
-			<ComboBoxItem Content="No Nuts"/>
-			<ComboBoxItem Content="Favorites"/>
-
-		</ComboBox>
-		<Button Content="Filters" Click="OpenFilters_Click" Margin="0,0,0,10"/>
+        <Button Content="Filters"
+        Click="OpenFilters_Click"
+        Margin="0,0,0,10"/>
+        <Button Content="Filters" Click="OpenFilters_Click" Margin="0,0,0,10"/>
 		<ListView x:Name="listMeals">
 			<ListView.ItemTemplate>
 				<DataTemplate>

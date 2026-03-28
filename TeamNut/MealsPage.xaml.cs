@@ -28,12 +28,16 @@ namespace TeamNut
             var button = sender as Button;
             var meal = button.DataContext as Meal;
 
-            viewModel.ToggleFavorite(meal);
+            if (meal != null)
+            {
+                viewModel.ToggleFavorite(meal);
+            }
 
-            // 🔥 atualiza lista pra refletir mudança
-            btnSearch_Click(null, null);
+
+            btnSearch_Click(this, new RoutedEventArgs());
         }
-
+        
+        
         private void btnSearch_Click(object sender, RoutedEventArgs e)
         {
             var results = viewModel.SearchMeals(
@@ -43,7 +47,7 @@ namespace TeamNut
                 filterGluten,
                 filterLactose,
                 filterNuts,
-                filterFavorites // 🔥 agora inclui favorites
+                filterFavorites 
             );
 
             listMeals.ItemsSource = results;
@@ -56,7 +60,7 @@ namespace TeamNut
             }
         }
 
-        // Added missing SelectionChanged handler wired from XAML
+        
         private void cmbFilter_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (sender is ComboBox cb && cb.SelectedItem is ComboBoxItem item)

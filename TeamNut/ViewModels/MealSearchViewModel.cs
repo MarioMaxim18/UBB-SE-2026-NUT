@@ -79,7 +79,7 @@ namespace TeamNut.ViewModels
                 .Where(m => !gluten || m.IsGlutenFree)
                 .Where(m => !lactose || m.IsLactoseFree)
                 .Where(m => !nuts || m.IsNutFree)
-                .Where(m => !favorites || m.IsFavorite) 
+                .Where(m => !favorites || m.IsFavorite)
                 .ToList();
         }
 
