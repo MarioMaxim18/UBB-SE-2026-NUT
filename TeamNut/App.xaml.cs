@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using TeamNut.Views;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.Foundation;
@@ -44,6 +45,12 @@ namespace TeamNut
         protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
         {
             _window = new MainWindow();
+
+            Frame rootFrame = new Frame();
+            _window.Content = rootFrame;
+
+            rootFrame.Navigate(typeof(RegisterView));
+
             _window.Activate();
         }
     }
