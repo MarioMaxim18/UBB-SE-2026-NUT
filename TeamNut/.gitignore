@@ -1,5 +1,6 @@
 # Visual Studio Cache and State
 .vs/
+../.vs/
 *.user
 *.userosscache
 *.sln.docstates
