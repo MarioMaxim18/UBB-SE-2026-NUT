@@ -8,57 +8,61 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-        <ScrollViewer>
-            <Grid Padding="20">
-                <Border 
-             MaxWidth="400" 
-             VerticalAlignment="Center" 
-             HorizontalAlignment="Center"
-             Background="{ThemeResource LayerFillColorDefaultBrush}"
-             BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-             BorderThickness="1"
-             CornerRadius="8"
-             Padding="30">
+    <ScrollViewer>
+        <Grid Padding="20">
+            <Border 
+                MaxWidth="400" 
+                VerticalAlignment="Center" 
+                HorizontalAlignment="Center"
+                Background="{ThemeResource LayerFillColorDefaultBrush}"
+                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                BorderThickness="1"
+                CornerRadius="8"
+                Padding="30">
 
-                    <StackPanel Spacing="15">
-                        <TextBlock 
-                     Text="Create Account" 
-                     Style="{StaticResource TitleTextBlockStyle}" 
-                     HorizontalAlignment="Center" 
-                     Margin="0,0,0,10"/>
+                <StackPanel Spacing="15">
+                    <TextBlock 
+                        Text="Create Account" 
+                        Style="{StaticResource TitleTextBlockStyle}" 
+                        HorizontalAlignment="Center" 
+                        Margin="0,0,0,10"/>
 
-                        <TextBox 
-                     Header="Username" 
-                     PlaceholderText="Enter a username"
-                     x:Name="UsernameInput"/>
+                    <TextBox 
+                        Header="Username" 
+                        PlaceholderText="Enter a username"
+                        Text="{x:Bind ViewModel.CurrentUser.Username, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
-                        <PasswordBox 
-                     Header="Password" 
-                     PlaceholderText="Enter password"
-                     PasswordRevealMode="Peek"
-                     x:Name="PasswordInput"/>
+                    <PasswordBox 
+                        Header="Password" 
+                        PlaceholderText="Enter password"
+                        PasswordRevealMode="Peek"
+                        PasswordChanged="PasswordInput_PasswordChanged"/>
 
-                        <CheckBox 
-                     Content="Register as a nutritionist?" 
-                     Margin="0,5,0,0"
-                     x:Name="NutritionistRoleCheckbox"
-                     IsChecked="False"
-                     />
+                    <CheckBox 
+                        Content="Register as a nutritionist?" 
+                        Margin="0,5,0,0"
+                        IsChecked="{x:Bind ViewModel.IsNutritionistChecked, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
-                        <Button 
-                     Content="Register" 
-                     Style="{StaticResource AccentButtonStyle}" 
-                     HorizontalAlignment="Stretch" 
-                     Margin="0,10,0,0"/>
+                    <Button 
+                        Content="Register" 
+                        Style="{StaticResource AccentButtonStyle}" 
+                        HorizontalAlignment="Stretch" 
+                        Margin="0,10,0,0"
+                        Command="{x:Bind ViewModel.RegisterCommand}"/>
 
+                    <TextBlock 
+                        Text="{x:Bind ViewModel.StatusMessage, Mode=OneWay, TargetNullValue='', FallbackValue=''}"
+                        Foreground="Red"
+                        TextWrapping="Wrap"
+                        HorizontalAlignment="Center"
+                        FontSize="12"/>
 
-                        <HyperlinkButton 
-                     Content="Already have an account? Login" 
-                     HorizontalAlignment="Center"
-                         Click="ToLogin_Click"
-                    />
-                    </StackPanel>
-                </Border>
-            </Grid>
-        </ScrollViewer>
+                    <HyperlinkButton 
+                        Content="Already have an account? Login" 
+                        HorizontalAlignment="Center"
+                        Click="ToLogin_Click"/>
+                </StackPanel>
+            </Border>
+        </Grid>
+    </ScrollViewer>
 </Page>

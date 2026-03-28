@@ -1,24 +1,40 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace TeamNut.Models
 {
-    public partial class User : ObservableObject
+    public partial class User : ObservableValidator
     {
         [ObservableProperty]
+        [Key]
         public partial int Id { get; set; }
 
         [ObservableProperty]
-        public partial string Username { get; set; }
+        [Required(ErrorMessage = "Username is mandatory")]
+        [StringLength(30, MinimumLength = 3)]
+        [RegularExpression(@"^[a-zA-Z0-9]+$", ErrorMessage = "Username must be alphanumeric")]
+        public partial string Username { get; set; } = string.Empty;
 
         [ObservableProperty]
-        public partial string Password { get; set; }
+        [Required(ErrorMessage = "Password is mandatory")]
+        [StringLength(30, MinimumLength = 8)]
+        public partial string Password { get; set; } = string.Empty;
 
         [ObservableProperty]
-        public partial string Role { get; set; }
+        [Required(ErrorMessage = "Role is mandatory")]
+        [RegularExpression(@"^(User|Nutritionist)$", ErrorMessage = "Role must be 'User' or 'Nutritionist'")]
+        public partial string Role { get; set; } = "User";
+
+        public List<string> ValidateAndReturnErrors()
+        { 
+            ValidateAllProperties();
+
+            return GetErrors()
+                .Select(e => e.ErrorMessage!)
+                .Where(msg => msg != null)
+                .ToList();
+        }
     }
 }
