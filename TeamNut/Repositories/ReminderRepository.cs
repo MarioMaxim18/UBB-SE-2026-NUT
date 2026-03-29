@@ -1,4 +1,5 @@
-﻿using Microsoft.Data.SqlClient;
+﻿/*
+using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -102,3 +103,4 @@ namespace TeamNut.Repositories
         }
     }
 }
+*/

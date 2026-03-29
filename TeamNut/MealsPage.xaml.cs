@@ -13,12 +13,13 @@ namespace TeamNut
         {
             this.InitializeComponent();
             viewModel = new MealSearchViewModel();
+            btnSearch_Click(this, new RoutedEventArgs());
         }
 
         private void Favorite_Click(object sender, RoutedEventArgs e)
         {
             var button = sender as Button;
-            var meal = button.DataContext as Meal;
+            var meal = button?.DataContext as Meal;
 
             if (meal != null)
             {
@@ -32,7 +33,7 @@ namespace TeamNut
         {
             var filter = new MealFilter
             {
-                Query = txtSearch.Text
+                SearchTerm = txtSearch.Text ?? ""
             };
 
             var results = viewModel.SearchMeals(filter);
@@ -44,7 +45,7 @@ namespace TeamNut
         {
             if (e.Key == Windows.System.VirtualKey.Enter)
             {
-                btnSearch_Click(null, null);
+                btnSearch_Click(this, new RoutedEventArgs());
             }
         }
     }

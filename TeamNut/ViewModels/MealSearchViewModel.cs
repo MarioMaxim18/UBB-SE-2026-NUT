@@ -1,18 +1,31 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using TeamNut.Models;
 
 namespace TeamNut.ViewModels
 {
     public class MealSearchViewModel
     {
+        private List<Meal> meals;
         public MealSearchViewModel()
         {
-            // TODO: inject MealService in future PR
+            meals = new List<Meal>
+    {
+        new Meal { Name = "Chicken Rice", Calories = 500 },
+        new Meal { Name = "Beef Burger", Calories = 700 },
+        new Meal { Name = "Salad", Calories = 200 },
+        new Meal { Name = "Pasta", Calories = 600 }
+    };
         }
 
-        public List<Meal> SearchMeals(object filter)
+        public List<Meal> SearchMeals(MealFilter filter)
         {
-            return new List<Meal>(); // vazio por enquanto
+            if (filter == null || string.IsNullOrEmpty(filter.SearchTerm))
+                return meals;
+
+            return meals
+                .Where(m => m.Name.ToLower().Contains(filter.SearchTerm.ToLower()))
+                .ToList();
         }
 
         public void ToggleFavorite(Meal meal)
