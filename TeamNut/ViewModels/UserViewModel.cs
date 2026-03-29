@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using TeamNut.Models;
 using TeamNut.Services;
 
-namespace TeamNut.ModelViews
+namespace TeamNut.ViewModels
 {
     public partial class UserViewModel : ObservableObject
     {
