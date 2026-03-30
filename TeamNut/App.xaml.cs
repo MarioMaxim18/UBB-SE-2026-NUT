@@ -8,9 +8,9 @@ namespace TeamNut
 {
     public partial class App : Application
     {
-        private Window? _window;
+        internal Window? _window;
 
-        public static UserViewModel MainViewModel { get; } = new UserViewModel();
+        public static UserViewModel UserViewModel { get; } = new UserViewModel();
 
         public App()
         {
