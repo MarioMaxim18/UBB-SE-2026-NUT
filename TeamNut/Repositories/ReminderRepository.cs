@@ -1,10 +1,12 @@
-﻿/*
+﻿using TeamNut.Models;
 using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
-using TeamNut.Domain;
+using TeamNut;
+using TeamNut.Repositories;
+
 
 namespace TeamNut.Repositories
 {
@@ -103,4 +105,3 @@ namespace TeamNut.Repositories
         }
     }
 }
-*/
