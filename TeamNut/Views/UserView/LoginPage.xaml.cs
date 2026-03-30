@@ -24,11 +24,32 @@ namespace TeamNut.Views.UserView
     /// </summary>
     public sealed partial class LoginPage : Page
     {
-        public UserViewModel ViewModel => App.MainViewModel;
+        public UserViewModel ViewModel => App.UserViewModel;
         public LoginPage()
         {
             InitializeComponent();
             this.DataContext = ViewModel;
+        }
+
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            base.OnNavigatedTo(e);
+            ViewModel.StatusMessage = string.Empty;
+            ViewModel.LoginSuccess += ViewModel_LoginSuccess;
+        }
+
+        protected override void OnNavigatedFrom(NavigationEventArgs e)
+        {
+            base.OnNavigatedFrom(e);
+            ViewModel.LoginSuccess -= ViewModel_LoginSuccess;
+        }
+
+        private void ViewModel_LoginSuccess(object sender, EventArgs e)
+        {
+            if (this.Frame != null)
+            {
+                this.Frame.Navigate(typeof(TeamNut.Views.MainPage));
+            }
         }
 
         public void ToRegister_Click(object sender, RoutedEventArgs e)
