@@ -38,6 +38,13 @@
                      PasswordRevealMode="Peek"
                      PasswordChanged="PasswordInput_PasswordChanged"/>
 
+                    <TextBlock 
+                    Text="{x:Bind ViewModel.StatusMessage, Mode=OneWay, TargetNullValue='', FallbackValue=''}"
+                    Foreground="Red"
+                    TextWrapping="Wrap"
+                    HorizontalAlignment="Center"
+                    FontSize="12"/> 
+
                     <Button 
                      Content="Login" 
                      Style="{StaticResource AccentButtonStyle}" 

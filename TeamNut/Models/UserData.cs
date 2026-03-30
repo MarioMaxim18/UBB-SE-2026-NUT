@@ -15,11 +15,11 @@ namespace TeamNut.Models
         public partial int UserId { get; set; }
 
         [ObservableProperty]
-        [Range(1, 500, ErrorMessage = "Weight must be a positive whole number")]
+        [Range(1, 500, ErrorMessage = "Weight must be a positive whole number, between 1 and 500")]
         public partial int Weight { get; set; }
 
         [ObservableProperty]
-        [Range(1, 300, ErrorMessage = "Height must be a positive whole number")]
+        [Range(1, 300, ErrorMessage = "Height must be a positive whole number, between 1 and 300")]
         public partial int Height { get; set; }
 
         [ObservableProperty]

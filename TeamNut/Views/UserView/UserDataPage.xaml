@@ -34,13 +34,15 @@
                      Header="Weight (kg)" 
                      PlaceholderText="Positive whole number"
                      Text="{x:Bind ViewModel.CurrentUserData.Weight, Mode=TwoWay}"
-                     x:Name="WeightInput"/>
+                     x:Name="WeightInput"
+                     BeforeTextChanging="NumberInput_BeforeTextChanging"/>
 
                     <TextBox 
                      Header="Height (cm)" 
                      PlaceholderText="Positive whole number"
                      Text="{x:Bind ViewModel.CurrentUserData.Height, Mode=TwoWay}"
-                     x:Name="HeightInput"/>
+                     x:Name="HeightInput"
+                     BeforeTextChanging="NumberInput_BeforeTextChanging"/>
 
                     <CalendarDatePicker 
                      Header="Birthdate" 

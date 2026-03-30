@@ -11,7 +11,6 @@ namespace TeamNut.Services
     public class UserService
     {
         private readonly UserRepository _userRepository;
-
         public UserService()
         {
             _userRepository = new UserRepository();
@@ -28,6 +27,7 @@ namespace TeamNut.Services
             var user = await _userRepository.GetByUsernameAndPassword(username, password);
             if (user != null)
             {
+                UserSession.Login(user.Username, user.Role);
                 return user;
             }
 
@@ -42,6 +42,7 @@ namespace TeamNut.Services
             }
 
             await _userRepository.Add(user);
+            UserSession.Login(user.Username, user.Role);
             return user;
         }
 
