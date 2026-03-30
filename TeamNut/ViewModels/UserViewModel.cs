@@ -56,6 +56,10 @@ namespace TeamNut.ViewModels
             }
             if(CurrentUser.Role == "User")
                 RegistrationValid?.Invoke(this, EventArgs.Empty);
+            else
+            {
+                var registeredUser = await _userService.RegisterUserAsync(CurrentUser);
+            }
         }
         [RelayCommand]
         private async void OnSaveData()
