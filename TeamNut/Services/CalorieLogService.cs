@@ -15,20 +15,34 @@ namespace TeamNut.Services
             _repository = new CalorieLogRepository();
         }
 
-        public async Task<CalorieLog> GetDailyLog(int userId)
+        private int GetUserId()
         {
-            var today = DateTime.Now.Date;
+            return UserSession.UserId
+                ?? throw new InvalidOperationException("User is not logged in.");
+        }
+
+        private DateTime GetToday()
+        {
+            return DateTime.UtcNow.Date;
+        }
+
+        public async Task<CalorieLog> GetDailyLog()
+        {
+            var userId = GetUserId();
+            var today = GetToday();
 
             var logs = await _repository.GetByUserAndDateRange(userId, today, today);
 
             if (logs == null || logs.Count == 0)
                 return new CalorieLog
                 {
+                    UserId = userId,
                     Date = today
                 };
 
             return new CalorieLog
             {
+                UserId = userId,
                 Date = today,
                 CaloriesConsumed = logs.Sum(x => x.CaloriesConsumed),
                 Protein = logs.Sum(x => x.Protein),
@@ -37,9 +51,10 @@ namespace TeamNut.Services
             };
         }
 
-        public async Task SaveMealLog(Meal meal, int userId)
+        public async Task SaveMealLog(Meal meal)
         {
-            var today = DateTime.Now.Date;
+            var userId = GetUserId();
+            var today = GetToday();
 
             var existing = await _repository.GetByUserAndDate(userId, today);
 
@@ -68,18 +83,29 @@ namespace TeamNut.Services
             }
         }
 
-        public async Task<CalorieLog> GetWeeklyTotals(int userId, DateTime date)
+        public async Task<CalorieLog> GetWeeklyTotals()
         {
+            var userId = GetUserId();
+            var date = GetToday();
+
             DateTime startOfWeek = GetStartOfWeek(date);
             DateTime endOfWeek = startOfWeek.AddDays(6);
 
             var logs = await _repository.GetByUserAndDateRange(userId, startOfWeek, endOfWeek);
 
             if (logs == null || !logs.Any())
-                return new CalorieLog();
+            {
+                return new CalorieLog
+                {
+                    UserId = userId,
+                    Date = date,
+                };
+            }
 
             return new CalorieLog
             {
+                UserId = userId,
+                Date = date,
                 CaloriesConsumed = logs.Sum(x => x.CaloriesConsumed),
                 Protein = logs.Sum(x => x.Protein),
                 Carbs = logs.Sum(x => x.Carbs),
