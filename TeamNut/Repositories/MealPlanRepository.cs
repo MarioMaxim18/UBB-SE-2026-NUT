@@ -76,6 +76,22 @@ namespace TeamNut.Repositories
             await cmd.ExecuteNonQueryAsync();
         }
 
+        public async Task<MealPlan> GetTodaysMealPlan(int userId)
+        {
+            using var conn = new SqlConnection(_connectionString);
+            const string sql = @"SELECT TOP 1 * FROM MealPlan 
+                                WHERE user_id = @userId 
+                                AND CAST(created_at AS DATE) = CAST(GETDATE() AS DATE)
+                                ORDER BY created_at DESC";
+            using var cmd = new SqlCommand(sql, conn);
+            cmd.Parameters.AddWithValue("@userId", userId);
+
+            await conn.OpenAsync();
+            using var reader = await cmd.ExecuteReaderAsync();
+            if (await reader.ReadAsync()) return MapReaderToMealPlan(reader);
+            return null;
+        }
+
         public async Task<int> GeneratePersonalizedDailyMealPlan(int userId)
         {
             using var conn = new SqlConnection(_connectionString);
@@ -84,6 +100,16 @@ namespace TeamNut.Repositories
 
             try
             {
+                // First check if there are any meals in the database
+                const string checkMealsSql = "SELECT COUNT(*) FROM Meals";
+                using var checkCmd = new SqlCommand(checkMealsSql, conn, transaction);
+                int mealCount = (int)await checkCmd.ExecuteScalarAsync();
+
+                if (mealCount == 0)
+                {
+                    throw new Exception("No meals found in database. Please add meals before generating a meal plan.");
+                }
+
                 const string getUserDataSql = @"SELECT calorie_needs, protein_needs, carb_needs, fat_needs, goal 
                                                FROM UserData WHERE user_id = @userId";
                 using var userDataCmd = new SqlCommand(getUserDataSql, conn, transaction);
@@ -217,6 +243,7 @@ namespace TeamNut.Repositories
                 }
                 else
                 {
+                    // Fallback to any 3 random meals
                     mealIds = new List<int>();
                     const string fallbackSql = "SELECT TOP 3 meal_id FROM Meals ORDER BY NEWID()";
                     using var fallbackCmd = new SqlCommand(fallbackSql, conn, transaction);
@@ -226,6 +253,11 @@ namespace TeamNut.Repositories
                         mealIds.Add(Convert.ToInt32(fallbackReader["meal_id"]));
                     }
                     fallbackReader.Close();
+                }
+
+                if (mealIds.Count == 0)
+                {
+                    throw new Exception("Could not select any meals for the plan. Database may be empty.");
                 }
 
                 const string insertMealPlanMealSql = @"INSERT INTO MealPlanMeal (mealPlanId, mealId, mealType, assigned_at, isConsumed) 
@@ -317,6 +349,51 @@ namespace TeamNut.Repositories
             return meals;
         }
 
+        public async Task<List<Views.MealPlanView.IngredientViewModel>> GetIngredientsForMeal(int mealId)
+        {
+            var ingredients = new List<Views.MealPlanView.IngredientViewModel>();
+            using var conn = new SqlConnection(_connectionString);
+
+            const string sql = @"
+                SELECT 
+                    i.name,
+                    mi.quantity,
+                    i.calories_per_100g,
+                    i.protein_per_100g,
+                    i.carbs_per_100g,
+                    i.fat_per_100g
+                FROM MealsIngredients mi
+                INNER JOIN Ingredients i ON mi.food_id = i.food_id
+                WHERE mi.meal_id = @mealId
+                ORDER BY mi.quantity DESC";
+
+            using var cmd = new SqlCommand(sql, conn);
+            cmd.Parameters.AddWithValue("@mealId", mealId);
+
+            await conn.OpenAsync();
+            using var reader = await cmd.ExecuteReaderAsync();
+
+            while (await reader.ReadAsync())
+            {
+                double quantity = Convert.ToDouble(reader["quantity"]);
+                double caloriesPer100g = Convert.ToDouble(reader["calories_per_100g"]);
+                double proteinPer100g = Convert.ToDouble(reader["protein_per_100g"]);
+                double carbsPer100g = Convert.ToDouble(reader["carbs_per_100g"]);
+                double fatPer100g = Convert.ToDouble(reader["fat_per_100g"]);
+
+                ingredients.Add(new Views.MealPlanView.IngredientViewModel
+                {
+                    Name = reader["name"].ToString(),
+                    Quantity = quantity,
+                    Calories = Math.Round(caloriesPer100g * quantity / 100, 1),
+                    Protein = Math.Round(proteinPer100g * quantity / 100, 1),
+                    Carbs = Math.Round(carbsPer100g * quantity / 100, 1),
+                    Fat = Math.Round(fatPer100g * quantity / 100, 1)
+                });
+            }
+
+            return ingredients;
+        }
 
         private MealPlan MapReaderToMealPlan(SqlDataReader reader)
         {

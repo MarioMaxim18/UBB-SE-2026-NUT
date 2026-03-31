@@ -9,6 +9,11 @@
             <ResourceDictionary.MergedDictionaries>
                 <XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls" />
             </ResourceDictionary.MergedDictionaries>
+
+            <!-- Value Converters -->
+            <local:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+            <local:InverseBoolConverter x:Key="InverseBoolConverter"/>
+            <local:EmptyStringToVisibilityConverter x:Key="EmptyStringToVisibilityConverter"/>
         </ResourceDictionary>
     </Application.Resources>
 </Application>
