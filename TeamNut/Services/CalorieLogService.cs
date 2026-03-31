@@ -1,0 +1,131 @@
+﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
+using TeamNut.Models;
+using TeamNut.Repositories;
+
+namespace TeamNut.Services
+{
+    public class CalorieLogService
+    {
+        private readonly CalorieLogRepository _repository;
+
+        public CalorieLogService()
+        {
+            _repository = new CalorieLogRepository();
+        }
+
+        private int GetUserId()
+        {
+            return UserSession.UserId
+                ?? throw new InvalidOperationException("User is not logged in.");
+        }
+
+        private DateTime GetToday()
+        {
+            return DateTime.UtcNow.Date;
+        }
+
+        public async Task<CalorieLog> GetDailyLog()
+        {
+            var userId = GetUserId();
+            var today = GetToday();
+
+            var logs = await _repository.GetByUserAndDateRange(userId, today, today.AddDays(1));
+
+            if (logs == null || logs.Count == 0)
+                return new CalorieLog
+                {
+                    UserId = userId,
+                    Date = today
+                };
+
+            return new CalorieLog
+            {
+                UserId = userId,
+                Date = today,
+                CaloriesConsumed = logs.Sum(x => x.CaloriesConsumed),
+                Protein = logs.Sum(x => x.Protein),
+                Carbs = logs.Sum(x => x.Carbs),
+                Fats = logs.Sum(x => x.Fats)
+            };
+        }
+
+        public async Task SaveMealLog(Meal meal)
+        {
+            var userId = GetUserId();
+            var today = GetToday();
+
+            var existing = await _repository.GetByUserAndDate(userId, today);
+
+            if (existing != null)
+            {
+                existing.CaloriesConsumed += meal.Calories;
+                existing.Protein += meal.Protein;
+                existing.Carbs += meal.Carbs;
+                existing.Fats += meal.Fat;
+
+                await _repository.Update(existing);
+            }
+            else
+            {
+                var log = new CalorieLog
+                {
+                    UserId = userId,
+                    Date = today,
+                    CaloriesConsumed = meal.Calories,
+                    Protein = meal.Protein,
+                    Carbs = meal.Carbs,
+                    Fats = meal.Fat
+                };
+
+                await _repository.Add(log);
+            }
+        }
+
+        public async Task<CalorieLog> GetWeeklyTotals()
+        {
+            var userId = GetUserId();
+            var date = GetToday();
+
+            DateTime startOfWeek = GetStartOfWeek(date);
+            DateTime endOfWeek = startOfWeek.AddDays(6);
+
+            var logs = await _repository.GetByUserAndDateRange(userId, startOfWeek, endOfWeek);
+
+            if (logs == null || !logs.Any())
+            {
+                return new CalorieLog
+                {
+                    UserId = userId,
+                    Date = date,
+                };
+            }
+
+            return new CalorieLog
+            {
+                UserId = userId,
+                Date = date,
+                CaloriesConsumed = logs.Sum(x => x.CaloriesConsumed),
+                Protein = logs.Sum(x => x.Protein),
+                Carbs = logs.Sum(x => x.Carbs),
+                Fats = logs.Sum(x => x.Fats)
+            };
+        }
+
+        public bool HasDayPassed(DateTime mealPlanDate)
+        {
+            return (DateTime.Now.Date - mealPlanDate.Date).TotalDays >= 1;
+        }
+
+        private DateTime GetStartOfWeek(DateTime date)
+        {
+            int diff = date.DayOfWeek - DayOfWeek.Monday;
+
+            if (diff < 0)
+                diff += 7;
+
+            return date.AddDays(-diff).Date;
+        }
+    }
+}

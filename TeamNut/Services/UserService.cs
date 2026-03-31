@@ -27,7 +27,7 @@ namespace TeamNut.Services
             var user = await _userRepository.GetByUsernameAndPassword(username, password);
             if (user != null)
             {
-                UserSession.Login(user.Username, user.Role);
+                UserSession.Login(user.Id, user.Username, user.Role);
                 return user;
             }
 
@@ -42,7 +42,7 @@ namespace TeamNut.Services
             }
 
             await _userRepository.Add(user);
-            UserSession.Login(user.Username, user.Role);
+            UserSession.Login(user.Id, user.Username, user.Role);
             return user;
         }
 
