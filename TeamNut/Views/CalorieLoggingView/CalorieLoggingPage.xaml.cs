@@ -1,7 +1,7 @@
 ﻿using Microsoft.UI.Xaml.Controls;
 using TeamNut.ViewModels;
 
-namespace TeamNut.View
+namespace TeamNut.Views.CalorieLoggingView
 {
     public sealed partial class CalorieLoggingPage : Page
     {
