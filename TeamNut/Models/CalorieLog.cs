@@ -1,21 +1,29 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace TeamNut.Models
 {
-    public class CalorieLog
+    public partial class CalorieLog : ObservableObject
     {
-        public int Id { get; set; }
-        public int UserId { get; set; }
-        public DateTime Date { get; set; }
+        [ObservableProperty]
+        private int _id;
 
-        public double CaloriesConsumed { get; set; }
-        public double CaloriesBurnt { get; set; }
-        public double Protein { get; set; }
-        public double Carbs { get; set; }
-        public double Fats { get; set; }
+        [ObservableProperty]
+        private int _userId;
+
+        [ObservableProperty]
+        private DateTime _date;
+
+        [ObservableProperty]
+        private double _caloriesConsumed;
+
+        [ObservableProperty]
+        private double _protein;
+
+        [ObservableProperty]
+        private double _carbs;
+
+        [ObservableProperty]
+        private double _fats;
     }
 }

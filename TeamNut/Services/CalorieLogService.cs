@@ -6,7 +6,7 @@ using TeamNut.Repositories;
 
 namespace TeamNut.Services
 {
-    public class CalorieLogService : ICalorieLogService
+    public class CalorieLogService
     {
         private readonly CalorieLogRepository _repository;
 
@@ -15,22 +15,55 @@ namespace TeamNut.Services
             _repository = new CalorieLogRepository();
         }
 
-        public async Task<CalorieLog> GetDailyLog(int userId, DateTime date)
+        public async Task<CalorieLog> GetDailyLog(int userId)
         {
-            return await _repository.GetByUserAndDate(userId, date);
+            var today = DateTime.Now.Date;
+
+            var logs = await _repository.GetByUserAndDateRange(userId, today, today);
+
+            if (logs == null || logs.Count == 0)
+                return new CalorieLog
+                {
+                    Date = today
+                };
+
+            return new CalorieLog
+            {
+                Date = today,
+                CaloriesConsumed = logs.Sum(x => x.CaloriesConsumed),
+                Protein = logs.Sum(x => x.Protein),
+                Carbs = logs.Sum(x => x.Carbs),
+                Fats = logs.Sum(x => x.Fats)
+            };
         }
 
-        public async Task SaveDailyLog(CalorieLog log)
+        public async Task SaveMealLog(Meal meal, int userId)
         {
-            var existing = await _repository.GetByUserAndDate(log.UserId, log.Date);
+            var today = DateTime.Now.Date;
+
+            var existing = await _repository.GetByUserAndDate(userId, today);
 
             if (existing != null)
             {
-                log.Id = existing.Id;
-                await _repository.Update(log);
+                existing.CaloriesConsumed += meal.Calories;
+                existing.Protein += meal.Protein;
+                existing.Carbs += meal.Carbs;
+                existing.Fats += meal.Fat;
+
+                await _repository.Update(existing);
             }
             else
             {
+                var log = new CalorieLog
+                {
+                    UserId = userId,
+                    Date = today,
+                    CaloriesConsumed = meal.Calories,
+                    Protein = meal.Protein,
+                    Carbs = meal.Carbs,
+                    Fats = meal.Fat
+                };
+
                 await _repository.Add(log);
             }
         }
@@ -48,7 +81,6 @@ namespace TeamNut.Services
             return new CalorieLog
             {
                 CaloriesConsumed = logs.Sum(x => x.CaloriesConsumed),
-                CaloriesBurnt = logs.Sum(x => x.CaloriesBurnt),
                 Protein = logs.Sum(x => x.Protein),
                 Carbs = logs.Sum(x => x.Carbs),
                 Fats = logs.Sum(x => x.Fats)

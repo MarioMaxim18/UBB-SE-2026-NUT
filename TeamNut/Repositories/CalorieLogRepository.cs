@@ -8,14 +8,15 @@ namespace TeamNut.Repositories
 {
     public class CalorieLogRepository : IRepository<CalorieLog>
     {
+        private readonly string _connectionString = DbConfig.ConnectionString;
         public async Task Add(CalorieLog log)
         {
-            using var conn = new SqlConnection(DbConfig.ConnectionString);
+            using var conn = new SqlConnection(_connectionString);
             await conn.OpenAsync();
 
             string query = @"INSERT INTO CalorieLogs 
                 (UserId, Date, CaloriesConsumed, CaloriesBurnt, Protein, Carbs, Fats)
-                VALUES (@userId, @date, @caloriesConsumed, @caloriesBurnt, @protein, @carbs, @fats)";
+                VALUES (@userId, @date, @caloriesConsumed, @protein, @carbs, @fats)";
 
             using var cmd = new SqlCommand(query, conn);
             AddParameters(cmd, log);
@@ -27,7 +28,7 @@ namespace TeamNut.Repositories
         {
             var logs = new List<CalorieLog>();
 
-            using var conn = new SqlConnection(DbConfig.ConnectionString);
+            using var conn = new SqlConnection(_connectionString);
             await conn.OpenAsync();
 
             string query = "SELECT * FROM CalorieLogs";
@@ -45,7 +46,7 @@ namespace TeamNut.Repositories
 
         public async Task<CalorieLog> GetById(int id)
         {
-            using var conn = new SqlConnection(DbConfig.ConnectionString);
+            using var conn = new SqlConnection(_connectionString);
             await conn.OpenAsync();
 
             string query = "SELECT * FROM CalorieLogs WHERE Id = @id";
@@ -65,12 +66,11 @@ namespace TeamNut.Repositories
 
         public async Task Update(CalorieLog log)
         {
-            using var conn = new SqlConnection(DbConfig.ConnectionString);
+            using var conn = new SqlConnection(_connectionString);
             await conn.OpenAsync();
 
             string query = @"UPDATE CalorieLogs 
                 SET CaloriesConsumed = @caloriesConsumed,
-                    CaloriesBurnt = @caloriesBurnt,
                     Protein = @protein,
                     Carbs = @carbs,
                     Fats = @fats
@@ -86,7 +86,7 @@ namespace TeamNut.Repositories
 
         public async Task Delete(int id)
         {
-            using var conn = new SqlConnection(DbConfig.ConnectionString);
+            using var conn = new SqlConnection(_connectionString);
             await conn.OpenAsync();
 
             string query = "DELETE FROM CalorieLogs WHERE Id = @id";
@@ -99,7 +99,7 @@ namespace TeamNut.Repositories
 
         public async Task<CalorieLog> GetByUserAndDate(int userId, DateTime date)
         {
-            using var conn = new SqlConnection(DbConfig.ConnectionString);
+            using var conn = new SqlConnection(_connectionString);
             await conn.OpenAsync();
 
             string query = @"SELECT * FROM CalorieLogs 
@@ -123,7 +123,7 @@ namespace TeamNut.Repositories
         {
             var logs = new List<CalorieLog>();
 
-            using var conn = new SqlConnection(DbConfig.ConnectionString);
+            using var conn = new SqlConnection(_connectionString);
             await conn.OpenAsync();
 
             string query = @"SELECT * FROM CalorieLogs 
@@ -153,7 +153,6 @@ namespace TeamNut.Repositories
                 UserId = Convert.ToInt32(reader["UserId"]),
                 Date = Convert.ToDateTime(reader["Date"]),
                 CaloriesConsumed = Convert.ToDouble(reader["CaloriesConsumed"]),
-                CaloriesBurnt = Convert.ToDouble(reader["CaloriesBurnt"]),
                 Protein = Convert.ToDouble(reader["Protein"]),
                 Carbs = Convert.ToDouble(reader["Carbs"]),
                 Fats = Convert.ToDouble(reader["Fats"])
@@ -165,7 +164,6 @@ namespace TeamNut.Repositories
             cmd.Parameters.AddWithValue("@userId", log.UserId);
             cmd.Parameters.AddWithValue("@date", log.Date);
             cmd.Parameters.AddWithValue("@caloriesConsumed", log.CaloriesConsumed);
-            cmd.Parameters.AddWithValue("@caloriesBurnt", log.CaloriesBurnt);
             cmd.Parameters.AddWithValue("@protein", log.Protein);
             cmd.Parameters.AddWithValue("@carbs", log.Carbs);
             cmd.Parameters.AddWithValue("@fats", log.Fats);
