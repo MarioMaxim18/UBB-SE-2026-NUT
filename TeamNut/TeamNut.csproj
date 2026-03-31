@@ -21,7 +21,8 @@
     <None Remove="Views\UserView\LoginPage.xaml" />
     <None Remove="Views\UserView\RegisterPage.xaml" />
     <None Remove="Views\UserView\UserDataPage.xaml" />
-	  <None Remove="Views\MainPage.xaml" />
+	<None Remove="Views\MainPage.xaml" />
+	<None Remove="Views\CalorieLoggingView\CalorieLoggingPage.xaml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -57,6 +58,9 @@
     <Page Update="Views\MainPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
+	<Page Update="CalorieLoggingView\CalorieLoggingPage.xaml">
+		<Generator>MSBuild:Compile</Generator>
+	</Page>
   </ItemGroup>
 
   <ItemGroup>
