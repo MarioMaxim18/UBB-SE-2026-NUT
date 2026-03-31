@@ -39,11 +39,11 @@ namespace TeamNut.ModelViews
 
             try
             {
-                StatusMessage = "Generating your daily meal plan...";
+                StatusMessage = "Generating your personalized daily meal plan...";
 
                 int userId = 1;
 
-                int mealPlanId = await _mealPlanRepository.GenerateDefaultDailyMealPlan(userId);
+                int mealPlanId = await _mealPlanRepository.GeneratePersonalizedDailyMealPlan(userId);
 
                 var meals = await _mealPlanRepository.GetMealsForMealPlan(mealPlanId);
 
@@ -52,7 +52,7 @@ namespace TeamNut.ModelViews
                     GeneratedMeals.Add(meal);
                 }
 
-                StatusMessage = $"Meal plan generated successfully! {meals.Count} meals added.";
+                StatusMessage = $"Personalized meal plan generated successfully! {meals.Count} meals added based on your nutritional needs.";
             }
             catch (Exception ex)
             {
