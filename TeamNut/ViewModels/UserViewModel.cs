@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using TeamNut.Models;
 using TeamNut.Services;
 
-namespace TeamNut.ModelViews
+namespace TeamNut.ViewModels
 {
     public partial class UserViewModel : ObservableObject
     {
@@ -56,6 +56,15 @@ namespace TeamNut.ModelViews
             }
             if(CurrentUser.Role == "User")
                 RegistrationValid?.Invoke(this, EventArgs.Empty);
+            else
+            {
+                var registeredUser = await _userService.RegisterUserAsync(CurrentUser);
+                if (registeredUser != null)
+                {
+                    UserSession.Login(registeredUser.Username, registeredUser.Role);
+                    LoginSuccess?.Invoke(this, EventArgs.Empty);
+                }
+            }
         }
         [RelayCommand]
         private async void OnSaveData()
@@ -77,6 +86,7 @@ namespace TeamNut.ModelViews
             CurrentUserData.UserId = registeredUser.Id;
             await _userService.AddUserDataAsync(CurrentUserData);
 
+            UserSession.Login(registeredUser.Username, registeredUser.Role);
             SaveDataSuccess?.Invoke(this, EventArgs.Empty);
         }
 
@@ -93,6 +103,7 @@ namespace TeamNut.ModelViews
             var user = await _userService.LoginAsync(CurrentUser.Username, CurrentUser.Password);
             if (user != null)
             {
+                UserSession.Login(user.Username, user.Role);
                 LoginSuccess?.Invoke(this, EventArgs.Empty);
             }
             else
