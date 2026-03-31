@@ -1,14 +1,10 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using TeamNut.Models;
 using TeamNut.Repositories;
-using TeamNut.Services;
 
 namespace TeamNut.ModelViews
 {
@@ -23,7 +19,7 @@ namespace TeamNut.ModelViews
         public partial bool IsBusy { get; set; }
 
         [ObservableProperty]
-        private ObservableCollection<Meal> generatedMeals = new ObservableCollection<Meal>();
+        private ObservableCollection<Meal> generatedMeals = new();
 
         public MealPlanViewModel()
         {
@@ -31,7 +27,7 @@ namespace TeamNut.ModelViews
         }
 
         [RelayCommand]
-        private async void OnGenerateMealPlan()
+        private async Task GenerateMealPlan()
         {
             StatusMessage = string.Empty;
             IsBusy = true;
@@ -52,11 +48,11 @@ namespace TeamNut.ModelViews
                     GeneratedMeals.Add(meal);
                 }
 
-                StatusMessage = $"Personalized meal plan generated successfully! {meals.Count} meals added based on your nutritional needs.";
+                StatusMessage = $"Meal plan generated! {meals.Count} meals added.";
             }
             catch (Exception ex)
             {
-                StatusMessage = $"An error occurred while generating the plan: {ex.Message}";
+                StatusMessage = $"Error: {ex.Message}";
             }
             finally
             {

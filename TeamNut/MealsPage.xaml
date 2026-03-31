@@ -8,6 +8,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
         <!-- TOP BAR -->
@@ -17,21 +18,21 @@
                      PlaceholderText="Search meal..."
                      Width="250"
                      KeyDown="txtSearch_KeyDown"/>
-            <!--  SEARCH BUTTON -->
-            <Button Content="Search"
-            Click="btnSearch_Click"/>
 
-            <!--  FILTER DROPDOWN -->
+            <Button Content="Search"
+                    Click="btnSearch_Click"/>
+
+            <!-- FILTER DROPDOWN -->
             <Button Content="Filters">
                 <Button.Flyout>
                     <Flyout>
                         <StackPanel Padding="10" Spacing="5">
-                            <CheckBox Content="Vegan" />
-                            <CheckBox Content="Keto" />
-                            <CheckBox Content="Gluten Free" />
-                            <CheckBox Content="Lactose Free" />
-                            <CheckBox Content="No Nuts" />
-                            <CheckBox Content="Favorites Only" />
+                            <CheckBox x:Name="chkVegan" Content="Vegan"/>
+                            <CheckBox x:Name="chkKeto" Content="Keto"/>
+                            <CheckBox x:Name="chkGlutenFree" Content="Gluten Free"/>
+                            <CheckBox x:Name="chkLactoseFree" Content="Lactose Free"/>
+                            <CheckBox x:Name="chkNutFree" Content="No Nuts"/>
+                            <CheckBox x:Name="chkFavorites" Content="Favorites Only"/>
                         </StackPanel>
                     </Flyout>
                 </Button.Flyout>
@@ -40,9 +41,14 @@
         </StackPanel>
 
         <!-- LIST -->
-        <ListView x:Name="listMeals" Grid.Row="1">
+        <ListView x:Name="listMeals"
+                  Grid.Row="1"
+                  IsItemClickEnabled="True"
+                  ItemClick="listMeals_ItemClick">
+
             <ListView.ItemTemplate>
                 <DataTemplate>
+
                     <Grid Padding="10" Margin="5"
                           Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                           BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
@@ -66,36 +72,59 @@
                                 <Run Text=" kcal" />
                             </TextBlock>
 
-                            <TextBlock Opacity="0.6" FontSize="12">
-                                <Run Text="{Binding Protein}" />
-                                <Run Text="g protein" />
-                            </TextBlock>
+                            <!-- MACROS -->
+                            <TextBlock Opacity="0.7" FontSize="12">
 
-                            <TextBlock Opacity="0.6" FontSize="12">
-                                <Run Text="{Binding Carbs}" />
-                                <Run Text="g carbs" />
-                            </TextBlock>
+                                <Run Text="P " Foreground="Green"/>
+                                <Run Text="{Binding Protein}" Foreground="Green"/>
+                                <Run Text="g  •  "/>
 
-                            <TextBlock Opacity="0.6" FontSize="12">
-                                <Run Text="{Binding Fat}" />
-                                <Run Text="g fat" />
+                                <Run Text="C " Foreground="Orange"/>
+                                <Run Text="{Binding Carbs}" Foreground="Orange"/>
+                                <Run Text="g  •  "/>
+
+                                <Run Text="F " Foreground="Crimson"/>
+                                <Run Text="{Binding Fat}" Foreground="Crimson"/>
+                                <Run Text="g"/>
+
                             </TextBlock>
 
                         </StackPanel>
 
-                        <!-- ⭐ FAVORITE  -->
+                        <!-- ⭐ FAVORITE -->
                         <Button Grid.Column="1"
-                                Click="Favorite_Click"
-                                FontSize="22"
-                                Background="Transparent"
-                                BorderThickness="0"
-                                Foreground="Gold"
-                                Content="★"/>
+                            Click="Favorite_Click"
+                            FontSize="22"
+                            Background="Transparent"
+                            BorderThickness="0"
+                            Foreground="Gold"
+                            Content="☆"
+                            Loaded="Favorite_Loaded"/>
 
                     </Grid>
+
                 </DataTemplate>
             </ListView.ItemTemplate>
+
         </ListView>
+
+        <!-- PAGINATION -->
+        <StackPanel Grid.Row="2"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Center"
+                    Spacing="10"
+                    Margin="0,10,0,0">
+
+            <Button x:Name="btnPrev" Content="Prev" Click="Prev_Click"/>
+
+            <TextBlock x:Name="txtPage"
+                       VerticalAlignment="Center"
+                       FontSize="14"
+                       FontWeight="SemiBold"/>
+
+            <Button x:Name="btnNext" Content="Next" Click="Next_Click"/>
+
+        </StackPanel>
 
     </Grid>
 </Page>

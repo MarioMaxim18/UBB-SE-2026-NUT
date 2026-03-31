@@ -1,17 +1,32 @@
 ﻿using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TeamNut.Repositories;
 using TeamNut.Models;
+using TeamNut.Models;
+using TeamNut.Repositories;
+
 
 namespace TeamNut.Repositories
 {
     
     internal class MealRepository : IRepository<Meal>
     {
+        public List<Meal> GetMeals()
+        {
+            try
+            {
+                return GetAll().Result.ToList();
+            }
+            catch
+            {
+                return new List<Meal>();
+            }
+        }
         private readonly string _connectionString = DbConfig.ConnectionString;
 
         public async Task<IEnumerable<Meal>> GetFilteredMeals(MealFilter filter)
