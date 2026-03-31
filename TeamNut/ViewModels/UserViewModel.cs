@@ -40,7 +40,7 @@ namespace TeamNut.ViewModels
                 CurrentUser.Role = "Nutritionist";
             }
             else
-                {
+            {
                 CurrentUser.Role = "User";
             }
             List<String> errors = CurrentUser.ValidateAndReturnErrors();
@@ -54,14 +54,14 @@ namespace TeamNut.ViewModels
                 this.StatusMessage = "Username already exists. Please choose another one.";
                 return;
             }
-            if(CurrentUser.Role == "User")
+            if (CurrentUser.Role == "User")
                 RegistrationValid?.Invoke(this, EventArgs.Empty);
             else
             {
                 var registeredUser = await _userService.RegisterUserAsync(CurrentUser);
                 if (registeredUser != null)
                 {
-                    UserSession.Login( registeredUser.Id, registeredUser.Username, registeredUser.Role);
+                    UserSession.Login(registeredUser.Id, registeredUser.Username, registeredUser.Role);
                     LoginSuccess?.Invoke(this, EventArgs.Empty);
                 }
             }
