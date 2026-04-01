@@ -5,6 +5,7 @@ DROP TABLE IF EXISTS Reminders;
 DROP TABLE IF EXISTS Inventory;
 DROP TABLE IF EXISTS UserBehaviour;
 DROP TABLE IF EXISTS Favorites;
+DROP TABLE IF EXISTS DailyMealLogs;
 DROP TABLE IF EXISTS DailyLogs;
 DROP TABLE IF EXISTS MealPlanMeal;
 DROP TABLE IF EXISTS MealPlan;
@@ -92,6 +93,23 @@ CREATE TABLE DailyLogs (
     totalCalories FLOAT,
     FOREIGN KEY (mealPlanId) REFERENCES MealPlan(mealplan_id) ON DELETE CASCADE
 );
+
+CREATE TABLE DailyMealLogs (
+    id INT IDENTITY(1,1) PRIMARY KEY,
+    user_id INT NOT NULL,
+    meal_id INT NOT NULL,
+    meal_name NVARCHAR(255) NOT NULL,
+    log_date DATETIME NOT NULL,
+    calories INT NOT NULL,
+    protein INT NOT NULL,
+    carbs INT NOT NULL,
+    fat INT NOT NULL,
+    meal_type NVARCHAR(50) NOT NULL,
+    CONSTRAINT FK_DailyMealLogs_Users FOREIGN KEY (user_id) REFERENCES Users(id) ON DELETE CASCADE,
+    CONSTRAINT FK_DailyMealLogs_Meals FOREIGN KEY (meal_id) REFERENCES Meals(meal_id)
+);
+
+CREATE INDEX IX_DailyMealLogs_UserDate ON DailyMealLogs(user_id, log_date);
 
 CREATE TABLE Favorites (
     id INT IDENTITY(1,1) PRIMARY KEY,

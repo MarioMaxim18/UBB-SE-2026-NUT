@@ -91,7 +91,7 @@ namespace TeamNut.Views.MealPlanView
         {
             var dialog = new ContentDialog
             {
-                Title = "⚙️ Update Your Preferences",
+                Title = "Update Your Preferences",
                 PrimaryButtonText = "Save",
                 CloseButtonText = "Cancel",
                 DefaultButton = ContentDialogButton.Primary,
@@ -158,7 +158,7 @@ namespace TeamNut.Views.MealPlanView
             // Info text
             var infoText = new TextBlock
             {
-                Text = "💡 Changes will be reflected in your next meal plan generation.",
+                Text = "Changes will be reflected in your next meal plan generation.",
                 TextWrapping = TextWrapping.Wrap,
                 Opacity = 0.7,
                 FontSize = 12,
@@ -205,8 +205,8 @@ namespace TeamNut.Views.MealPlanView
 
                     var successDialog = new ContentDialog
                     {
-                        Title = "✅ Settings Updated",
-                        Content = "Your preferences have been saved successfully!\n\n📅 Your new preferences will be applied to tomorrow's meal plan, which will be automatically generated when you log in.\n\n💡 Today's meal plan will remain unchanged.",
+                        Title = "Settings Updated",
+                        Content = "Your preferences have been saved successfully!\n\nYour new preferences will be applied to tomorrow's meal plan, which will be automatically generated when you log in.\n\nToday's meal plan will remain unchanged.",
                         CloseButtonText = "OK",
                         XamlRoot = this.XamlRoot
                     };
@@ -214,7 +214,7 @@ namespace TeamNut.Views.MealPlanView
 
                     // Don't clear meals - today's plan stays the same
                     // The new settings will be used for tomorrow's auto-generated plan
-                    StatusMessageText.Text = "✅ Settings saved! New preferences will apply to tomorrow's meal plan.";
+                    StatusMessageText.Text = "Settings saved! New preferences will apply to tomorrow's meal plan.";
                 }
                 catch (Exception ex)
                 {
@@ -250,12 +250,102 @@ namespace TeamNut.Views.MealPlanView
 
             if (ViewModel.GeneratedMeals.Count > 0)
             {
-                MealsCountText.Text = $"📋 Your meal plan contains {ViewModel.GeneratedMeals.Count} meals:";
+                MealsCountText.Text = $"Your meal plan contains {ViewModel.GeneratedMeals.Count} meals:";
                 MealsCountText.Visibility = Visibility.Visible;
+                AddToDailyLogButton.Visibility = Visibility.Visible;
             }
             else
             {
                 MealsCountText.Visibility = Visibility.Collapsed;
+                AddToDailyLogButton.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        private async void AddToDailyLogButton_Click(object sender, RoutedEventArgs e)
+        {
+            int? userId = UserSession.UserId;
+
+            if (userId == null || userId <= 0)
+            {
+                var errorDialog = new ContentDialog
+                {
+                    Title = "Not Logged In",
+                    Content = "You must be logged in to add meals to your daily log.",
+                    CloseButtonText = "OK",
+                    XamlRoot = this.XamlRoot
+                };
+                _ = await errorDialog.ShowAsync();
+                return;
+            }
+
+            if (ViewModel.GeneratedMeals.Count == 0)
+            {
+                var errorDialog = new ContentDialog
+                {
+                    Title = "No Meals",
+                    Content = "There are no meals in your meal plan to add.",
+                    CloseButtonText = "OK",
+                    XamlRoot = this.XamlRoot
+                };
+                _ = await errorDialog.ShowAsync();
+                return;
+            }
+
+            // Confirm with user before adding
+            var confirmDialog = new ContentDialog
+            {
+                Title = "Add to Daily Log",
+                Content = $"This will add all {ViewModel.GeneratedMeals.Count} meals from your meal plan to today's daily meal log.\n\nDo you want to continue?",
+                PrimaryButtonText = "Yes, Add to Log",
+                CloseButtonText = "Cancel",
+                DefaultButton = ContentDialogButton.Primary,
+                XamlRoot = this.XamlRoot
+            };
+
+            var result = await confirmDialog.ShowAsync();
+
+            if (result == ContentDialogResult.Primary)
+            {
+                try
+                {
+                    var dailyMealLogService = new DailyMealLogService();
+
+                    // Add each meal to the daily log
+                    foreach (var mealViewModel in ViewModel.GeneratedMeals)
+                    {
+                        await dailyMealLogService.SaveMealToLog(
+                            mealViewModel.Id,
+                            mealViewModel.Name,
+                            mealViewModel.Calories,
+                            mealViewModel.Protein,
+                            mealViewModel.Carbs,
+                            mealViewModel.Fat,
+                            mealViewModel.MealType ?? "Unspecified"
+                        );
+                    }
+
+                    var successDialog = new ContentDialog
+                    {
+                        Title = "Success",
+                        Content = $"Successfully added {ViewModel.GeneratedMeals.Count} meals to your daily meal log!",
+                        CloseButtonText = "OK",
+                        XamlRoot = this.XamlRoot
+                    };
+                    _ = await successDialog.ShowAsync();
+
+                    StatusMessageText.Text = "Meal plan added to daily log successfully!";
+                }
+                catch (Exception ex)
+                {
+                    var errorDialog = new ContentDialog
+                    {
+                        Title = "Error",
+                        Content = $"Failed to add meals to daily log: {ex.Message}",
+                        CloseButtonText = "OK",
+                        XamlRoot = this.XamlRoot
+                    };
+                    _ = await errorDialog.ShowAsync();
+                }
             }
         }
     }
