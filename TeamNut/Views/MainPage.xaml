@@ -10,10 +10,8 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-
 
         <Border Grid.Row="0" Padding="20,10" BorderThickness="0,0,0,1" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" Background="{ThemeResource LayerFillColorDefaultBrush}">
             <Grid>
@@ -35,8 +33,31 @@
             </Grid>
         </Border>
 
+        <TabView Grid.Row="1" 
+                 x:Name="MainTabView"
+                 TabWidthMode="Equal"
+                 IsAddTabButtonVisible="False"
+                 CanDragTabs="False"
+                 CanReorderTabs="False"
+                 SelectionChanged="MainTabView_SelectionChanged">
 
-        <Frame Grid.Row="1" x:Name="ContentContainer">
-        </Frame>
+            <TabView.TabItems>
+                <TabViewItem Header="Meals" IsClosable="False" x:Name="MealsTab">
+                    <Frame x:Name="MealsFrame"/>
+                </TabViewItem>
+
+                <TabViewItem Header="My Meal Plan" IsClosable="False" x:Name="MealPlanTab">
+                    <Frame x:Name="MealPlanFrame"/>
+                </TabViewItem>
+
+                <TabViewItem Header="Calorie Logging" IsClosable="False" x:Name="CalorieTab">
+                    <Frame x:Name="CalorieLoggingFrame"/>
+                </TabViewItem>
+
+                <TabViewItem Header="Nutritionist Chat" IsClosable="False" x:Name="ChatTab">
+                    <Frame x:Name="ChatFrame"/>
+                </TabViewItem>
+            </TabView.TabItems>
+        </TabView>
     </Grid>
 </Page>

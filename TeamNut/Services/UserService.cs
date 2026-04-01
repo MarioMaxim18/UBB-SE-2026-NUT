@@ -51,5 +51,15 @@ namespace TeamNut.Services
             await _userRepository.AddUserData(data);
             return data;
         }
+
+        public async Task<UserData> GetUserDataAsync(int userId)
+        {
+            return await _userRepository.GetUserDataByUserId(userId);
+        }
+
+        public async Task UpdateUserDataAsync(UserData data)
+        {
+            await _userRepository.UpdateUserData(data);
+        }
     }
 }

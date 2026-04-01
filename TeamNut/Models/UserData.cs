@@ -98,8 +98,8 @@ namespace TeamNut.Models
 
             double adjustedCalories = Goal.ToLower() switch
             {
-                "bulk" => tdee + 400,
-                "cut" => tdee - 400,
+                "bulk" => tdee + 300,
+                "cut" => tdee - 300,
                 "maintenance" => tdee,
                 "well-being" => tdee,
                 _ => tdee
