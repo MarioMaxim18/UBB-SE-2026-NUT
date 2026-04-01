@@ -32,22 +32,35 @@ namespace TeamNut.Repositories
         public async Task<IEnumerable<Meal>> GetFilteredMeals(MealFilter filter)
         {
             var meals = new List<Meal>();
-            StringBuilder sql = new StringBuilder("SELECT * FROM Meals WHERE 1=1");
+            StringBuilder sql = new StringBuilder(@"
+                SELECT 
+                    m.*,
+                    CAST(ISNULL(SUM(i.calories_per_100g * mi.quantity / 100.0), 0) AS INT) AS calories,
+                    CAST(ISNULL(SUM(i.protein_per_100g * mi.quantity / 100.0), 0) AS INT) AS protein,
+                    CAST(ISNULL(SUM(i.carbs_per_100g * mi.quantity / 100.0), 0) AS INT) AS carbs,
+                    CAST(ISNULL(SUM(i.fat_per_100g * mi.quantity / 100.0), 0) AS INT) AS fat
+                FROM Meals m
+                LEFT JOIN MealsIngredients mi ON m.meal_id = mi.meal_id
+                LEFT JOIN Ingredients i ON mi.food_id = i.food_id
+                WHERE 1=1");
             var parameters = new List<SqlParameter>();
 
             
-            if (filter.IsKeto) sql.Append(" AND isKeto = 1");
-            if (filter.IsVegan) sql.Append(" AND isVegan = 1");
-            if (filter.IsNutFree) sql.Append(" AND isNutFree = 1");
-            if (filter.IsLactoseFree) sql.Append(" AND isLactoseFree = 1");
-            if (filter.IsGlutenFree) sql.Append(" AND isGlutenFree = 1");
+            if (filter.IsKeto) sql.Append(" AND m.isKeto = 1");
+            if (filter.IsVegan) sql.Append(" AND m.isVegan = 1");
+            if (filter.IsNutFree) sql.Append(" AND m.isNutFree = 1");
+            if (filter.IsLactoseFree) sql.Append(" AND m.isLactoseFree = 1");
+            if (filter.IsGlutenFree) sql.Append(" AND m.isGlutenFree = 1");
 
             
             if (!string.IsNullOrWhiteSpace(filter.SearchTerm))
             {
-                sql.Append(" AND name LIKE @search");
+                sql.Append(" AND m.name LIKE @search");
                 parameters.Add(new SqlParameter("@search", $"%{filter.SearchTerm}%"));
             }
+
+            sql.Append(@" GROUP BY 
+                m.meal_id, m.imageUrl, m.name, m.isKeto, m.isLactoseFree, m.isNutFree, m.isVegan, m.isGlutenFree, m.description");
 
             using var conn = new SqlConnection(_connectionString);
             using var cmd = new SqlCommand(sql.ToString(), conn);
@@ -65,7 +78,18 @@ namespace TeamNut.Repositories
         public async Task<Meal> GetById(int id)
         {
             using var conn = new SqlConnection(_connectionString);
-            const string sql = "SELECT * FROM Meals WHERE meal_id = @id";
+            const string sql = @"
+                SELECT 
+                    m.*,
+                    CAST(ISNULL(SUM(i.calories_per_100g * mi.quantity / 100.0), 0) AS INT) AS calories,
+                    CAST(ISNULL(SUM(i.protein_per_100g * mi.quantity / 100.0), 0) AS INT) AS protein,
+                    CAST(ISNULL(SUM(i.carbs_per_100g * mi.quantity / 100.0), 0) AS INT) AS carbs,
+                    CAST(ISNULL(SUM(i.fat_per_100g * mi.quantity / 100.0), 0) AS INT) AS fat
+                FROM Meals m
+                LEFT JOIN MealsIngredients mi ON m.meal_id = mi.meal_id
+                LEFT JOIN Ingredients i ON mi.food_id = i.food_id
+                WHERE m.meal_id = @id
+                GROUP BY m.meal_id, m.imageUrl, m.name, m.isKeto, m.isLactoseFree, m.isNutFree, m.isVegan, m.isGlutenFree, m.description";
             using var cmd = new SqlCommand(sql, conn);
             cmd.Parameters.AddWithValue("@id", id);
 
@@ -79,7 +103,17 @@ namespace TeamNut.Repositories
         {
             var meals = new List<Meal>();
             using var conn = new SqlConnection(_connectionString);
-            const string sql = "SELECT * FROM Meals";
+            const string sql = @"
+                SELECT 
+                    m.*,
+                    CAST(ISNULL(SUM(i.calories_per_100g * mi.quantity / 100.0), 0) AS INT) AS calories,
+                    CAST(ISNULL(SUM(i.protein_per_100g * mi.quantity / 100.0), 0) AS INT) AS protein,
+                    CAST(ISNULL(SUM(i.carbs_per_100g * mi.quantity / 100.0), 0) AS INT) AS carbs,
+                    CAST(ISNULL(SUM(i.fat_per_100g * mi.quantity / 100.0), 0) AS INT) AS fat
+                FROM Meals m
+                LEFT JOIN MealsIngredients mi ON m.meal_id = mi.meal_id
+                LEFT JOIN Ingredients i ON mi.food_id = i.food_id
+                GROUP BY m.meal_id, m.imageUrl, m.name, m.isKeto, m.isLactoseFree, m.isNutFree, m.isVegan, m.isGlutenFree, m.description";
             using var cmd = new SqlCommand(sql, conn);
 
             await conn.OpenAsync();
@@ -144,6 +178,10 @@ namespace TeamNut.Repositories
                 Id = Convert.ToInt32(reader["meal_id"]),
                 Name = reader["name"].ToString(),
                 ImageUrl = reader["imageUrl"]?.ToString(),
+                Calories = Convert.ToInt32(reader["calories"]),
+                Protein = Convert.ToInt32(reader["protein"]),
+                Carbs = Convert.ToInt32(reader["carbs"]),
+                Fat = Convert.ToInt32(reader["fat"]),
                 IsKeto = Convert.ToBoolean(reader["isKeto"]),
                 IsVegan = Convert.ToBoolean(reader["isVegan"]),
                 IsNutFree = Convert.ToBoolean(reader["isNutFree"]),

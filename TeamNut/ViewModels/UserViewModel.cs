@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using TeamNut.Models;
 using TeamNut.Services;
 
@@ -37,7 +38,7 @@ namespace TeamNut.ViewModels
         }
 
         [RelayCommand]
-        private async void OnRegister()
+        private async Task OnRegister()
         {
             StatusMessage = string.Empty;
 
@@ -75,35 +76,47 @@ namespace TeamNut.ViewModels
         }
 
         [RelayCommand]
-        private async void OnSaveData()
+        private async Task OnSaveData()
         {
             StatusMessage = string.Empty;
 
-            List<string> errors = CurrentUserData.GetValidationErrors();
-            if (errors.Any())
+            try
             {
-                StatusMessage = string.Join(Environment.NewLine, errors);
-                return;
+                List<string> errors = CurrentUserData.GetValidationErrors();
+                if (errors.Any())
+                {
+                    StatusMessage = string.Join(Environment.NewLine, errors);
+                    return;
+                }
+
+                CurrentUserData.Age = CurrentUserData.CalculateAge(SelectedDate);
+                CurrentUserData.Bmi = CurrentUserData.CalculateBmi();
+                CurrentUserData.CalorieNeeds = CurrentUserData.CalculateCalorieNeeds();
+                CurrentUserData.ProteinNeeds = CurrentUserData.CalculateProteinNeeds();
+                CurrentUserData.FatNeeds = CurrentUserData.CalculateFatNeeds();
+                CurrentUserData.CarbNeeds = CurrentUserData.CalculateCarbNeeds();
+
+                var registeredUser = await _userService.RegisterUserAsync(CurrentUser);
+                if (registeredUser == null)
+                {
+                    StatusMessage = "Registration failed. Username might already exist.";
+                    return;
+                }
+
+                CurrentUserData.UserId = registeredUser.Id;
+                await _userService.AddUserDataAsync(CurrentUserData);
+
+                UserSession.Login(registeredUser.Id, registeredUser.Username, registeredUser.Role);
+                SaveDataSuccess?.Invoke(this, EventArgs.Empty);
             }
-
-            CurrentUserData.CalculateAge(SelectedDate);
-
-            var registeredUser = await _userService.RegisterUserAsync(CurrentUser);
-            if (registeredUser == null)
+            catch (Exception ex)
             {
-                StatusMessage = "Registration failed. Username might already exist.";
-                return;
+                StatusMessage = "An error occurred while saving: " + ex.Message;
             }
-
-            CurrentUserData.UserId = registeredUser.Id;
-            await _userService.AddUserDataAsync(CurrentUserData);
-
-            UserSession.Login(registeredUser.Id, registeredUser.Username, registeredUser.Role);
-            SaveDataSuccess?.Invoke(this, EventArgs.Empty);
         }
 
         [RelayCommand]
-        private async void OnLogin()
+        private async Task OnLogin()
         {
             StatusMessage = string.Empty;
 

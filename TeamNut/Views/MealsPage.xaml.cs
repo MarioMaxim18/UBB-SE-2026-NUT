@@ -70,7 +70,7 @@ namespace TeamNut
             }
         }
        
-        private void btnSearch_Click(object sender, RoutedEventArgs e)
+        private async void btnSearch_Click(object sender, RoutedEventArgs e)
         {
             var filter = new MealFilter
             {
@@ -82,9 +82,8 @@ namespace TeamNut
                 IsNutFree = chkNutFree.IsChecked == true
             };
 
-            var results = viewModel.SearchMeals(filter);
+            var results = await viewModel.SearchMealsAsync(filter);
 
-            // Favorites
             if (chkFavorites.IsChecked == true)
                 results = results.Where(m => m.IsFavorite).ToList();
 

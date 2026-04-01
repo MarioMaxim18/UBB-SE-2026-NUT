@@ -30,6 +30,14 @@ namespace TeamNut.ViewModels
             OnPropertyChanged(nameof(Meals));
         }
 
+        public async Task<System.Collections.Generic.List<Meal>> SearchMealsAsync(MealFilter filter)
+        {
+            var list = await _mealService.GetFilteredMealsAsync(filter);
+            Meals = new ObservableCollection<Meal>(list);
+            OnPropertyChanged(nameof(Meals));
+            return list;
+        }
+
         [RelayCommand]
         public async Task SearchAsync()
         {
