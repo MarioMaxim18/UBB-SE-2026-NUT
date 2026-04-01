@@ -276,18 +276,38 @@ namespace TeamNut.Views.MealPlanView
                     return;
                 }
 
+                if (ViewModel.GeneratedMeals.Count == 0)
+                {
+                    var errorDialog = new ContentDialog
+                    {
+                        Title = "No Meals",
+                        Content = "No meals to save. Please generate a meal plan first.",
+                        CloseButtonText = "OK",
+                        XamlRoot = this.XamlRoot
+                    };
+                    await errorDialog.ShowAsync();
+                    return;
+                }
+
                 await ViewModel.SaveToDailyLogAsync();
+
+                // Build a detailed message showing all saved meals
+                var messageText = $"Successfully saved {ViewModel.GeneratedMeals.Count} meals to daily log:\n\n";
+                foreach (var meal in ViewModel.GeneratedMeals)
+                {
+                    messageText += $"• {meal.Name}: {meal.Calories} kcal\n";
+                }
 
                 var successDialog = new ContentDialog
                 {
                     Title = "Success",
-                    Content = $"Meal plan saved to daily log!\n\nMeal Plan ID: {ViewModel.CurrentMealPlanId}\nTotal Calories: {ViewModel.TotalCalories}",
+                    Content = messageText,
                     CloseButtonText = "OK",
                     XamlRoot = this.XamlRoot
                 };
                 await successDialog.ShowAsync();
 
-                StatusMessageText.Text = $"Meal plan saved to daily log! (ID: {ViewModel.CurrentMealPlanId}, Calories: {ViewModel.TotalCalories})";
+                StatusMessageText.Text = $"All {ViewModel.GeneratedMeals.Count} meals saved to daily log!";
             }
             catch (Exception ex)
             {

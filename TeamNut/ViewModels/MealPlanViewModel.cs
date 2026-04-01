@@ -295,9 +295,9 @@ namespace TeamNut.ModelViews
                     return;
                 }
 
-                await _mealPlanService.SaveToDailyLogAsync(CurrentMealPlanId, TotalCalories);
+                await _mealPlanService.SaveMealsToDailyLogAsync(CurrentMealPlanId);
 
-                StatusMessage = $"Meal plan saved to daily log! (ID: {CurrentMealPlanId}, Calories: {TotalCalories})";
+                StatusMessage = $"All {GeneratedMeals.Count} meals saved to daily log!";
             }
             catch (Exception ex)
             {
@@ -314,7 +314,8 @@ namespace TeamNut.ModelViews
                 throw new InvalidOperationException("No meal plan is currently loaded. Please generate a meal plan first.");
             }
 
-            await _mealPlanService.SaveToDailyLogAsync(CurrentMealPlanId, TotalCalories);
+            await _mealPlanService.SaveMealsToDailyLogAsync(CurrentMealPlanId);
         }
     }
 }
+

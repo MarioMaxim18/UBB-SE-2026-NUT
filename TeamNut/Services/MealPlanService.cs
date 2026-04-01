@@ -243,13 +243,14 @@ namespace TeamNut.Services
         }
 
         /// <summary>
-        /// Saves the meal plan ID and total calories to the DailyLogs table
+        /// Saves individual meals from a meal plan to the DailyLogs table
         /// </summary>
-        /// <param name="mealPlanId">The meal plan ID</param>
-        /// <param name="totalCalories">The total calories of the meal plan</param>
-        public async Task SaveToDailyLogAsync(int mealPlanId, float totalCalories)
+        /// <param name="mealPlanId">The meal plan ID to get meals from</param>
+        public async Task SaveMealsToDailyLogAsync(int mealPlanId)
         {
-            await _mealPlanRepository.SaveToDailyLog(mealPlanId, totalCalories);
+            var meals = await GetMealsForMealPlanAsync(mealPlanId);
+            await _mealPlanRepository.SaveMealsToDailyLog(meals);
         }
     }
 }
+
