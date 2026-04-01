@@ -47,7 +47,7 @@
                     <CalendarDatePicker 
                      Header="Birthdate" 
                      PlaceholderText="Select a date"
-                     Date="{Binding ViewModel.SelectedDate, Mode=TwoWay}"
+                     Date="{x:Bind ViewModel.SelectedDate, Mode=TwoWay}"
                      x:Name="BirthdateInput"
                      HorizontalAlignment="Stretch"/>
 

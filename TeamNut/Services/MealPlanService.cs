@@ -248,8 +248,13 @@ namespace TeamNut.Services
         /// <param name="mealPlanId">The meal plan ID to get meals from</param>
         public async Task SaveMealsToDailyLogAsync(int mealPlanId)
         {
+            if (!UserSession.UserId.HasValue)
+            {
+                throw new InvalidOperationException("User must be logged in to save daily logs.");
+            }
+
             var meals = await GetMealsForMealPlanAsync(mealPlanId);
-            await _mealPlanRepository.SaveMealsToDailyLog(meals);
+            await _mealPlanRepository.SaveMealsToDailyLog(UserSession.UserId.Value, meals);
         }
     }
 }

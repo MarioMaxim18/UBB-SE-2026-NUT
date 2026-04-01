@@ -3,62 +3,57 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-    <Grid Padding="10">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="*" />
-        </Grid.ColumnDefinitions>
+    <Grid Padding="16" RowSpacing="12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
 
-        <!-- LEFT -->
-        <StackPanel Grid.Column="0" Spacing="8">
-            <TextBlock Text="Daily" FontSize="18"/>
+        <TextBlock Text="{Binding StatusMessage}" FontSize="16" TextWrapping="WrapWholeWords"
+                   Visibility="{Binding HasData, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Inverse}"/>
 
-            <TextBlock Text="{Binding StatusMessage}" />
+        <Grid Grid.Row="1" ColumnSpacing="16"
+              Visibility="{Binding HasData, Converter={StaticResource BoolToVisibilityConverter}}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
 
-            <TextBlock>
-                <Run Text="Calories: "/>
-                <Run Text="{Binding DailyLog.CaloriesConsumed}"/>
-            </TextBlock>
+            <Border Grid.Column="0" Padding="12" CornerRadius="10" BorderThickness="1" BorderBrush="Gray">
+                <StackPanel Spacing="8">
+                    <TextBlock Text="Daily Log (Today)" FontSize="18" FontWeight="SemiBold"/>
+                    <TextBlock Text="Calories"/>
+                    <TextBlock Text="{Binding DailyCaloriesText}" FontWeight="SemiBold"/>
+                    <ProgressBar Minimum="0" Maximum="{Binding DailyCaloriesGoal}" Value="{Binding DailyTotals.Calories}" Height="16"/>
+                    <TextBlock Text="Protein"/>
+                    <TextBlock Text="{Binding DailyProteinText}" FontWeight="SemiBold"/>
+                    <ProgressBar Minimum="0" Maximum="{Binding DailyProteinGoal}" Value="{Binding DailyTotals.Protein}" Height="16"/>
+                    <TextBlock Text="Carbs"/>
+                    <TextBlock Text="{Binding DailyCarbsText}" FontWeight="SemiBold"/>
+                    <ProgressBar Minimum="0" Maximum="{Binding DailyCarbsGoal}" Value="{Binding DailyTotals.Carbs}" Height="16"/>
+                    <TextBlock Text="Fats"/>
+                    <TextBlock Text="{Binding DailyFatsText}" FontWeight="SemiBold"/>
+                    <ProgressBar Minimum="0" Maximum="{Binding DailyFatsGoal}" Value="{Binding DailyTotals.Fats}" Height="16"/>
+                </StackPanel>
+            </Border>
 
-            <TextBlock>
-                <Run Text="Protein: "/>
-                <Run Text="{Binding DailyLog.Protein}"/>
-            </TextBlock>
-
-            <TextBlock>
-                <Run Text="Carbs: "/>
-                <Run Text="{Binding DailyLog.Carbs}"/>
-            </TextBlock>
-
-            <TextBlock>
-                <Run Text="Fats: "/>
-                <Run Text="{Binding DailyLog.Fats}"/>
-            </TextBlock>
-        </StackPanel>
-
-        <!-- RIGHT -->
-        <StackPanel Grid.Column="1" Spacing="8">
-            <TextBlock Text="This Week" FontSize="18"/>
-
-            <TextBlock>
-                <Run Text="Calories: "/>
-                <Run Text="{Binding WeeklyLog.CaloriesConsumed}"/>
-            </TextBlock>
-
-            <TextBlock>
-                <Run Text="Protein: "/>
-                <Run Text="{Binding WeeklyLog.Protein}"/>
-            </TextBlock>
-
-            <TextBlock>
-                <Run Text="Carbs: "/>
-                <Run Text="{Binding WeeklyLog.Carbs}"/>
-            </TextBlock>
-
-            <TextBlock>
-                <Run Text="Fats: "/>
-                <Run Text="{Binding WeeklyLog.Fats}"/>
-            </TextBlock>
-        </StackPanel>
+            <Border Grid.Column="1" Padding="12" CornerRadius="10" BorderThickness="1" BorderBrush="Gray">
+                <StackPanel Spacing="8">
+                    <TextBlock Text="Weekly Log (Monday-Sunday)" FontSize="18" FontWeight="SemiBold"/>
+                    <TextBlock Text="Calories"/>
+                    <TextBlock Text="{Binding WeeklyCaloriesText}" FontWeight="SemiBold"/>
+                    <ProgressBar Minimum="0" Maximum="{Binding WeeklyCaloriesGoal}" Value="{Binding WeeklyTotals.Calories}" Height="16"/>
+                    <TextBlock Text="Protein"/>
+                    <TextBlock Text="{Binding WeeklyProteinText}" FontWeight="SemiBold"/>
+                    <ProgressBar Minimum="0" Maximum="{Binding WeeklyProteinGoal}" Value="{Binding WeeklyTotals.Protein}" Height="16"/>
+                    <TextBlock Text="Carbs"/>
+                    <TextBlock Text="{Binding WeeklyCarbsText}" FontWeight="SemiBold"/>
+                    <ProgressBar Minimum="0" Maximum="{Binding WeeklyCarbsGoal}" Value="{Binding WeeklyTotals.Carbs}" Height="16"/>
+                    <TextBlock Text="Fats"/>
+                    <TextBlock Text="{Binding WeeklyFatsText}" FontWeight="SemiBold"/>
+                    <ProgressBar Minimum="0" Maximum="{Binding WeeklyFatsGoal}" Value="{Binding WeeklyTotals.Fats}" Height="16"/>
+                </StackPanel>
+            </Border>
+        </Grid>
     </Grid>
 </Page>

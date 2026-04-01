@@ -61,7 +61,7 @@
     <Page Update="Views\MainPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
-	<Page Update="CalorieLoggingView\CalorieLoggingPage.xaml">
+  <Page Update="Views\CalorieLoggingView\CalorieLoggingPage.xaml">
 		<Generator>MSBuild:Compile</Generator>
 	</Page>
   </ItemGroup>

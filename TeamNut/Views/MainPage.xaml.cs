@@ -10,7 +10,6 @@ namespace TeamNut.Views
     {
         private bool mealsLoaded = false;
         private bool mealPlanLoaded = false;
-        private bool calorieLoaded = false;
         private bool chatLoaded = false;
 
         public MainPage()
@@ -52,12 +51,15 @@ namespace TeamNut.Views
                     MealPlanFrame.Navigate(typeof(TeamNut.Views.MealPlanView.MealPlanPage));
                     mealPlanLoaded = true;
                 }
+                else if (selectedItem == DailyLogTab)
+                {
+                    DailyLogFrame.Navigate(typeof(TeamNut.Views.CalorieLoggingView.CalorieLoggingPage));
+                }
                 else if (selectedItem == ChatTab && !chatLoaded)
                 {
                     ChatFrame.Navigate(typeof(TeamNut.Views.NutritionistChat.NutritionistChatPage));
                     chatLoaded = true;
                 }
-                // CalorieTab not loaded yet - page is empty
             }
             catch (Exception ex)
             {

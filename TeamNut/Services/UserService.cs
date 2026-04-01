@@ -48,6 +48,7 @@ namespace TeamNut.Services
 
         public async Task<UserData> AddUserDataAsync(UserData data)
         {
+            ApplyCalculatedNutrition(data);
             await _userRepository.AddUserData(data);
             return data;
         }
@@ -59,7 +60,19 @@ namespace TeamNut.Services
 
         public async Task UpdateUserDataAsync(UserData data)
         {
+            ApplyCalculatedNutrition(data);
             await _userRepository.UpdateUserData(data);
+        }
+
+        private static void ApplyCalculatedNutrition(UserData data)
+        {
+            if (data == null) return;
+
+            data.Bmi = data.CalculateBmi();
+            data.CalorieNeeds = data.CalculateCalorieNeeds();
+            data.ProteinNeeds = data.CalculateProteinNeeds();
+            data.FatNeeds = data.CalculateFatNeeds();
+            data.CarbNeeds = data.CalculateCarbNeeds();
         }
     }
 }

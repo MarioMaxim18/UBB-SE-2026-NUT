@@ -90,6 +90,11 @@ namespace TeamNut.ViewModels
                 }
 
                 CurrentUserData.Age = CurrentUserData.CalculateAge(SelectedDate);
+                if (CurrentUserData.Age <= 0)
+                {
+                    StatusMessage = "Please select a valid birthdate.";
+                    return;
+                }
                 CurrentUserData.Bmi = CurrentUserData.CalculateBmi();
                 CurrentUserData.CalorieNeeds = CurrentUserData.CalculateCalorieNeeds();
                 CurrentUserData.ProteinNeeds = CurrentUserData.CalculateProteinNeeds();

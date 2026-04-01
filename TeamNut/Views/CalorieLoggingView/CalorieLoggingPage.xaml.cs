@@ -6,13 +6,13 @@ namespace TeamNut.Views.CalorieLoggingView
 {
     public sealed partial class CalorieLoggingPage : Page
     {
-        private readonly CalorieLoggingViewModel _viewModel;
+        private readonly DailyLogViewModel _viewModel;
 
         public CalorieLoggingPage()
         {
             this.InitializeComponent();
 
-            _viewModel = new CalorieLoggingViewModel();
+            _viewModel = new DailyLogViewModel();
             this.DataContext = _viewModel;
 
             LoadData();
@@ -20,7 +20,7 @@ namespace TeamNut.Views.CalorieLoggingView
 
         private async void LoadData()
         {
-            await _viewModel.Load(System.DateTime.Now.AddDays(-1));
+            await _viewModel.LoadAsync();
         }
     }
 }

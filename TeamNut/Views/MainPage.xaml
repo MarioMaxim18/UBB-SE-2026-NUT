@@ -61,8 +61,8 @@
                     <Frame x:Name="MealPlanFrame"/>
                 </TabViewItem>
 
-                <TabViewItem Header="Calorie Logging" IsClosable="False" x:Name="CalorieTab">
-                    <Frame x:Name="CalorieLoggingFrame"/>
+                <TabViewItem Header="Daily Logs" IsClosable="False" x:Name="DailyLogTab">
+                    <Frame x:Name="DailyLogFrame"/>
                 </TabViewItem>
 
                 <TabViewItem Header="Nutritionist Chat" IsClosable="False" x:Name="ChatTab">

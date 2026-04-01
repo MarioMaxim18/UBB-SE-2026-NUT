@@ -88,8 +88,11 @@ CREATE TABLE MealPlanMeal (
 
 CREATE TABLE DailyLogs (
     id INT IDENTITY(1,1) PRIMARY KEY,
+    user_id INT,
     mealId INT,
     calories FLOAT,
+    created_at DATETIME DEFAULT GETDATE(),
+    FOREIGN KEY (user_id) REFERENCES Users(id) ON DELETE CASCADE,
     FOREIGN KEY (mealId) REFERENCES Meals(meal_id) ON DELETE CASCADE
 );
 
