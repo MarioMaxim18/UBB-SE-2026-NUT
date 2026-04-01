@@ -89,6 +89,33 @@
 
                             </TextBlock>
 
+                            <StackPanel Orientation="Horizontal" Spacing="6" Margin="0,8,0,0">
+                                <Border Background="#2E7D32" CornerRadius="12" Padding="8,2"
+                                        Visibility="{Binding VeganVisibility}">
+                                    <TextBlock Text="Vegan" Foreground="White" FontSize="11"/>
+                                </Border>
+
+                                <Border Background="#8E24AA" CornerRadius="12" Padding="8,2"
+                                        Visibility="{Binding KetoVisibility}">
+                                    <TextBlock Text="Keto" Foreground="White" FontSize="11"/>
+                                </Border>
+
+                                <Border Background="#EF6C00" CornerRadius="12" Padding="8,2"
+                                        Visibility="{Binding GlutenFreeVisibility}">
+                                    <TextBlock Text="Gluten Free" Foreground="White" FontSize="11"/>
+                                </Border>
+
+                                <Border Background="#00838F" CornerRadius="12" Padding="8,2"
+                                        Visibility="{Binding LactoseFreeVisibility}">
+                                    <TextBlock Text="Lactose Free" Foreground="White" FontSize="11"/>
+                                </Border>
+
+                                <Border Background="#5D4037" CornerRadius="12" Padding="8,2"
+                                        Visibility="{Binding NutFreeVisibility}">
+                                    <TextBlock Text="Nut Free" Foreground="White" FontSize="11"/>
+                                </Border>
+                            </StackPanel>
+
                         </StackPanel>
 
                         <!-- ⭐ FAVORITE -->

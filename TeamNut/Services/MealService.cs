@@ -15,16 +15,21 @@ namespace TeamNut.Services
             _mealRepository = new MealRepository();
         }
 
-        // Return all meals or apply a simple text filter on the meal name
-        public Task<List<Meal>> GetMealsAsync(string? filter = null)
+        public async Task<List<Meal>> GetMealsAsync(string? filter = null)
         {
-            var meals = _mealRepository.GetMeals() ?? new List<Meal>();
+            var meals = (await _mealRepository.GetAll()).ToList();
 
             if (string.IsNullOrWhiteSpace(filter) || filter == "All")
-                return Task.FromResult(meals);
+                return meals;
 
             var filtered = meals.Where(m => (m.Name ?? string.Empty).Contains(filter, System.StringComparison.OrdinalIgnoreCase)).ToList();
-            return Task.FromResult(filtered);
+            return filtered;
+        }
+
+        public async Task<List<Meal>> GetFilteredMealsAsync(MealFilter filter)
+        {
+            var results = await _mealRepository.GetFilteredMeals(filter);
+            return results.ToList();
         }
 
         public async Task<Meal?> GetByIdAsync(int id)
