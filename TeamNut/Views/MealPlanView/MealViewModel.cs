@@ -45,6 +45,7 @@ namespace TeamNut.Views.MealPlanView
 
     public class IngredientViewModel
     {
+        public int IngredientId { get; set; }
         public string Name { get; set; } = string.Empty;
         public double Quantity { get; set; }
         public double Calories { get; set; }
