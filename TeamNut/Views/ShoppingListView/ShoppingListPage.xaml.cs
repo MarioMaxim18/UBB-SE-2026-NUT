@@ -2,6 +2,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using TeamNut.ViewModels;
+using TeamNut.Models;
 
 namespace TeamNut.Views.ShoppingListView
 {
