@@ -1,11 +1,10 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+using System.Collections.Generic;
+using System.Linq;
 using TeamNut.Models;
 using TeamNut.Repositories;
 using TeamNut.Services;
@@ -24,7 +23,7 @@ namespace TeamNut.ModelViews
         public partial bool IsBusy { get; set; }
 
         [ObservableProperty]
-        private ObservableCollection<MealViewModel> generatedMeals = new ObservableCollection<MealViewModel>();
+        private ObservableCollection<MealViewModel> generatedMeals = new();
 
         private int _totalCalories;
         public int TotalCalories
@@ -87,7 +86,7 @@ namespace TeamNut.ModelViews
 
                 if (meals == null || meals.Count == 0)
                 {
-                    StatusMessage = "Meal plan created but no meals were returned. Check database data.";
+                    StatusMessage = "Meal plan created but no meals were returned.";
                     HasMeals = false;
                     return;
                 }
@@ -103,8 +102,12 @@ namespace TeamNut.ModelViews
                 foreach (var meal in meals)
                 {
                     var mealType = mealTypes.ContainsKey(index) ? mealTypes[index] : "MEAL";
+
                     var mealViewModel = MealViewModel.FromMeal(meal, mealType);
-                    mealViewModel.Ingredients = await _mealPlanRepository.GetIngredientsForMeal(meal.Id);
+
+                    mealViewModel.Ingredients =
+                        await _mealPlanRepository.GetIngredientsForMeal(meal.Id);
+
                     GeneratedMeals.Add(mealViewModel);
                     index++;
                 }
@@ -112,7 +115,10 @@ namespace TeamNut.ModelViews
                 CalculateTotals();
                 HasMeals = GeneratedMeals.Count > 0;
 
-                StatusMessage = $"Success! {meals.Count} meals added. Total: {TotalCalories} cal, {TotalProtein}g protein, {TotalCarbs}g carbs, {TotalFat}g fat";
+                StatusMessage =
+                    $"Success! {meals.Count} meals added. " +
+                    $"Total: {TotalCalories} cal, {TotalProtein}g protein, " +
+                    $"{TotalCarbs}g carbs, {TotalFat}g fat";
             }
             catch (Exception ex)
             {
@@ -152,8 +158,12 @@ namespace TeamNut.ModelViews
                     foreach (var meal in meals)
                     {
                         var mealType = mealTypes.ContainsKey(index) ? mealTypes[index] : "MEAL";
+
                         var mealViewModel = MealViewModel.FromMeal(meal, mealType);
-                        mealViewModel.Ingredients = await _mealPlanRepository.GetIngredientsForMeal(meal.Id);
+
+                        mealViewModel.Ingredients =
+                            await _mealPlanRepository.GetIngredientsForMeal(meal.Id);
+
                         GeneratedMeals.Add(mealViewModel);
                         index++;
                     }
@@ -164,7 +174,7 @@ namespace TeamNut.ModelViews
                 }
                 else
                 {
-                    StatusMessage = "No meal plan found for today. Generate a new one!";
+                    StatusMessage = "No meal plan found for today.";
                     HasMeals = false;
                 }
             }
