@@ -428,5 +428,22 @@ namespace TeamNut.Repositories
                 GoalType = reader["goal_type"]?.ToString()
             };
         }
+
+        public async Task SaveMealsToDailyLog(List<Meal> meals)
+        {
+            using var conn = new SqlConnection(_connectionString);
+            await conn.OpenAsync();
+
+            const string sql = @"INSERT INTO DailyLogs (mealId, calories) 
+                                VALUES (@mealId, @calories)";
+
+            foreach (var meal in meals)
+            {
+                using var cmd = new SqlCommand(sql, conn);
+                cmd.Parameters.AddWithValue("@mealId", meal.Id);
+                cmd.Parameters.AddWithValue("@calories", meal.Calories);
+                await cmd.ExecuteNonQueryAsync();
+            }
+        }
     }
 }

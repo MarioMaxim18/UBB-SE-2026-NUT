@@ -88,9 +88,9 @@ CREATE TABLE MealPlanMeal (
 
 CREATE TABLE DailyLogs (
     id INT IDENTITY(1,1) PRIMARY KEY,
-    mealPlanId INT,
-    totalCalories FLOAT,
-    FOREIGN KEY (mealPlanId) REFERENCES MealPlan(mealplan_id) ON DELETE CASCADE
+    mealId INT,
+    calories FLOAT,
+    FOREIGN KEY (mealId) REFERENCES Meals(meal_id) ON DELETE CASCADE
 );
 
 CREATE TABLE Favorites (

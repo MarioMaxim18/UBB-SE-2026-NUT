@@ -24,6 +24,13 @@ namespace TeamNut.ModelViews
         [ObservableProperty]
         private ObservableCollection<MealViewModel> generatedMeals = new();
 
+        private int _currentMealPlanId;
+        public int CurrentMealPlanId
+        {
+            get => _currentMealPlanId;
+            set => SetProperty(ref _currentMealPlanId, value);
+        }
+
         private int _totalCalories;
         public int TotalCalories
         {
@@ -94,7 +101,7 @@ namespace TeamNut.ModelViews
                 ErrorDialogTitle = "User Not Logged In";
                 ErrorDialogMessage = "You need to be logged in to view your meal plan.\n\nPlease create an account or log in to continue.";
                 ShowErrorDialog = true;
-                StatusMessage = "❌ Please log in to view your meal plan.";
+                StatusMessage = "Please log in to view your meal plan.";
                 return;
             }
 
@@ -106,7 +113,7 @@ namespace TeamNut.ModelViews
                 ErrorDialogTitle = "Meal Plan Already Exists";
                 ErrorDialogMessage = "You already have a meal plan for today.\n\nYour meal plan will automatically regenerate tomorrow based on your latest preferences.\n\nIf you changed your settings, the new preferences will apply to tomorrow's meal plan.";
                 ShowErrorDialog = true;
-                StatusMessage = "⚠️ Meal plan already generated for today. New plan tomorrow!";
+                StatusMessage = "Meal plan already generated for today. New plan tomorrow!";
             }
             else
             {
@@ -172,6 +179,9 @@ namespace TeamNut.ModelViews
         {
             try
             {
+                // Store the current meal plan ID
+                CurrentMealPlanId = mealPlanId;
+
                 // Get the user's goal
                 string userGoal = await _mealPlanService.GetUserGoalAsync(userId);
 
@@ -207,14 +217,13 @@ namespace TeamNut.ModelViews
                 // Calculate and display total nutrition
                 var (totalCalories, totalProtein, totalCarbs, totalFat) = _mealPlanService.CalculateTotalNutrition(meals);
 
-                // Display goal information with emoji
-                string goalEmoji = _mealPlanService.GetGoalEmoji(userGoal);
+                // Display goal information
                 string goalName = char.ToUpper(userGoal[0]) + userGoal.Substring(1);
-                GoalDescription = $"{goalEmoji} {goalName} Goal";
+                GoalDescription = $"{goalName} Goal";
 
                 TotalNutritionSummary = $"Daily Total: {totalCalories} kcal | {totalProtein}g protein | {totalCarbs}g carbs | {totalFat}g fat";
 
-                StatusMessage = $"✅ Your meal plan for today ({goalName} goal)";
+                StatusMessage = $"Your meal plan for today ({goalName} goal)";
                 HasMeals = true;
             }
             catch (Exception ex)
@@ -240,14 +249,14 @@ namespace TeamNut.ModelViews
                 // Load the generated meals
                 await LoadMealPlanByIdAsync(mealPlanId, userId);
 
-                StatusMessage = $"✅ New meal plan generated for today!";
+                StatusMessage = $"New meal plan generated for today!";
             }
             catch (InvalidOperationException ex)
             {
                 ErrorDialogTitle = "Error Generating Meal Plan";
                 ErrorDialogMessage = ex.Message;
                 ShowErrorDialog = true;
-                StatusMessage = $"❌ {ex.Message}";
+                StatusMessage = $"{ex.Message}";
                 HasMeals = false;
             }
             catch (Exception ex)
@@ -255,7 +264,7 @@ namespace TeamNut.ModelViews
                 ErrorDialogTitle = "Unexpected Error";
                 ErrorDialogMessage = $"An unexpected error occurred:\n\n{ex.Message}";
                 ShowErrorDialog = true;
-                StatusMessage = $"❌ Error: {ex.Message}";
+                StatusMessage = $"Error: {ex.Message}";
                 HasMeals = false;
             }
         }
@@ -272,5 +281,41 @@ namespace TeamNut.ModelViews
             TotalCarbs = GeneratedMeals.Sum(m => m.Carbs);
             TotalFat = GeneratedMeals.Sum(m => m.Fat);
         }
+
+        [RelayCommand]
+        private async Task SaveToDailyLog()
+        {
+            try
+            {
+                if (CurrentMealPlanId <= 0)
+                {
+                    ErrorDialogTitle = "No Meal Plan";
+                    ErrorDialogMessage = "No meal plan is currently loaded. Please generate a meal plan first.";
+                    ShowErrorDialog = true;
+                    return;
+                }
+
+                await _mealPlanService.SaveMealsToDailyLogAsync(CurrentMealPlanId);
+
+                StatusMessage = $"All {GeneratedMeals.Count} meals saved to daily log!";
+            }
+            catch (Exception ex)
+            {
+                ErrorDialogTitle = "Save Failed";
+                ErrorDialogMessage = $"Failed to save to daily log:\n\n{ex.Message}";
+                ShowErrorDialog = true;
+            }
+        }
+
+        public async Task SaveToDailyLogAsync()
+        {
+            if (CurrentMealPlanId <= 0)
+            {
+                throw new InvalidOperationException("No meal plan is currently loaded. Please generate a meal plan first.");
+            }
+
+            await _mealPlanService.SaveMealsToDailyLogAsync(CurrentMealPlanId);
+        }
     }
 }
+

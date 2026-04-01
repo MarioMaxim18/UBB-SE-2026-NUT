@@ -112,7 +112,6 @@
                                     <!-- Nutritional Info -->
                                     <StackPanel Orientation="Horizontal" Spacing="15">
                                         <StackPanel Orientation="Horizontal" Spacing="5">
-                                            <TextBlock Text="🔥" FontSize="14"/>
                                             <TextBlock FontWeight="SemiBold">
                                                 <Run Text="{Binding Calories}"/>
                                                 <Run Text="kcal" FontWeight="Normal"/>
@@ -120,7 +119,6 @@
                                         </StackPanel>
 
                                         <StackPanel Orientation="Horizontal" Spacing="5">
-                                            <TextBlock Text="🥩" FontSize="14"/>
                                             <TextBlock>
                                                 <Run Text="{Binding Protein}"/>
                                                 <Run Text="g protein"/>
@@ -128,7 +126,6 @@
                                         </StackPanel>
 
                                         <StackPanel Orientation="Horizontal" Spacing="5">
-                                            <TextBlock Text="🍞" FontSize="14"/>
                                             <TextBlock>
                                                 <Run Text="{Binding Carbs}"/>
                                                 <Run Text="g carbs"/>
@@ -136,7 +133,6 @@
                                         </StackPanel>
 
                                         <StackPanel Orientation="Horizontal" Spacing="5">
-                                            <TextBlock Text="🥑" FontSize="14"/>
                                             <TextBlock>
                                                 <Run Text="{Binding Fat}"/>
                                                 <Run Text="g fat"/>
@@ -151,28 +147,28 @@
                                             CornerRadius="4"
                                             Padding="8,4"
                                             Visibility="{Binding IsVegan}">
-                                            <TextBlock Text="🌱 Vegan" FontSize="12"/>
+                                            <TextBlock Text="Vegan" FontSize="12"/>
                                         </Border>
                                         <Border 
                                             Background="{ThemeResource SystemFillColorCautionBrush}"
                                             CornerRadius="4"
                                             Padding="8,4"
                                             Visibility="{Binding IsKeto}">
-                                            <TextBlock Text="🥓 Keto" FontSize="12"/>
+                                            <TextBlock Text="Keto" FontSize="12"/>
                                         </Border>
                                         <Border 
                                             Background="{ThemeResource SystemFillColorAttentionBrush}"
                                             CornerRadius="4"
                                             Padding="8,4"
                                             Visibility="{Binding IsGlutenFree}">
-                                            <TextBlock Text="🌾 Gluten-Free" FontSize="12"/>
+                                            <TextBlock Text="Gluten-Free" FontSize="12"/>
                                         </Border>
                                         <Border 
                                             Background="{ThemeResource SystemFillColorCriticalBrush}"
                                             CornerRadius="4"
                                             Padding="8,4"
                                             Visibility="{Binding IsLactoseFree}">
-                                            <TextBlock Text="🥛 Lactose-Free" FontSize="12"/>
+                                            <TextBlock Text="Lactose-Free" FontSize="12"/>
                                         </Border>
                                     </StackPanel>
                                 </StackPanel>
@@ -189,6 +185,19 @@
                         </DataTemplate>
                     </ListView.ItemTemplate>
                 </ListView>
+
+                <!-- Save to Daily Log Button -->
+                <Button 
+                    x:Name="SaveToDailyLogButton"
+                    HorizontalAlignment="Center"
+                    Margin="0,20,0,20"
+                    Click="SaveToDailyLogButton_Click"
+                    Style="{StaticResource AccentButtonStyle}">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <FontIcon Glyph="&#xE74E;" FontSize="16"/>
+                        <TextBlock Text="Save to Daily Log"/>
+                    </StackPanel>
+                </Button>
             </StackPanel>
         </ScrollViewer>
     </Grid>
