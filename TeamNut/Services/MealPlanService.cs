@@ -256,6 +256,16 @@ namespace TeamNut.Services
             var meals = await GetMealsForMealPlanAsync(mealPlanId);
             await _mealPlanRepository.SaveMealsToDailyLog(UserSession.UserId.Value, meals);
         }
+
+        public async Task SaveMealToDailyLogAsync(int mealId, int calories)
+        {
+            if (!UserSession.UserId.HasValue)
+            {
+                throw new InvalidOperationException("User must be logged in to save daily logs.");
+            }
+
+            await _mealPlanRepository.SaveMealToDailyLog(UserSession.UserId.Value, mealId, calories);
+        }
     }
 }
 

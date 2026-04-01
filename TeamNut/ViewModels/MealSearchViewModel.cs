@@ -38,6 +38,12 @@ namespace TeamNut.ViewModels
             return list;
         }
 
+        public async Task<string> GetMealIngredientsTextAsync(int mealId)
+        {
+            var lines = await _mealService.GetMealIngredientLinesAsync(mealId);
+            return lines.Count > 0 ? string.Join("\n", lines) : "No ingredients found.";
+        }
+
         [RelayCommand]
         public async Task SearchAsync()
         {

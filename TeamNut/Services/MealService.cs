@@ -42,5 +42,10 @@ namespace TeamNut.Services
             var list = await _mealRepository.GetAll();
             return list.ToList();
         }
+
+        public async Task<List<string>> GetMealIngredientLinesAsync(int mealId)
+        {
+            return await _mealRepository.GetIngredientLinesForMealAsync(mealId);
+        }
     }
 }

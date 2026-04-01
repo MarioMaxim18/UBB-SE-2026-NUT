@@ -247,16 +247,6 @@ namespace TeamNut.Views.MealPlanView
         private void UpdateMealsList()
         {
             MealsListView.ItemsSource = ViewModel.GeneratedMeals;
-
-            if (ViewModel.GeneratedMeals.Count > 0)
-            {
-                MealsCountText.Text = $"Your meal plan contains {ViewModel.GeneratedMeals.Count} meals:";
-                MealsCountText.Visibility = Visibility.Visible;
-            }
-            else
-            {
-                MealsCountText.Visibility = Visibility.Collapsed;
-            }
         }
 
         private async void SaveToDailyLogButton_Click(object sender, RoutedEventArgs e)
@@ -315,6 +305,29 @@ namespace TeamNut.Views.MealPlanView
                 {
                     Title = "Save Failed",
                     Content = $"Failed to save to daily log:\n\n{ex.Message}",
+                    CloseButtonText = "OK",
+                    XamlRoot = this.XamlRoot
+                };
+                await errorDialog.ShowAsync();
+            }
+        }
+
+        private async void AddMealToLogsButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (sender is Button btn && btn.DataContext is MealViewModel meal)
+                {
+                    await ViewModel.SaveMealToDailyLogAsync(meal.Id);
+                    StatusMessageText.Text = $"{meal.Name} added to daily log.";
+                }
+            }
+            catch (Exception ex)
+            {
+                var errorDialog = new ContentDialog
+                {
+                    Title = "Save Failed",
+                    Content = $"Failed to add meal to daily log:\n\n{ex.Message}",
                     CloseButtonText = "OK",
                     XamlRoot = this.XamlRoot
                 };

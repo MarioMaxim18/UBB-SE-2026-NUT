@@ -29,6 +29,8 @@ namespace TeamNut
             var meal = e.ClickedItem as Meal;
             if (meal == null) return;
 
+            var ingredientsText = await viewModel.GetMealIngredientsTextAsync(meal.Id);
+
             var panel = new StackPanel { Spacing = 10 };
 
             if (!string.IsNullOrEmpty(meal.ImageUrl))
@@ -46,7 +48,7 @@ namespace TeamNut
                        $"Protein: {meal.Protein}g\n" +
                        $"Carbs: {meal.Carbs}g\n" +
                        $"Fat: {meal.Fat}g\n\n" +
-                       $"Ingredients:\n{meal.Description ?? "Not available"}"
+                       $"Ingredients:\n{ingredientsText}"
             });
 
             ContentDialog dialog = new ContentDialog

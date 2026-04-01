@@ -27,6 +27,33 @@ namespace TeamNut.Repositories
                 return new List<Meal>();
             }
         }
+
+        public async Task<List<string>> GetIngredientLinesForMealAsync(int mealId)
+        {
+            var ingredients = new List<string>();
+
+            using var conn = new SqlConnection(_connectionString);
+            const string sql = @"
+                SELECT i.name, mi.quantity
+                FROM MealsIngredients mi
+                INNER JOIN Ingredients i ON i.food_id = mi.food_id
+                WHERE mi.meal_id = @mealId
+                ORDER BY mi.quantity DESC, i.name";
+
+            using var cmd = new SqlCommand(sql, conn);
+            cmd.Parameters.AddWithValue("@mealId", mealId);
+
+            await conn.OpenAsync();
+            using var reader = await cmd.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
+            {
+                var name = reader["name"]?.ToString() ?? "Unknown ingredient";
+                var quantity = Convert.ToDouble(reader["quantity"]);
+                ingredients.Add($"- {name} ({quantity:0.#}g)");
+            }
+
+            return ingredients;
+        }
         private readonly string _connectionString = DbConfig.ConnectionString;
 
         public async Task<IEnumerable<Meal>> GetFilteredMeals(MealFilter filter)

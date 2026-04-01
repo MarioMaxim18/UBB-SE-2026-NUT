@@ -450,5 +450,21 @@ namespace TeamNut.Repositories
                 await cmd.ExecuteNonQueryAsync();
             }
         }
+
+        public async Task SaveMealToDailyLog(int userId, int mealId, int calories)
+        {
+            using var conn = new SqlConnection(_connectionString);
+            await conn.OpenAsync();
+
+            const string sql = @"INSERT INTO DailyLogs (user_id, mealId, calories, created_at)
+                                VALUES (@userId, @mealId, @calories, @loggedAt)";
+
+            using var cmd = new SqlCommand(sql, conn);
+            cmd.Parameters.AddWithValue("@userId", userId);
+            cmd.Parameters.AddWithValue("@mealId", mealId);
+            cmd.Parameters.AddWithValue("@calories", calories);
+            cmd.Parameters.AddWithValue("@loggedAt", DateTime.Now);
+            await cmd.ExecuteNonQueryAsync();
+        }
     }
 }

@@ -316,6 +316,17 @@ namespace TeamNut.ModelViews
 
             await _mealPlanService.SaveMealsToDailyLogAsync(CurrentMealPlanId);
         }
+
+        public async Task SaveMealToDailyLogAsync(int mealId)
+        {
+            var meal = GeneratedMeals.FirstOrDefault(m => m.Id == mealId);
+            if (meal == null)
+            {
+                throw new InvalidOperationException("Meal not found in current meal plan.");
+            }
+
+            await _mealPlanService.SaveMealToDailyLogAsync(mealId, meal.Calories);
+        }
     }
 }
 
