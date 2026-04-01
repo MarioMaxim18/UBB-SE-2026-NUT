@@ -1,26 +1,46 @@
-﻿using System.Collections.Generic;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using System.Collections.ObjectModel;
+using System.Threading.Tasks;
 using TeamNut.Models;
+using TeamNut.Services;
 
 namespace TeamNut.ViewModels
 {
-    public class MealSearchViewModel
+    public partial class MealSearchViewModel : ObservableObject
     {
-        private List<Meal> meals;
+        private readonly MealService _mealService;
+
+        public ObservableCollection<Meal> Meals { get; private set; } = new ObservableCollection<Meal>();
+
+        public string SearchTerm { get; set; } = string.Empty;
+
+        public Meal? SelectedMeal { get; set; }
 
         public MealSearchViewModel()
         {
-            meals = new List<Meal>();
+            _mealService = new MealService();
+            _ = LoadMealsAsync();
         }
 
-        public List<Meal> SearchMeals(MealFilter filter)
+        public async Task LoadMealsAsync(string? filter = null)
         {
-            return meals;
+            var list = await _mealService.GetMealsAsync(filter);
+            Meals = new ObservableCollection<Meal>(list);
+            OnPropertyChanged(nameof(Meals));
         }
 
+        [RelayCommand]
+        public async Task SearchAsync()
+        {
+            await LoadMealsAsync(SearchTerm);
+        }
+
+        [RelayCommand]
         public void ToggleFavorite(Meal meal)
         {
-            if (meal != null)
-                meal.IsFavorite = !meal.IsFavorite;
+            if (meal == null) return;
+            meal.IsFavorite = !meal.IsFavorite;
         }
     }
 }
