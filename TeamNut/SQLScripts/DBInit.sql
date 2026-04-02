@@ -1,4 +1,4 @@
-﻿
+
 DROP TABLE IF EXISTS Messages;
 DROP TABLE IF EXISTS Conversations;
 DROP TABLE IF EXISTS Reminders;
@@ -13,7 +13,7 @@ DROP TABLE IF EXISTS Ingredients;
 DROP TABLE IF EXISTS Meals;
 DROP TABLE IF EXISTS UserData;
 DROP TABLE IF EXISTS Users;
-
+DROP TABLE IF EXISTS ShoppingItems;
 CREATE TABLE Users (
     id INT IDENTITY(1,1) PRIMARY KEY,
     username VARCHAR(100) NOT NULL,
@@ -150,4 +150,14 @@ CREATE TABLE Messages (
     text_content VARCHAR(300),
     FOREIGN KEY (conversation_id) REFERENCES Conversations(id) ON DELETE CASCADE,
     FOREIGN KEY (sender_id) REFERENCES Users(id) ON DELETE NO ACTION
+);
+
+CREATE TABLE ShoppingItems (
+    id INT IDENTITY(1,1) PRIMARY KEY,
+    user_id INT,
+    ingredient_id INT,
+    quantity_grams FLOAT DEFAULT 0,
+    is_checked BIT DEFAULT 0,
+    FOREIGN KEY (user_id) REFERENCES Users(id) ON DELETE CASCADE,
+    FOREIGN KEY (ingredient_id) REFERENCES Ingredients(food_id) ON DELETE CASCADE
 );
