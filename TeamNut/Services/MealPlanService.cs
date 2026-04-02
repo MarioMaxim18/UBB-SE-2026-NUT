@@ -113,7 +113,15 @@ namespace TeamNut.Services
 
             try
             {
-                return await _mealPlanRepository.GetTodaysMealPlan(userId);
+                var latestPlan = await _mealPlanRepository.GetLatestMealPlan(userId);
+
+                if (latestPlan != null && latestPlan.CreatedAt.Date == DateTime.Today)
+                {
+                    return latestPlan;
+                }
+
+                int newPlanId = await GeneratePersonalizedMealPlanAsync(userId);
+                return await _mealPlanRepository.GetById(newPlanId);
             }
             catch (Exception ex)
             {

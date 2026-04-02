@@ -26,6 +26,21 @@ namespace TeamNut.Repositories
             return null;
         }
 
+        public async Task<MealPlan> GetLatestMealPlan(int userId)
+        {
+            using var conn = new SqlConnection(_connectionString);
+            const string sql = @"SELECT TOP 1 * FROM MealPlan
+                                WHERE user_id = @userId
+                                ORDER BY created_at DESC";
+            using var cmd = new SqlCommand(sql, conn);
+            cmd.Parameters.AddWithValue("@userId", userId);
+
+            await conn.OpenAsync();
+            using var reader = await cmd.ExecuteReaderAsync();
+            if (await reader.ReadAsync()) return MapReaderToMealPlan(reader);
+            return null;
+        }
+
         public async Task<IEnumerable<MealPlan>> GetAll()
         {
             var plans = new List<MealPlan>();

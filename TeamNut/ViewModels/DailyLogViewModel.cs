@@ -136,7 +136,7 @@ namespace TeamNut.ViewModels
             if (!await _service.HasAnyLogsAsync())
             {
                 HasData = false;
-                StatusMessage = "You need to have had an account for atleast 24 hours.";
+                StatusMessage = "You need to have had atleast one consumed meal.";
                 return;
             }
 
