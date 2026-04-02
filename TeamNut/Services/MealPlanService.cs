@@ -91,7 +91,7 @@ namespace TeamNut.Services
 
             try
             {
-                var latestPlan = await _mealPlanRepository.GetLatestMealPlan(userId);
+                var latestPlan = await _mealPlanRepository.GetTodaysMealPlan(userId);
 
                 if (latestPlan != null && latestPlan.CreatedAt.Date == DateTime.Today)
                 {
