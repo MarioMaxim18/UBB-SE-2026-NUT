@@ -1,4 +1,4 @@
-﻿using Microsoft.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -101,7 +101,6 @@ namespace TeamNut.Repositories
 
             try
             {
-                // First check if there are any meals in the database
                 const string checkMealsSql = "SELECT COUNT(*) FROM Meals";
                 using var checkCmd = new SqlCommand(checkMealsSql, conn, transaction);
                 int mealCount = (int)await checkCmd.ExecuteScalarAsync();
@@ -278,7 +277,6 @@ namespace TeamNut.Repositories
                             testMeals = candidateMeals.Take(3).ToList();
                         }
 
-                        // Keep track of best attempt
                         if (bestAttempt == null)
                         {
                             bestAttempt = testMeals;
@@ -299,7 +297,6 @@ namespace TeamNut.Repositories
                         }
                         else
                         {
-                            // Update best attempt if this one is closer to calorie target
                             int currentDiff = Math.Abs(totalCalories - calorieNeeds);
                             int bestDiff = Math.Abs(bestAttempt.Sum(m => m.calories) - calorieNeeds);
                             if (currentDiff < bestDiff)
@@ -317,12 +314,10 @@ namespace TeamNut.Repositories
                 }
                 else if (bestAttempt != null && bestAttempt.Count >= 3)
                 {
-                    // Use best attempt if no perfect match found
                     mealIds = bestAttempt.Take(3).Select(m => m.mealId).ToList();
                 }
                 else
                 {
-                    // Only fall back to random if absolutely necessary
                     mealIds = new List<int>();
                     const string fallbackSql = "SELECT TOP 3 meal_id FROM Meals ORDER BY NEWID()";
                     using var fallbackCmd = new SqlCommand(fallbackSql, conn, transaction);

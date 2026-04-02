@@ -11,7 +11,6 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <!-- TOP BAR -->
         <StackPanel Orientation="Horizontal" Spacing="10" Margin="0,0,0,10">
 
             <TextBox x:Name="txtSearch"
@@ -22,7 +21,6 @@
             <Button Content="Search"
                     Click="btnSearch_Click"/>
 
-            <!-- FILTER DROPDOWN -->
             <Button Content="Filters">
                 <Button.Flyout>
                     <Flyout>
@@ -40,7 +38,6 @@
 
         </StackPanel>
 
-        <!-- LIST -->
         <ListView x:Name="listMeals"
                   Grid.Row="1"
                   IsItemClickEnabled="True"
@@ -60,7 +57,6 @@
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
 
-                        <!-- TEXT -->
                         <StackPanel>
 
                             <TextBlock Text="{Binding Name}"
@@ -72,7 +68,6 @@
                                 <Run Text=" kcal" />
                             </TextBlock>
 
-                            <!-- MACROS -->
                             <TextBlock Opacity="0.7" FontSize="12">
 
                                 <Run Text="P " Foreground="Green"/>
@@ -118,7 +113,6 @@
 
                         </StackPanel>
 
-                        <!-- ⭐ FAVORITE -->
                         <Button Grid.Column="1"
                             Click="Favorite_Click"
                             FontSize="22"
@@ -135,7 +129,6 @@
 
         </ListView>
 
-        <!-- PAGINATION -->
         <StackPanel Grid.Row="2"
                     Orientation="Horizontal"
                     HorizontalAlignment="Center"

@@ -1,4 +1,4 @@
-﻿using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Collections.Generic;
@@ -68,7 +68,7 @@ namespace TeamNut
             {
                 await viewModel.ToggleFavoriteAsync(meal);
 
-                btn.Content = meal.IsFavorite ? "★" : "☆";
+                btn.Content = meal.IsFavorite ? "?" : "?";
             }
         }
        
@@ -115,7 +115,7 @@ namespace TeamNut
         {
             if (sender is Button btn && btn.DataContext is Meal meal)
             {
-                btn.Content = meal.IsFavorite ? "★" : "☆";
+                btn.Content = meal.IsFavorite ? "?" : "?";
             }
         }
         private void Prev_Click(object sender, RoutedEventArgs e)

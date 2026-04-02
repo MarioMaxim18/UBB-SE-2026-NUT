@@ -1,4 +1,4 @@
-﻿using Microsoft.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -15,7 +15,6 @@ namespace TeamNut.Repositories
         public async Task<IEnumerable<Inventory>> GetAllByUserId(int userId)
         {
             var items = new List<Inventory>();
-            // join with Ingredients table to get the Name for the UI
             const string sql = @"SELECT inv.*, ing.name 
                                  FROM Inventory inv 
                                  JOIN Ingredients ing ON inv.ingredient_id = ing.food_id 

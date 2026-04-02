@@ -12,7 +12,6 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <!-- Messages list (UI skeleton). Items will be populated by the ViewModel in a separate task/branch -->
         <ListView x:Name="MessagesList" Grid.Row="0">
             <ListView.ItemTemplate>
                 <DataTemplate>
@@ -25,7 +24,6 @@
             </ListView.ItemTemplate>
         </ListView>
 
-        <!-- Input area - will be wired to commands in the viewmodel task -->
         <Grid Grid.Row="1" Margin="0,8,0,0" ColumnSpacing="8">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />

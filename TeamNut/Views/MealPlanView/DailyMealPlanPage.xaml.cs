@@ -19,7 +19,6 @@ namespace TeamNut.Views.MealPlanView
         {
             base.OnNavigatedTo(e);
             
-            // Load today's meal plan when navigating to this page
             ViewModel.LoadTodaysMealPlan();
         }
     }

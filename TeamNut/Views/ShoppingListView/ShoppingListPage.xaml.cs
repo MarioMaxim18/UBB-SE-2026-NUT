@@ -15,7 +15,6 @@ namespace TeamNut.Views.ShoppingListView
         {
             this.InitializeComponent();
             
-            // Helpful to assign Name to root so bindings inside DataTemplates can reach ViewModel
             this.Name = "RootPage";
         }
 

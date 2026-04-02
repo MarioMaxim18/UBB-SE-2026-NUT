@@ -29,7 +29,6 @@ namespace TeamNut.Services
             {
                 int ingredientId = await _ingredientRepository.GetOrCreateIngredientIdAsync(itemName);
 
-                // Check if already exists for this user
                 var existing = await _repository.GetByUserAndIngredient(userId, ingredientId);
                 if (existing != null)
                 {
@@ -110,14 +109,11 @@ namespace TeamNut.Services
         {
             try
             {
-                // 1. Get what we need from Meal Plan
                 var neededIngredients = await _repository.GetIngredientsNeededFromMealPlan(userId);
                 if (!neededIngredients.Any()) return 0;
 
-                // 2. Get what we already have in Inventory
                 var inventory = (await _inventoryRepository.GetAllByUserId(userId)).ToList();
 
-                // 3. Get what is already in Shopping List
                 var currentList = await _repository.GetAllByUserId(userId);
 
                 int itemsAddedCount = 0;
@@ -126,21 +122,18 @@ namespace TeamNut.Services
                 {
                     double totalNeeded = needed.QuantityGrams;
 
-                    // Subtract what we have in inventory
                     var inStock = inventory.FirstOrDefault(i => i.IngredientId == needed.IngredientId);
                     if (inStock != null)
                     {
                         totalNeeded -= inStock.QuantityGrams;
                     }
 
-                    // Subtract what is already in shopping list
                     var alreadyInList = currentList.FirstOrDefault(s => s.IngredientId == needed.IngredientId);
                     if (alreadyInList != null)
                     {
                         totalNeeded -= alreadyInList.QuantityGrams;
                     }
 
-                    // If we still need more, add/update it
                     if (totalNeeded > 0)
                     {
                         await AddItemAsync(needed.IngredientName, userId, totalNeeded);

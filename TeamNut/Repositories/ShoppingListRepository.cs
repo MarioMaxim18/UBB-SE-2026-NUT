@@ -158,7 +158,6 @@ namespace TeamNut.Repositories
             using var conn = new SqlConnection(_connectionString);
             await conn.OpenAsync();
 
-            // We aggregate by ingredient_id for today's meal plan onwards
             string query = @"
                 SELECT mi.food_id as ingredient_id, i.name as ingredient_name, SUM(mi.quantity) as quantity_grams
                 FROM MealPlan mp

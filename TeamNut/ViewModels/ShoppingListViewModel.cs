@@ -43,7 +43,6 @@ namespace TeamNut.ViewModels
             Items.Clear();
             foreach (var item in loadedItems)
             {
-                // Subscribe to PropertyChanged to automatically update standard properties to the DB when checked
                 item.PropertyChanged += async (s, e) =>
                 {
                     if (e.PropertyName == nameof(ShoppingItem.IsChecked))
@@ -63,7 +62,6 @@ namespace TeamNut.ViewModels
                 var addedItem = await _shoppingListService.AddItemAsync(itemName.Trim(), UserSession.UserId.Value, PendingQuantity);
                 if (addedItem != null)
                 {
-                    // Check if item is already in the observable collection (Upsert case)
                     var existing = System.Linq.Enumerable.FirstOrDefault(Items, i => i.Id == addedItem.Id);
                     
                     if (existing == null)
@@ -80,7 +78,6 @@ namespace TeamNut.ViewModels
                     }
                     else
                     {
-                        // Update the existing UI object so the text reflects the new sum
                         existing.QuantityGrams = addedItem.QuantityGrams;
                     }
 
@@ -163,7 +160,6 @@ namespace TeamNut.ViewModels
             IsError = error;
             IsStatusVisible = true;
             
-            // Auto hide after 3 seconds
             Task.Delay(3000).ContinueWith(_ =>
             {
                 IsStatusVisible = false;

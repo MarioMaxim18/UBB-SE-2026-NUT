@@ -1,4 +1,4 @@
-﻿using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using TeamNut.ViewModels;
 using TeamNut.Views;
@@ -22,7 +22,6 @@ namespace TeamNut
 
             InitializeComponent();
 
-            // Ensure LocalDB instance is running
             EnsureLocalDbStarted();
         }
 
@@ -45,7 +44,6 @@ namespace TeamNut
             }
             catch
             {
-                // If starting fails, the app will show connection error when trying to connect
             }
         }
 

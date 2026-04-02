@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using TeamNut.Models;
@@ -36,11 +36,7 @@ namespace TeamNut.Services
         
         public async Task ConfirmConsumption(int userId, int mealId)
         {
-            // 1. Get the meal details to get calories/macros
-            // 2. Add to DailyLogs table (Raw SQL via a LogRepository)
-            // 3. Subtract ingredients from Inventory table
 
-            // This needs to be completed with future repositories and models, but here's a placeholder for the logic flow:
             Console.WriteLine($"User {userId} confirmed meal {mealId}. Updating logs...");
         }
 

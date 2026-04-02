@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Page
     x:Class="TeamNut.Views.MealPlanView.MealPlanPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -14,7 +14,6 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <!-- Header Section -->
         <StackPanel Grid.Row="0" Spacing="20" MaxWidth="800">
             <Grid>
                 <TextBlock 
@@ -75,7 +74,6 @@
                 TextWrapping="Wrap"/>
         </StackPanel>
 
-        <!-- Meals List Section -->
         <ScrollViewer Grid.Row="1" Margin="0,20,0,0">
             <StackPanel MaxWidth="800" Spacing="15">
                 <ListView 
@@ -96,7 +94,6 @@
                                     <ColumnDefinition Width="Auto"/>
                                 </Grid.ColumnDefinitions>
 
-                                <!-- Meal Info -->
                                 <StackPanel Grid.Column="0" Spacing="8">
                                     <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
                                         <TextBlock 
@@ -112,14 +109,12 @@
                                         </Border>
                                     </StackPanel>
 
-                                    <!-- Description -->
                                     <TextBlock 
                                         Text="{Binding Description}"
                                         Opacity="0.7"
                                         TextWrapping="Wrap"
                                         MaxWidth="500"/>
 
-                                    <!-- Nutritional Info -->
                                     <StackPanel Orientation="Horizontal" Spacing="15">
                                         <StackPanel Orientation="Horizontal" Spacing="5">
                                             <TextBlock FontWeight="SemiBold">
@@ -150,7 +145,6 @@
                                         </StackPanel>
                                     </StackPanel>
 
-                                    <!-- Dietary Tags -->
                                     <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,5,0,0">
                                         <Border 
                                             Background="{ThemeResource SystemFillColorSuccessBrush}"
@@ -183,7 +177,6 @@
                                     </StackPanel>
                                 </StackPanel>
 
-                                <!-- Actions -->
                                 <StackPanel Grid.Column="1" Spacing="10" VerticalAlignment="Top">
                                     <FontIcon 
                                         Glyph="&#xE735;"
@@ -203,7 +196,6 @@
                     </ListView.ItemTemplate>
                 </ListView>
 
-                <!-- Save to Daily Log Button -->
                 <Button 
                     x:Name="SaveToDailyLogButton"
                     HorizontalAlignment="Center"

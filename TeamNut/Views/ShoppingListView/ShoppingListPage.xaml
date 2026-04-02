@@ -10,7 +10,6 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <UserControl.Resources>
-        <!-- Adding some small styles for the Delete Button -->
         <Style x:Key="DeleteButtonStyle" TargetType="Button">
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="Foreground" Value="#E81123"/>
@@ -26,7 +25,6 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <!-- Header -->
         <StackPanel Grid.Row="0" Margin="0,0,0,24">
             <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
                 <TextBlock Text="Grocery Helper" FontSize="16" Foreground="Gray" VerticalAlignment="Center"/>
@@ -34,13 +32,11 @@
             </StackPanel>
             <TextBlock Text="Shopping List" FontSize="32" FontWeight="Bold"/>
             
-            <!-- Status Message area requested by Lead -->
             <InfoBar IsOpen="{x:Bind ViewModel.IsStatusVisible, Mode=OneWay}" 
                      Message="{x:Bind ViewModel.StatusMessage, Mode=OneWay}" 
                      Margin="0,16,0,0" />
         </StackPanel>
 
-        <!-- Input Box -->
         <Border Grid.Row="1" 
                 Background="{ThemeResource LayerFillColorDefaultBrush}" 
                 BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" 
@@ -81,7 +77,6 @@
                 </Grid>
         </Border>
 
-        <!-- List View -->
         <ListView Grid.Row="2" 
                   ItemsSource="{x:Bind ViewModel.Items, Mode=OneWay}"
                   SelectionMode="None">
@@ -102,14 +97,12 @@
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
                             
-                            <!-- Item Text -->
                             <TextBlock Grid.Column="0" 
                                        Text="{x:Bind IngredientName, Mode=OneWay}" 
                                        VerticalAlignment="Center" 
                                        FontSize="16"
                                        TextWrapping="Wrap"/>
 
-                            <!-- Grams -->
                             <TextBlock Grid.Column="1" 
                                        VerticalAlignment="Center" 
                                        Foreground="Gray"
@@ -119,7 +112,6 @@
                                 <Run Text=" g"/>
                             </TextBlock>
                             
-                            <!-- Pantry Components -->
                             <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8">
                                 <Button Background="Transparent" BorderThickness="0" Click="AcceptButton_Click" ToolTipService.ToolTip="Move to Pantry">
                                     <SymbolIcon Symbol="Accept" Foreground="Green"/>
@@ -134,7 +126,6 @@
             </ListView.ItemTemplate>
             
             <ListView.ItemContainerStyle>
-                <!-- Remove default hovering/selection grey backgrounds since we styled our own ItemTemplate -->
                 <Style TargetType="ListViewItem">
                     <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
                     <Setter Property="Padding" Value="0"/>

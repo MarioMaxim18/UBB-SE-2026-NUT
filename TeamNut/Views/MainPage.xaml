@@ -20,7 +20,6 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
-                <!-- Left -->
                 <StackPanel Orientation="Horizontal"
                             VerticalAlignment="Center"
                             Spacing="15">
@@ -31,7 +30,6 @@
                                VerticalAlignment="Center"/>
                 </StackPanel>
 
-                <!-- Right -->
                 <Button Grid.Column="1"
                         Content="Logout"
                         VerticalAlignment="Center"

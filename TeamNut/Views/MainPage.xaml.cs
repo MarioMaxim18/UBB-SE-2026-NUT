@@ -22,7 +22,6 @@ namespace TeamNut.Views
         {
             try
             {
-                // Load the first tab by default
                 if (!mealsLoaded && MealsFrame != null)
                 {
                     MealsFrame.Navigate(typeof(TeamNut.MealsPage));
@@ -70,7 +69,6 @@ namespace TeamNut.Views
                     ShoppingListFrame.Navigate(typeof(TeamNut.Views.ShoppingListView.ShoppingListPage));
                     shoppingListLoaded = true;
                 }
-                // CalorieTab not loaded yet - page is empty
             }
             catch (Exception ex)
             {

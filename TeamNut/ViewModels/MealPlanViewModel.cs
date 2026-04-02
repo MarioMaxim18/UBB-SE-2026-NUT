@@ -85,15 +85,12 @@ namespace TeamNut.ModelViews
         {
             _mealPlanService = new MealPlanService();
 
-            // Auto-load meal plan when view model is created
             _ = LoadOrGenerateTodaysMealPlanAsync();
         }
 
         [RelayCommand]
         private async Task OnGenerateMealPlan()
         {
-            // Since we auto-generate on page load, this button now just refreshes the current plan
-            // Check if a plan already exists for today
             int? userId = UserSession.UserId;
 
             if (userId == null || userId <= 0)
@@ -109,7 +106,6 @@ namespace TeamNut.ModelViews
 
             if (todaysPlan != null)
             {
-                // Plan already exists for today
                 ErrorDialogTitle = "Meal Plan Already Exists";
                 ErrorDialogMessage = "You already have a meal plan for today.\n\nYour meal plan will automatically regenerate tomorrow based on your latest preferences.\n\nIf you changed your settings, the new preferences will apply to tomorrow's meal plan.";
                 ShowErrorDialog = true;
@@ -117,15 +113,10 @@ namespace TeamNut.ModelViews
             }
             else
             {
-                // Generate new plan
                 await LoadOrGenerateTodaysMealPlanAsync();
             }
         }
 
-        /// <summary>
-        /// Loads today's meal plan if it exists, otherwise generates a new one automatically
-        /// This method is called when the page loads
-        /// </summary>
         public async Task LoadOrGenerateTodaysMealPlanAsync()
         {
             IsBusy = true;
@@ -145,18 +136,15 @@ namespace TeamNut.ModelViews
                     return;
                 }
 
-                // Check if there's already a meal plan for today
                 var todaysPlan = await _mealPlanService.GetTodaysMealPlanAsync(userId.Value);
 
                 if (todaysPlan != null)
                 {
-                    // Load existing plan
                     StatusMessage = "Loading your meal plan for today...";
                     await LoadMealPlanByIdAsync(todaysPlan.Id, userId.Value);
                 }
                 else
                 {
-                    // Generate new plan for today
                     StatusMessage = "Generating your personalized meal plan for today...";
                     await GenerateNewMealPlanAsync(userId.Value);
                 }
@@ -172,20 +160,14 @@ namespace TeamNut.ModelViews
             }
         }
 
-        /// <summary>
-        /// Loads an existing meal plan by ID
-        /// </summary>
         private async Task LoadMealPlanByIdAsync(int mealPlanId, int userId)
         {
             try
             {
-                // Store the current meal plan ID
                 CurrentMealPlanId = mealPlanId;
 
-                // Get the user's goal
                 string userGoal = await _mealPlanService.GetUserGoalAsync(userId);
 
-                // Load meals for this plan
                 var meals = await _mealPlanService.GetMealsForMealPlanAsync(mealPlanId);
 
                 if (meals == null || meals.Count == 0)
@@ -195,7 +177,6 @@ namespace TeamNut.ModelViews
                     return;
                 }
 
-                // Convert meals to MealViewModel
                 int index = 0;
                 var mealTypes = new Dictionary<int, string>
                 {
@@ -214,10 +195,8 @@ namespace TeamNut.ModelViews
 
                 CalculateTotals();
 
-                // Calculate and display total nutrition
                 var (totalCalories, totalProtein, totalCarbs, totalFat) = _mealPlanService.CalculateTotalNutrition(meals);
 
-                // Display goal information
                 string goalName = char.ToUpper(userGoal[0]) + userGoal.Substring(1);
                 GoalDescription = $"{goalName} Goal";
 
@@ -233,20 +212,14 @@ namespace TeamNut.ModelViews
             }
         }
 
-        /// <summary>
-        /// Generates a new meal plan for the user
-        /// </summary>
         private async Task GenerateNewMealPlanAsync(int userId)
         {
             try
             {
-                // Get the user's goal
                 string userGoal = await _mealPlanService.GetUserGoalAsync(userId);
 
-                // Generate the meal plan
                 int mealPlanId = await _mealPlanService.GeneratePersonalizedMealPlanAsync(userId);
 
-                // Load the generated meals
                 await LoadMealPlanByIdAsync(mealPlanId, userId);
 
                 StatusMessage = $"New meal plan generated for today!";
