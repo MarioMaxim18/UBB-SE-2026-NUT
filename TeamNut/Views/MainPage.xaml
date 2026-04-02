@@ -68,6 +68,10 @@
                 <TabViewItem Header="Nutritionist Chat" IsClosable="False" x:Name="ChatTab">
                     <Frame x:Name="ChatFrame"/>
                 </TabViewItem>
+
+                <TabViewItem Header="Shopping List" IsClosable="False" x:Name="ShoppingListTab">
+                    <Frame x:Name="ShoppingListFrame"/>
+                </TabViewItem>
             </TabView.TabItems>
         </TabView>
     </Grid>

@@ -132,16 +132,23 @@ namespace TeamNut.ViewModels
                 return;
             }
 
-            var user = await _userService.LoginAsync(CurrentUser.Username, CurrentUser.Password);
+            try
+            {
+                var user = await _userService.LoginAsync(CurrentUser.Username, CurrentUser.Password);
 
-            if (user != null)
-            {
-                UserSession.Login(user.Id, user.Username, user.Role);
-                LoginSuccess?.Invoke(this, EventArgs.Empty);
+                if (user != null)
+                {
+                    UserSession.Login(user.Id, user.Username, user.Role);
+                    LoginSuccess?.Invoke(this, EventArgs.Empty);
+                }
+                else
+                {
+                    StatusMessage = "Invalid username or password.";
+                }
             }
-            else
+            catch (Exception ex)
             {
-                StatusMessage = "Invalid username or password.";
+                StatusMessage = "Database Connection Failed! Start SSMS and check your server. Error: " + ex.Message;
             }
         }
     }

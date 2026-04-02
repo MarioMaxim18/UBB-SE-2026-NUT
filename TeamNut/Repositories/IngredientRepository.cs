@@ -1,3 +1,4 @@
+using System;
 using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
@@ -23,7 +24,7 @@ namespace TeamNut.Repositories
                 if (existing != null && existing != DBNull.Value)
                 {
                     return Convert.ToInt32(existing);
-                }
+            }
             }
 
             const string insertSql = @"INSERT INTO Ingredients (name, calories_per_100g, protein_per_100g, carbs_per_100g, fat_per_100g)
@@ -49,6 +50,7 @@ namespace TeamNut.Repositories
             await conn.OpenAsync();
             using var reader = await cmd.ExecuteReaderAsync();
 
+            using var reader = await selectCmd.ExecuteReaderAsync();
             while (await reader.ReadAsync())
             {
                 ingredients.Add(new Ingredient
@@ -63,7 +65,7 @@ namespace TeamNut.Repositories
             }
 
             return ingredients;
-        }
+            }
 
         private static double GetDoubleOrZero(SqlDataReader reader, string column)
         {

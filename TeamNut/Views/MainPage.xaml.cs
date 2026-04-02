@@ -12,6 +12,7 @@ namespace TeamNut.Views
         private bool mealPlanLoaded = false;
         private bool inventoryLoaded = false;
         private bool chatLoaded = false;
+        private bool shoppingListLoaded = false;
 
         public MainPage()
         {
@@ -66,6 +67,12 @@ namespace TeamNut.Views
                     ChatFrame.Navigate(typeof(TeamNut.Views.NutritionistChat.NutritionistChatPage));
                     chatLoaded = true;
                 }
+                else if (selectedItem == ShoppingListTab && !shoppingListLoaded)
+                {
+                    ShoppingListFrame.Navigate(typeof(TeamNut.Views.ShoppingListView.ShoppingListPage));
+                    shoppingListLoaded = true;
+                }
+                // CalorieTab not loaded yet - page is empty
             }
             catch (Exception ex)
             {
