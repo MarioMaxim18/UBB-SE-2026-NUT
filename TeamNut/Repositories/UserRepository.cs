@@ -24,7 +24,8 @@ public class UserRepository : IRepository<User>
         {
             return new User
             {
-                Id = reader.GetInt32(0),
+                //Id = reader.GetInt32(0), (old)
+                Id = Convert.ToInt32(reader[0]),
                 Username = reader.GetString(1),
                 Password = reader.GetString(2),
                 Role = reader.GetString(3)
@@ -138,7 +139,7 @@ public class UserRepository : IRepository<User>
         {
             return new User
             {
-                Id = reader.GetInt32(0),
+                Id = Convert.ToInt32(reader[0]),
                 Username = reader.GetString(1),
                 Password = reader.GetString(2),
                 Role = reader.GetString(3)
@@ -166,7 +167,7 @@ public class UserRepository : IRepository<User>
             {
                 users.Add(new User
                 {
-                    Id = reader.GetInt32(0),
+                    Id = Convert.ToInt32(reader[0]),
                     Username = reader.GetString(1),
                     Password = reader.GetString(2),
                     Role = reader.GetString(3)
@@ -188,7 +189,7 @@ public class UserRepository : IRepository<User>
         {
             return new UserData
             {
-                Id = reader.GetInt32(0),
+                Id = Convert.ToInt32(reader[0]),
                 UserId = reader.GetInt32(1),
                 Weight = Convert.ToInt32(reader.GetValue(2)),
                 Height = Convert.ToInt32(reader.GetValue(3)),
