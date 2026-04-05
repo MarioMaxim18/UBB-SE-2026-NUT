@@ -1,5 +1,5 @@
 using TeamNut.Models;
-using Microsoft.Data.SqlClient;
+using Microsoft.Data.Sqlite;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -17,9 +17,9 @@ namespace TeamNut.Repositories
 
         public async Task<Reminder> GetById(int id)
         {
-            using var conn = new SqlConnection(_connectionString);
+            using var conn = new SqliteConnection(_connectionString);
             const string sql = "SELECT * FROM Reminders WHERE id = @id";
-            using var cmd = new SqlCommand(sql, conn);
+            using var cmd = new SqliteCommand(sql, conn);
             cmd.Parameters.AddWithValue("@id", id);
 
             await conn.OpenAsync();
@@ -34,9 +34,9 @@ namespace TeamNut.Repositories
         public async Task<IEnumerable<Reminder>> GetAll()
         {
             var reminders = new List<Reminder>();
-            using var conn = new SqlConnection(_connectionString);
+            using var conn = new SqliteConnection(_connectionString);
             const string sql = "SELECT * FROM Reminders";
-            using var cmd = new SqlCommand(sql, conn);
+            using var cmd = new SqliteCommand(sql, conn);
 
             await conn.OpenAsync();
             using var reader = await cmd.ExecuteReaderAsync();
@@ -49,10 +49,10 @@ namespace TeamNut.Repositories
 
         public async Task Add(Reminder entity)
         {
-            using var conn = new SqlConnection(_connectionString);
+            using var conn = new SqliteConnection(_connectionString);
             const string sql = @"INSERT INTO Reminders (user_id, name, has_sound, time, frequency) 
                                 VALUES (@uid, @name, @sound, @time, @freq)";
-            using var cmd = new SqlCommand(sql, conn);
+            using var cmd = new SqliteCommand(sql, conn);
             cmd.Parameters.AddWithValue("@uid", entity.UserId);
             cmd.Parameters.AddWithValue("@name", entity.Name);
             cmd.Parameters.AddWithValue("@sound", entity.HasSound);
@@ -65,10 +65,10 @@ namespace TeamNut.Repositories
 
         public async Task Update(Reminder entity)
         {
-            using var conn = new SqlConnection(_connectionString);
+            using var conn = new SqliteConnection(_connectionString);
             const string sql = @"UPDATE Reminders SET name = @name, has_sound = @sound, 
                                  time = @time, frequency = @freq WHERE id = @id";
-            using var cmd = new SqlCommand(sql, conn);
+            using var cmd = new SqliteCommand(sql, conn);
             cmd.Parameters.AddWithValue("@id", entity.Id);
             cmd.Parameters.AddWithValue("@name", entity.Name);
             cmd.Parameters.AddWithValue("@sound", entity.HasSound);
@@ -81,9 +81,9 @@ namespace TeamNut.Repositories
 
         public async Task Delete(int id)
         {
-            using var conn = new SqlConnection(_connectionString);
+            using var conn = new SqliteConnection(_connectionString);
             const string sql = "DELETE FROM Reminders WHERE id = @id";
-            using var cmd = new SqlCommand(sql, conn);
+            using var cmd = new SqliteCommand(sql, conn);
             cmd.Parameters.AddWithValue("@id", id);
 
             await conn.OpenAsync();
@@ -91,7 +91,7 @@ namespace TeamNut.Repositories
         }
 
         
-        private Reminder MapReaderToReminder(SqlDataReader reader)
+        private Reminder MapReaderToReminder(SqliteDataReader reader)
         {
             return new Reminder
             {

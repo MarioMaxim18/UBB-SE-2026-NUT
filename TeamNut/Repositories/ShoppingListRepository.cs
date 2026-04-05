@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Microsoft.Data.SqlClient;
+using Microsoft.Data.Sqlite;
 using System.Threading.Tasks;
 using TeamNut.Models;
 
@@ -12,13 +12,13 @@ namespace TeamNut.Repositories
 
         public async Task Add(ShoppingItem item)
         {
-            using var conn = new SqlConnection(_connectionString);
+            using var conn = new SqliteConnection(_connectionString);
             await conn.OpenAsync();
 
             string query = @"INSERT INTO ShoppingItems (user_id, ingredient_id, quantity_grams, is_checked)
                              VALUES (@userId, @ingredientId, @quantityGrams, @isChecked)";
 
-            using var cmd = new SqlCommand(query, conn);
+            using var cmd = new SqliteCommand(query, conn);
             cmd.Parameters.AddWithValue("@userId", item.UserId);
             cmd.Parameters.AddWithValue("@ingredientId", item.IngredientId);
             cmd.Parameters.AddWithValue("@quantityGrams", item.QuantityGrams);
@@ -31,14 +31,14 @@ namespace TeamNut.Repositories
         {
             var items = new List<ShoppingItem>();
 
-            using var conn = new SqlConnection(_connectionString);
+            using var conn = new SqliteConnection(_connectionString);
             await conn.OpenAsync();
 
             string query = @"SELECT s.id, s.user_id, s.ingredient_id, s.quantity_grams, s.is_checked, i.name AS ingredient_name 
                              FROM ShoppingItems s 
                              JOIN Ingredients i ON s.ingredient_id = i.food_id";
 
-            using var cmd = new SqlCommand(query, conn);
+            using var cmd = new SqliteCommand(query, conn);
             using var reader = await cmd.ExecuteReaderAsync();
 
             while (await reader.ReadAsync())
@@ -51,7 +51,7 @@ namespace TeamNut.Repositories
 
         public async Task<ShoppingItem> GetById(int id)
         {
-            using var conn = new SqlConnection(_connectionString);
+            using var conn = new SqliteConnection(_connectionString);
             await conn.OpenAsync();
 
             string query = @"SELECT s.id, s.user_id, s.ingredient_id, s.quantity_grams, s.is_checked, i.name AS ingredient_name 
@@ -59,7 +59,7 @@ namespace TeamNut.Repositories
                              JOIN Ingredients i ON s.ingredient_id = i.food_id
                              WHERE s.id = @id";
 
-            using var cmd = new SqlCommand(query, conn);
+            using var cmd = new SqliteCommand(query, conn);
             cmd.Parameters.AddWithValue("@id", id);
 
             using var reader = await cmd.ExecuteReaderAsync();
@@ -74,7 +74,7 @@ namespace TeamNut.Repositories
 
         public async Task<ShoppingItem> GetByUserAndIngredient(int userId, int ingredientId)
         {
-            using var conn = new SqlConnection(_connectionString);
+            using var conn = new SqliteConnection(_connectionString);
             await conn.OpenAsync();
 
             string query = @"SELECT s.id, s.user_id, s.ingredient_id, s.quantity_grams, s.is_checked, i.name AS ingredient_name 
@@ -82,7 +82,7 @@ namespace TeamNut.Repositories
                              JOIN Ingredients i ON s.ingredient_id = i.food_id
                              WHERE s.user_id = @userId AND s.ingredient_id = @ingredientId";
 
-            using var cmd = new SqlCommand(query, conn);
+            using var cmd = new SqliteCommand(query, conn);
             cmd.Parameters.AddWithValue("@userId", userId);
             cmd.Parameters.AddWithValue("@ingredientId", ingredientId);
 
@@ -100,7 +100,7 @@ namespace TeamNut.Repositories
         {
             var items = new List<ShoppingItem>();
 
-            using var conn = new SqlConnection(_connectionString);
+            using var conn = new SqliteConnection(_connectionString);
             await conn.OpenAsync();
 
             string query = @"SELECT s.id, s.user_id, s.ingredient_id, s.quantity_grams, s.is_checked, i.name AS ingredient_name 
@@ -108,7 +108,7 @@ namespace TeamNut.Repositories
                              JOIN Ingredients i ON s.ingredient_id = i.food_id
                              WHERE s.user_id = @userId";
 
-            using var cmd = new SqlCommand(query, conn);
+            using var cmd = new SqliteCommand(query, conn);
             cmd.Parameters.AddWithValue("@userId", userId);
 
             using var reader = await cmd.ExecuteReaderAsync();
@@ -123,14 +123,14 @@ namespace TeamNut.Repositories
 
         public async Task Update(ShoppingItem item)
         {
-            using var conn = new SqlConnection(_connectionString);
+            using var conn = new SqliteConnection(_connectionString);
             await conn.OpenAsync();
 
             string query = @"UPDATE ShoppingItems 
                              SET ingredient_id = @ingredientId, quantity_grams = @quantityGrams, is_checked = @isChecked
                              WHERE id = @id";
 
-            using var cmd = new SqlCommand(query, conn);
+            using var cmd = new SqliteCommand(query, conn);
             cmd.Parameters.AddWithValue("@id", item.Id);
             cmd.Parameters.AddWithValue("@ingredientId", item.IngredientId);
             cmd.Parameters.AddWithValue("@quantityGrams", item.QuantityGrams);
@@ -141,12 +141,12 @@ namespace TeamNut.Repositories
 
         public async Task Delete(int id)
         {
-            using var conn = new SqlConnection(_connectionString);
+            using var conn = new SqliteConnection(_connectionString);
             await conn.OpenAsync();
 
             string query = "DELETE FROM ShoppingItems WHERE id = @id";
 
-            using var cmd = new SqlCommand(query, conn);
+            using var cmd = new SqliteCommand(query, conn);
             cmd.Parameters.AddWithValue("@id", id);
 
             await cmd.ExecuteNonQueryAsync();
@@ -155,7 +155,7 @@ namespace TeamNut.Repositories
         public async Task<List<ShoppingItem>> GetIngredientsNeededFromMealPlan(int userId)
         {
             var items = new List<ShoppingItem>();
-            using var conn = new SqlConnection(_connectionString);
+            using var conn = new SqliteConnection(_connectionString);
             await conn.OpenAsync();
 
             string query = @"
@@ -168,7 +168,7 @@ namespace TeamNut.Repositories
                   AND mp.created_at >= CAST(GETDATE() AS DATE)
                 GROUP BY mi.food_id, i.name";
 
-            using var cmd = new SqlCommand(query, conn);
+            using var cmd = new SqliteCommand(query, conn);
             cmd.Parameters.AddWithValue("@userId", userId);
 
             using var reader = await cmd.ExecuteReaderAsync();
@@ -185,7 +185,7 @@ namespace TeamNut.Repositories
             return items;
         }
 
-        private ShoppingItem MapReaderToItem(SqlDataReader reader)
+        private ShoppingItem MapReaderToItem(SqliteDataReader reader)
         {
             return new ShoppingItem
             {

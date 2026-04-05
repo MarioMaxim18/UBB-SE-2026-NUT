@@ -45,7 +45,6 @@
 
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
-    <PackageReference Include="Microsoft.Data.SqlClient" Version="7.0.0" />
     <PackageReference Include="Microsoft.Data.Sqlite" Version="10.0.5" />
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.7705" />
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.8.260317003" />
@@ -55,6 +54,9 @@
   <ItemGroup>
     <None Update="MealsPage.xaml">
       <Generator>MSBuild:Compile</Generator>
+    </None>
+    <None Update="NutData.db">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Views\MealPlanView\DailyMealPlanPage.xaml">
       <Generator>MSBuild:Compile</Generator>

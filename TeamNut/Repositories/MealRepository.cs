@@ -1,4 +1,4 @@
-using Microsoft.Data.SqlClient;
+using Microsoft.Data.Sqlite;
 using System;
 using System.Collections.Generic;
 using System.Collections.Generic;
@@ -32,7 +32,7 @@ namespace TeamNut.Repositories
         {
             var ingredients = new List<string>();
 
-            using var conn = new SqlConnection(_connectionString);
+            using var conn = new SqliteConnection(_connectionString);
             const string sql = @"
                 SELECT i.name, mi.quantity
                 FROM MealsIngredients mi
@@ -40,7 +40,7 @@ namespace TeamNut.Repositories
                 WHERE mi.meal_id = @mealId
                 ORDER BY mi.quantity DESC, i.name";
 
-            using var cmd = new SqlCommand(sql, conn);
+            using var cmd = new SqliteCommand(sql, conn);
             cmd.Parameters.AddWithValue("@mealId", mealId);
 
             await conn.OpenAsync();
@@ -73,7 +73,7 @@ namespace TeamNut.Repositories
                 LEFT JOIN MealsIngredients mi ON m.meal_id = mi.meal_id
                 LEFT JOIN Ingredients i ON mi.food_id = i.food_id
                 WHERE 1=1");
-            var parameters = new List<SqlParameter>();
+            var parameters = new List<SqliteParameter>();
 
             
             if (filter.IsKeto) sql.Append(" AND m.isKeto = 1");
@@ -86,14 +86,14 @@ namespace TeamNut.Repositories
             if (!string.IsNullOrWhiteSpace(filter.SearchTerm))
             {
                 sql.Append(" AND m.name LIKE @search");
-                parameters.Add(new SqlParameter("@search", $"%{filter.SearchTerm}%"));
+                parameters.Add(new SqliteParameter("@search", $"%{filter.SearchTerm}%"));
             }
 
             sql.Append(@" GROUP BY 
                 m.meal_id, m.imageUrl, m.name, m.isKeto, m.isLactoseFree, m.isNutFree, m.isVegan, m.isGlutenFree, m.description");
 
-            using var conn = new SqlConnection(_connectionString);
-            using var cmd = new SqlCommand(sql.ToString(), conn);
+            using var conn = new SqliteConnection(_connectionString);
+            using var cmd = new SqliteCommand(sql.ToString(), conn);
             cmd.Parameters.AddWithValue("@userId", userId);
             cmd.Parameters.AddRange(parameters.ToArray());
 
@@ -109,7 +109,7 @@ namespace TeamNut.Repositories
         public async Task<Meal> GetById(int id)
         {
             var userId = UserSession.UserId ?? 0;
-            using var conn = new SqlConnection(_connectionString);
+            using var conn = new SqliteConnection(_connectionString);
             const string sql = @"
                 SELECT 
                     m.*,
@@ -124,7 +124,7 @@ namespace TeamNut.Repositories
                 LEFT JOIN Ingredients i ON mi.food_id = i.food_id
                 WHERE m.meal_id = @id
                 GROUP BY m.meal_id, m.imageUrl, m.name, m.isKeto, m.isLactoseFree, m.isNutFree, m.isVegan, m.isGlutenFree, m.description";
-            using var cmd = new SqlCommand(sql, conn);
+            using var cmd = new SqliteCommand(sql, conn);
             cmd.Parameters.AddWithValue("@id", id);
             cmd.Parameters.AddWithValue("@userId", userId);
 
@@ -138,7 +138,7 @@ namespace TeamNut.Repositories
         {
             var userId = UserSession.UserId ?? 0;
             var meals = new List<Meal>();
-            using var conn = new SqlConnection(_connectionString);
+            using var conn = new SqliteConnection(_connectionString);
             const string sql = @"
                 SELECT 
                     m.*,
@@ -152,7 +152,7 @@ namespace TeamNut.Repositories
                 LEFT JOIN MealsIngredients mi ON m.meal_id = mi.meal_id
                 LEFT JOIN Ingredients i ON mi.food_id = i.food_id
                 GROUP BY m.meal_id, m.imageUrl, m.name, m.isKeto, m.isLactoseFree, m.isNutFree, m.isVegan, m.isGlutenFree, m.description";
-            using var cmd = new SqlCommand(sql, conn);
+            using var cmd = new SqliteCommand(sql, conn);
             cmd.Parameters.AddWithValue("@userId", userId);
 
             await conn.OpenAsync();
@@ -163,10 +163,10 @@ namespace TeamNut.Repositories
 
         public async Task Add(Meal entity)
         {
-            using var conn = new SqlConnection(_connectionString);
+            using var conn = new SqliteConnection(_connectionString);
             const string sql = @"INSERT INTO Meals (name, imageUrl, isKeto, isVegan, isNutFree, isLactoseFree, isGlutenFree, description) 
                                 VALUES (@name, @img, @keto, @vegan, @nut, @lac, @glu, @desc)";
-            using var cmd = new SqlCommand(sql, conn);
+            using var cmd = new SqliteCommand(sql, conn);
             AddMealParameters(cmd, entity);
 
             await conn.OpenAsync();
@@ -175,14 +175,14 @@ namespace TeamNut.Repositories
 
         public async Task SetFavoriteAsync(int userId, int mealId, bool isFavorite)
         {
-            using var conn = new SqlConnection(_connectionString);
+            using var conn = new SqliteConnection(_connectionString);
             await conn.OpenAsync();
 
             if (isFavorite)
             {
                 const string insertSql = @"IF NOT EXISTS (SELECT 1 FROM Favorites WHERE userId = @userId AND mealId = @mealId)
                                            INSERT INTO Favorites (userId, mealId) VALUES (@userId, @mealId)";
-                using var insertCmd = new SqlCommand(insertSql, conn);
+                using var insertCmd = new SqliteCommand(insertSql, conn);
                 insertCmd.Parameters.AddWithValue("@userId", userId);
                 insertCmd.Parameters.AddWithValue("@mealId", mealId);
                 await insertCmd.ExecuteNonQueryAsync();
@@ -190,7 +190,7 @@ namespace TeamNut.Repositories
             else
             {
                 const string deleteSql = "DELETE FROM Favorites WHERE userId = @userId AND mealId = @mealId";
-                using var deleteCmd = new SqlCommand(deleteSql, conn);
+                using var deleteCmd = new SqliteCommand(deleteSql, conn);
                 deleteCmd.Parameters.AddWithValue("@userId", userId);
                 deleteCmd.Parameters.AddWithValue("@mealId", mealId);
                 await deleteCmd.ExecuteNonQueryAsync();
@@ -199,11 +199,11 @@ namespace TeamNut.Repositories
 
         public async Task Update(Meal entity)
         {
-            using var conn = new SqlConnection(_connectionString);
+            using var conn = new SqliteConnection(_connectionString);
             const string sql = @"UPDATE Meals SET name=@name, imageUrl=@img, isKeto=@keto, isVegan=@vegan, 
                                  isNutFree=@nut, isLactoseFree=@lac, isGlutenFree=@glu, description=@desc 
                                  WHERE meal_id=@id";
-            using var cmd = new SqlCommand(sql, conn);
+            using var cmd = new SqliteCommand(sql, conn);
             cmd.Parameters.AddWithValue("@id", entity.Id);
             AddMealParameters(cmd, entity);
 
@@ -213,16 +213,16 @@ namespace TeamNut.Repositories
 
         public async Task Delete(int id)
         {
-            using var conn = new SqlConnection(_connectionString);
+            using var conn = new SqliteConnection(_connectionString);
             const string sql = "DELETE FROM Meals WHERE meal_id = @id";
-            using var cmd = new SqlCommand(sql, conn);
+            using var cmd = new SqliteCommand(sql, conn);
             cmd.Parameters.AddWithValue("@id", id);
 
             await conn.OpenAsync();
             await cmd.ExecuteNonQueryAsync();
         }
 
-        private void AddMealParameters(SqlCommand cmd, Meal meal)
+        private void AddMealParameters(SqliteCommand cmd, Meal meal)
         {
             cmd.Parameters.AddWithValue("@name", meal.Name);
             cmd.Parameters.AddWithValue("@img", meal.ImageUrl ?? (object)DBNull.Value);
@@ -234,7 +234,7 @@ namespace TeamNut.Repositories
             cmd.Parameters.AddWithValue("@desc", meal.Description ?? (object)DBNull.Value);
         }
 
-        private Meal MapReaderToMeal(SqlDataReader reader)
+        private Meal MapReaderToMeal(SqliteDataReader reader)
         {
             return new Meal
             {

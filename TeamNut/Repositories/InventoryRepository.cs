@@ -1,4 +1,4 @@
-using Microsoft.Data.SqlClient;
+using Microsoft.Data.Sqlite;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -20,8 +20,8 @@ namespace TeamNut.Repositories
                                  JOIN Ingredients ing ON inv.ingredient_id = ing.food_id 
                                  WHERE inv.user_id = @uid";
 
-            using var conn = new SqlConnection(_connectionString);
-            using var cmd = new SqlCommand(sql, conn);
+            using var conn = new SqliteConnection(_connectionString);
+            using var cmd = new SqliteCommand(sql, conn);
             cmd.Parameters.AddWithValue("@uid", userId);
 
             await conn.OpenAsync();
@@ -37,7 +37,7 @@ namespace TeamNut.Repositories
 
         public async Task Add(Inventory entity)
         {
-            using var conn = new SqlConnection(_connectionString);
+            using var conn = new SqliteConnection(_connectionString);
             
             const string sql = @"
                 IF EXISTS (SELECT 1 FROM Inventory WHERE user_id = @uid AND ingredient_id = @iid)
@@ -51,7 +51,7 @@ namespace TeamNut.Repositories
                     VALUES (@uid, @iid, @qty)
                 END";
 
-            using var cmd = new SqlCommand(sql, conn);
+            using var cmd = new SqliteCommand(sql, conn);
             cmd.Parameters.AddWithValue("@uid", entity.UserId);
             cmd.Parameters.AddWithValue("@iid", entity.IngredientId);
             cmd.Parameters.AddWithValue("@qty", entity.QuantityGrams);
@@ -63,9 +63,9 @@ namespace TeamNut.Repositories
         
         public async Task Delete(int id)
         {
-            using var conn = new SqlConnection(_connectionString);
+            using var conn = new SqliteConnection(_connectionString);
             const string sql = "DELETE FROM Inventory WHERE id = @id";
-            using var cmd = new SqlCommand(sql, conn);
+            using var cmd = new SqliteCommand(sql, conn);
             cmd.Parameters.AddWithValue("@id", id);
 
             await conn.OpenAsync();
@@ -75,9 +75,9 @@ namespace TeamNut.Repositories
         
         public async Task<Inventory> GetById(int id)
         {
-            using var conn = new SqlConnection(_connectionString);
+            using var conn = new SqliteConnection(_connectionString);
             const string sql = "SELECT * FROM Inventory WHERE id = @id";
-            using var cmd = new SqlCommand(sql, conn);
+            using var cmd = new SqliteCommand(sql, conn);
             cmd.Parameters.AddWithValue("@id", id);
             await conn.OpenAsync();
             using var reader = await cmd.ExecuteReaderAsync();
@@ -88,16 +88,16 @@ namespace TeamNut.Repositories
 
         public async Task Update(Inventory entity)
         {
-            using var conn = new SqlConnection(_connectionString);
+            using var conn = new SqliteConnection(_connectionString);
             const string sql = "UPDATE Inventory SET quantity_grams = @qty WHERE id = @id";
-            using var cmd = new SqlCommand(sql, conn);
+            using var cmd = new SqliteCommand(sql, conn);
             cmd.Parameters.AddWithValue("@id", entity.Id);
             cmd.Parameters.AddWithValue("@qty", entity.QuantityGrams);
             await conn.OpenAsync();
             await cmd.ExecuteNonQueryAsync();
         }
 
-        private Inventory MapReaderToInventory(SqlDataReader reader)
+        private Inventory MapReaderToInventory(SqliteDataReader reader)
         {
             return new Inventory
             {
