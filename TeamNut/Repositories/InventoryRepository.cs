@@ -15,7 +15,7 @@ namespace TeamNut.Repositories
             using var conn = new SqliteConnection(_connectionString);
             await conn.OpenAsync();
 
-            // 1. Search if the item already exists for this user
+            
             const string checkSql = @"
         SELECT id, quantity_grams 
         FROM Inventory 
@@ -29,7 +29,7 @@ namespace TeamNut.Repositories
 
             if (await reader.ReadAsync())
             {
-                // 2. IF IT EXISTS: Update the existing quantity
+                
                 int existingId = Convert.ToInt32(reader["id"]);
                 int existingQty = Convert.ToInt32(reader["quantity_grams"]);
                 int newQty = existingQty + entity.QuantityGrams;
@@ -39,12 +39,12 @@ namespace TeamNut.Repositories
                 updateCmd.Parameters.AddWithValue("@qty", newQty);
                 updateCmd.Parameters.AddWithValue("@id", existingId);
 
-                await reader.CloseAsync(); // Close reader before executing next command
+                await reader.CloseAsync(); 
                 await updateCmd.ExecuteNonQueryAsync();
             }
             else
             {
-                // 3. IF IT DOESN'T EXIST: Run a regular INSERT
+                
                 const string insertSql = @"
             INSERT INTO Inventory (user_id, ingredient_id, quantity_grams) 
             VALUES (@uid, @iid, @qty)";
@@ -54,7 +54,7 @@ namespace TeamNut.Repositories
                 insertCmd.Parameters.AddWithValue("@iid", entity.IngredientId);
                 insertCmd.Parameters.AddWithValue("@qty", entity.QuantityGrams);
 
-                await reader.CloseAsync(); // Close reader before executing next command
+                await reader.CloseAsync(); 
                 await insertCmd.ExecuteNonQueryAsync();
             }
         }
@@ -119,8 +119,7 @@ namespace TeamNut.Repositories
 
         private Inventory MapReaderToInventory(SqliteDataReader reader)
         {
-            // SQLite FIX: Use Convert.ToInt32 for all numeric fields
-            // This prevents the 'System.Int64 to System.Int32' crash
+            
             return new Inventory
             {
                 Id = Convert.ToInt32(reader["id"]),

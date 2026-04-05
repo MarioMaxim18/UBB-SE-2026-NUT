@@ -31,9 +31,17 @@ namespace TeamNut.Repositories
                 }
             }
 
-            const string insertSql = @"INSERT INTO Ingredients (name, calories_per_100g, protein_per_100g, carbs_per_100g, fat_per_100g)
+            /*const string insertSql = @"INSERT INTO Ingredients (name, calories_per_100g, protein_per_100g, carbs_per_100g, fat_per_100g)
                                        OUTPUT INSERTED.food_id
                                        VALUES (@name, 0, 0, 0, 0)";
+            using var insertCmd = new SqliteCommand(insertSql, conn);
+            insertCmd.Parameters.AddWithValue("@name", name);
+            var id = await insertCmd.ExecuteScalarAsync();
+            return Convert.ToInt32(id);*/
+            const string insertSql = @"INSERT INTO Ingredients (name, calories_per_100g, protein_per_100g, carbs_per_100g, fat_per_100g)
+                           VALUES (@name, 0, 0, 0, 0);
+                           SELECT last_insert_rowid();"; 
+
             using var insertCmd = new SqliteCommand(insertSql, conn);
             insertCmd.Parameters.AddWithValue("@name", name);
             var id = await insertCmd.ExecuteScalarAsync();
@@ -44,10 +52,11 @@ namespace TeamNut.Repositories
         {
             var results = new List<KeyValuePair<int, string>>();
 
-            const string sql = @"SELECT LIMIT 20 food_id, name
+            const string sql = @"SELECT  food_id, name
                                  FROM Ingredients
                                  WHERE name LIKE @search
-                                 ORDER BY name";
+                                 ORDER BY name
+                                 LIMIT 20";
 
             using var conn = new SqliteConnection(_connectionString);
             using var cmd = new SqliteCommand(sql, conn);
