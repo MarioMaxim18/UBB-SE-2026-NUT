@@ -55,31 +55,7 @@ public class UserRepository : IRepository<User>
         await conn.OpenAsync();
         await cmd.ExecuteNonQueryAsync();
     }
-    /*
-    public async Task Add(User entity)
-    {
-        using var conn = new SqliteConnection(_connectionString);
-        string sql = "INSERT INTO Users (username, password, role) OUTPUT INSERTED.id VALUES (@u, @p, @r)";
-
-        using var cmd = new SqliteCommand(sql, conn);
-        cmd.Parameters.AddWithValue("@u", entity.Username);
-        cmd.Parameters.AddWithValue("@p", entity.Password);
-        cmd.Parameters.AddWithValue("@r", entity.Role);
-
-        await conn.OpenAsync();
-
-        var result = await cmd.ExecuteScalarAsync();
-
-        if (result != null && result != DBNull.Value)
-        {
-            entity.Id = Convert.ToInt32(result);
-        }
-        else
-        {
-            throw new Exception("CRITICAL: Database did not return a new User ID.");
-        }
-    }
-    */
+   
 
     //new add for SQL lite 
     public async Task Add(User entity)

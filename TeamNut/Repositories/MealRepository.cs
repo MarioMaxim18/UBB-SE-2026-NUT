@@ -64,10 +64,10 @@ namespace TeamNut.Repositories
                 SELECT 
                     m.*,
                     MAX(CASE WHEN f.id IS NULL THEN 0 ELSE 1 END) AS isFavorite,
-                    CAST(ISNULL(SUM(i.calories_per_100g * mi.quantity / 100.0), 0) AS INT) AS calories,
-                    CAST(ISNULL(SUM(i.protein_per_100g * mi.quantity / 100.0), 0) AS INT) AS protein,
-                    CAST(ISNULL(SUM(i.carbs_per_100g * mi.quantity / 100.0), 0) AS INT) AS carbs,
-                    CAST(ISNULL(SUM(i.fat_per_100g * mi.quantity / 100.0), 0) AS INT) AS fat
+                    CAST(IFNULL(SUM(i.calories_per_100g * mi.quantity / 100.0), 0) AS INT) AS calories,
+                    CAST(IFNULL(SUM(i.protein_per_100g * mi.quantity / 100.0), 0) AS INT) AS protein,
+                    CAST(IFNULL(SUM(i.carbs_per_100g * mi.quantity / 100.0), 0) AS INT) AS carbs,
+                    CAST(IFNULL(SUM(i.fat_per_100g * mi.quantity / 100.0), 0) AS INT) AS fat
                 FROM Meals m
                 LEFT JOIN Favorites f ON f.mealId = m.meal_id AND f.userId = @userId
                 LEFT JOIN MealsIngredients mi ON m.meal_id = mi.meal_id
@@ -114,10 +114,10 @@ namespace TeamNut.Repositories
                 SELECT 
                     m.*,
                     MAX(CASE WHEN f.id IS NULL THEN 0 ELSE 1 END) AS isFavorite,
-                    CAST(ISNULL(SUM(i.calories_per_100g * mi.quantity / 100.0), 0) AS INT) AS calories,
-                    CAST(ISNULL(SUM(i.protein_per_100g * mi.quantity / 100.0), 0) AS INT) AS protein,
-                    CAST(ISNULL(SUM(i.carbs_per_100g * mi.quantity / 100.0), 0) AS INT) AS carbs,
-                    CAST(ISNULL(SUM(i.fat_per_100g * mi.quantity / 100.0), 0) AS INT) AS fat
+                    CAST(IFNULL(SUM(i.calories_per_100g * mi.quantity / 100.0), 0) AS INT) AS calories,
+                    CAST(IFNULL(SUM(i.protein_per_100g * mi.quantity / 100.0), 0) AS INT) AS protein,
+                    CAST(IFNULL(SUM(i.carbs_per_100g * mi.quantity / 100.0), 0) AS INT) AS carbs,
+                    CAST(IFNULL(SUM(i.fat_per_100g * mi.quantity / 100.0), 0) AS INT) AS fat
                 FROM Meals m
                 LEFT JOIN Favorites f ON f.mealId = m.meal_id AND f.userId = @userId
                 LEFT JOIN MealsIngredients mi ON m.meal_id = mi.meal_id
@@ -143,10 +143,10 @@ namespace TeamNut.Repositories
                 SELECT 
                     m.*,
                     MAX(CASE WHEN f.id IS NULL THEN 0 ELSE 1 END) AS isFavorite,
-                    CAST(ISNULL(SUM(i.calories_per_100g * mi.quantity / 100.0), 0) AS INT) AS calories,
-                    CAST(ISNULL(SUM(i.protein_per_100g * mi.quantity / 100.0), 0) AS INT) AS protein,
-                    CAST(ISNULL(SUM(i.carbs_per_100g * mi.quantity / 100.0), 0) AS INT) AS carbs,
-                    CAST(ISNULL(SUM(i.fat_per_100g * mi.quantity / 100.0), 0) AS INT) AS fat
+                    CAST(IFNULL(SUM(i.calories_per_100g * mi.quantity / 100.0), 0) AS INT) AS calories,
+                    CAST(IFNULL(SUM(i.protein_per_100g * mi.quantity / 100.0), 0) AS INT) AS protein,
+                    CAST(IFNULL(SUM(i.carbs_per_100g * mi.quantity / 100.0), 0) AS INT) AS carbs,
+                    CAST(IFNULL(SUM(i.fat_per_100g * mi.quantity / 100.0), 0) AS INT) AS fat
                 FROM Meals m
                 LEFT JOIN Favorites f ON f.mealId = m.meal_id AND f.userId = @userId
                 LEFT JOIN MealsIngredients mi ON m.meal_id = mi.meal_id
