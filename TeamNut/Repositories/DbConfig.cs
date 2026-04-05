@@ -8,6 +8,8 @@ namespace TeamNut.Repositories
 {
     internal class DbConfig
     {
-        public static string ConnectionString => @"Server=(localdb)\TeamNutInstance;Database=NUTdb;Trusted_Connection=True;TrustServerCertificate=True;";
+        public static string ConnectionString => "Data Source=NutData.db";
+        //public static string ConnectionString => @"Server=(localdb)\TeamNutInstance;Database=NUTdb;Trusted_Connection=True;TrustServerCertificate=True;";
+
     }
 }
