@@ -47,6 +47,8 @@ namespace TeamNut.Views.MealPlanView
             {
                 UpdateMealsList();
             };
+
+            _ = ViewModel.LoadOrGenerateTodaysMealPlanAsync();
         }
 
         private async void SettingsButton_Click(object sender, RoutedEventArgs e)

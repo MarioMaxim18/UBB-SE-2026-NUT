@@ -84,8 +84,6 @@ namespace TeamNut.ModelViews
         public MealPlanViewModel()
         {
             _mealPlanService = new MealPlanService();
-
-            _ = LoadOrGenerateTodaysMealPlanAsync();
         }
 
         [RelayCommand]

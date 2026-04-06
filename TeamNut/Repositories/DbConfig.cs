@@ -1,13 +1,28 @@
 using System;
-using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace TeamNut.Repositories
 {
     internal class DbConfig
     {
-        public static string ConnectionString => @"Data Source=np:\\.\pipe\LOCALDB#9B005CFF\tsql\query;Initial Catalog=NUTdb;Integrated Security=True;Encrypt=False;TrustServerCertificate=True;";
+        public static string ConnectionString
+        {
+            get
+            {
+                
+                string directory = AppDomain.CurrentDomain.BaseDirectory;
+
+                
+                while (directory != null && !Directory.GetFiles(directory, "*.csproj").Any())
+                {
+                    directory = Directory.GetParent(directory)?.FullName;
+                }
+
+                
+                string dbPath = Path.Combine(directory ?? "", "NutData.db");
+                return $"Data Source={dbPath}";
+            }
+        }
     }
 }

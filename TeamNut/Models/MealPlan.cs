@@ -7,6 +7,6 @@ namespace TeamNut.Models
         public int Id { get; set; } // mealplan_id
         public int UserId { get; set; } // user_id
         public DateTime CreatedAt { get; set; } // created_at
-        public string GoalType { get; set; } // goal type
+        public string GoalType { get; set; } = string.Empty;// goal type
     }
 }

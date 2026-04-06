@@ -18,11 +18,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Views\RemindersView\RemindersPage.xaml" />
     <None Remove="Views\UserView\LoginPage.xaml" />
     <None Remove="Views\UserView\RegisterPage.xaml" />
     <None Remove="Views\UserView\UserDataPage.xaml" />
 	<None Remove="Views\MainPage.xaml" />
 	<None Remove="Views\CalorieLoggingView\CalorieLoggingPage.xaml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="obj\x64\Debug\net8.0-windows10.0.19041.0\win-x64\App.g.i.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -45,7 +50,7 @@
 
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
-    <PackageReference Include="Microsoft.Data.SqlClient" Version="7.0.0" />
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="10.0.5" />
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.7705" />
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.8.260317003" />
   </ItemGroup>
@@ -58,6 +63,9 @@
     <None Update="Views\MealPlanView\DailyMealPlanPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </None>
+    <Page Update="Views\RemindersView\RemindersPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Update="Views\MainPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -94,4 +102,19 @@
     <PublishTrimmed Condition="'$(Configuration)' == 'Debug'">False</PublishTrimmed>
     <PublishTrimmed Condition="'$(Configuration)' != 'Debug'">True</PublishTrimmed>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PRIResource Remove="SQLScripts\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove=".SQLScripts\**\*.sql;SQLScripts\**\*.sql" />
+    <Content Remove=".SQLScripts\**\*.sql;SQLScripts\**\*.sql" />
+    <EmbeddedResource Remove=".SQLScripts\**\*.sql;SQLScripts\**\*.sql" />
+    <Page Remove=".SQLScripts\**\*.sql;SQLScripts\**\*.sql" />
+    <PRIResource Remove=".SQLScripts\**\*.sql;SQLScripts\**\*.sql" />
+    <None Include=".SQLScripts\**\*.sql;SQLScripts\**\*.sql">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 </Project>

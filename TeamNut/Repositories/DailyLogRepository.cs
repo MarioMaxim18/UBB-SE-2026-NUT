@@ -1,4 +1,4 @@
-using Microsoft.Data.SqlClient;
+using Microsoft.Data.Sqlite;
 using System;
 using System.Threading.Tasks;
 using TeamNut.Models;
@@ -11,13 +11,13 @@ namespace TeamNut.Repositories
 
         public async Task Add(DailyLog log)
         {
-            using var conn = new SqlConnection(_connectionString);
+            using var conn = new SqliteConnection(_connectionString);
             await conn.OpenAsync();
 
             const string query = @"INSERT INTO DailyLogs (user_id, mealId, calories, created_at)
                                    VALUES (@userId, @mealId, @calories, @loggedAt)";
 
-            using var cmd = new SqlCommand(query, conn);
+            using var cmd = new SqliteCommand(query, conn);
             cmd.Parameters.AddWithValue("@userId", log.UserId);
             cmd.Parameters.AddWithValue("@mealId", log.MealId);
             cmd.Parameters.AddWithValue("@calories", log.Calories);
@@ -28,11 +28,11 @@ namespace TeamNut.Repositories
 
         public async Task<bool> HasAnyLogs(int userId)
         {
-            using var conn = new SqlConnection(_connectionString);
+            using var conn = new SqliteConnection(_connectionString);
             await conn.OpenAsync();
 
             const string query = "SELECT COUNT(1) FROM DailyLogs WHERE user_id = @userId";
-            using var cmd = new SqlCommand(query, conn);
+            using var cmd = new SqliteCommand(query, conn);
             cmd.Parameters.AddWithValue("@userId", userId);
 
             var count = Convert.ToInt32(await cmd.ExecuteScalarAsync());
@@ -41,7 +41,7 @@ namespace TeamNut.Repositories
 
         public async Task<DailyLog> GetNutritionTotalsForRange(int userId, DateTime startInclusive, DateTime endExclusive)
         {
-            using var conn = new SqlConnection(_connectionString);
+            using var conn = new SqliteConnection(_connectionString);
             await conn.OpenAsync();
 
             const string query = @"
@@ -58,7 +58,7 @@ namespace TeamNut.Repositories
                   AND dl.created_at >= @startDate
                   AND dl.created_at < @endDate";
 
-            using var cmd = new SqlCommand(query, conn);
+            using var cmd = new SqliteCommand(query, conn);
             cmd.Parameters.AddWithValue("@userId", userId);
             cmd.Parameters.AddWithValue("@startDate", startInclusive);
             cmd.Parameters.AddWithValue("@endDate", endExclusive);

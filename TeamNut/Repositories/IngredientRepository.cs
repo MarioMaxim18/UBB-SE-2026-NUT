@@ -1,4 +1,4 @@
-using Microsoft.Data.SqlClient;
+using Microsoft.Data.Sqlite;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -17,11 +17,11 @@ namespace TeamNut.Repositories
 
         public async Task<int> GetOrCreateIngredientIdByNameAsync(string name)
         {
-            using var conn = new SqlConnection(_connectionString);
+            using var conn = new SqliteConnection(_connectionString);
             await conn.OpenAsync();
 
             const string findSql = "SELECT food_id FROM Ingredients WHERE LOWER(name) = LOWER(@name)";
-            using (var findCmd = new SqlCommand(findSql, conn))
+            using (var findCmd = new SqliteCommand(findSql, conn))
             {
                 findCmd.Parameters.AddWithValue("@name", name);
                 var existing = await findCmd.ExecuteScalarAsync();
@@ -31,10 +31,18 @@ namespace TeamNut.Repositories
                 }
             }
 
-            const string insertSql = @"INSERT INTO Ingredients (name, calories_per_100g, protein_per_100g, carbs_per_100g, fat_per_100g)
+            /*const string insertSql = @"INSERT INTO Ingredients (name, calories_per_100g, protein_per_100g, carbs_per_100g, fat_per_100g)
                                        OUTPUT INSERTED.food_id
                                        VALUES (@name, 0, 0, 0, 0)";
-            using var insertCmd = new SqlCommand(insertSql, conn);
+            using var insertCmd = new SqliteCommand(insertSql, conn);
+            insertCmd.Parameters.AddWithValue("@name", name);
+            var id = await insertCmd.ExecuteScalarAsync();
+            return Convert.ToInt32(id);*/
+            const string insertSql = @"INSERT INTO Ingredients (name, calories_per_100g, protein_per_100g, carbs_per_100g, fat_per_100g)
+                           VALUES (@name, 0, 0, 0, 0);
+                           SELECT last_insert_rowid();"; 
+
+            using var insertCmd = new SqliteCommand(insertSql, conn);
             insertCmd.Parameters.AddWithValue("@name", name);
             var id = await insertCmd.ExecuteScalarAsync();
             return Convert.ToInt32(id);
@@ -44,13 +52,14 @@ namespace TeamNut.Repositories
         {
             var results = new List<KeyValuePair<int, string>>();
 
-            const string sql = @"SELECT TOP 20 food_id, name
+            const string sql = @"SELECT  food_id, name
                                  FROM Ingredients
                                  WHERE name LIKE @search
-                                 ORDER BY name";
+                                 ORDER BY name
+                                 LIMIT 20";
 
-            using var conn = new SqlConnection(_connectionString);
-            using var cmd = new SqlCommand(sql, conn);
+            using var conn = new SqliteConnection(_connectionString);
+            using var cmd = new SqliteCommand(sql, conn);
             cmd.Parameters.AddWithValue("@search", $"%{search}%");
 
             await conn.OpenAsync();
@@ -73,8 +82,8 @@ namespace TeamNut.Repositories
                                  FROM Ingredients
                                  ORDER BY name";
 
-            using var conn = new SqlConnection(_connectionString);
-            using var cmd = new SqlCommand(sql, conn);
+            using var conn = new SqliteConnection(_connectionString);
+            using var cmd = new SqliteCommand(sql, conn);
 
             await conn.OpenAsync();
             using var reader = await cmd.ExecuteReaderAsync();
@@ -95,7 +104,7 @@ namespace TeamNut.Repositories
             return ingredients;
         }
 
-        private static double GetDoubleOrZero(SqlDataReader reader, string column)
+        private static double GetDoubleOrZero(SqliteDataReader reader, string column)
         {
             var value = reader[column];
             return value == DBNull.Value ? 0 : Convert.ToDouble(value);

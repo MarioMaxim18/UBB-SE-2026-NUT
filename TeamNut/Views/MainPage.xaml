@@ -20,14 +20,13 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
-                <StackPanel Orientation="Horizontal"
-                            VerticalAlignment="Center"
-                            Spacing="15">
+                <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" Spacing="15">
+                    <TextBlock Text="TeamNut Home" FontSize="24" FontWeight="SemiBold"/>
 
-                    <TextBlock Text="TeamNut Home"
-                               FontSize="24"
-                               FontWeight="SemiBold"
-                               VerticalAlignment="Center"/>
+                    <TextBlock x:Name="MainNextReminderText" 
+                               VerticalAlignment="Center" 
+                               Foreground="Gray" 
+                               Margin="20,0,0,0"/>
                 </StackPanel>
 
                 <Button Grid.Column="1"
@@ -35,7 +34,6 @@
                         VerticalAlignment="Center"
                         Click="LogoutButton_Click"/>
             </Grid>
-
         </Border>
 
         <TabView Grid.Row="1" 
@@ -70,7 +68,14 @@
                 <TabViewItem Header="Shopping List" IsClosable="False" x:Name="ShoppingListTab">
                     <Frame x:Name="ShoppingListFrame"/>
                 </TabViewItem>
+
+                <TabViewItem Header="Reminders" IsClosable="False" x:Name="RemindersTab">
+                    <Frame x:Name="RemindersFrame"/>
+                </TabViewItem>
             </TabView.TabItems>
         </TabView>
     </Grid>
 </Page>
+
+
+

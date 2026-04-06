@@ -21,6 +21,9 @@ namespace TeamNut.Models
         private bool _isGlutenFree;
 
         [ObservableProperty]
+        private bool _isFavoriteOnly; 
+
+        [ObservableProperty]
         private string _searchTerm = string.Empty;
     }
 }
