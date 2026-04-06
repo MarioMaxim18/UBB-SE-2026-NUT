@@ -42,7 +42,7 @@
                            SmallChange="10"
                            SpinButtonPlacementMode="Inline"/>
 
-                <Button Grid.Column="2"
+                <Button Grid.Column="4"
                         Content="✚"
                         ToolTipService.ToolTip="Add ingredient"
                         MinWidth="60"
@@ -59,7 +59,7 @@
                                 <ColumnDefinition Width="100" />
                             </Grid.ColumnDefinitions>
 
-                            <Button Grid.Column="0" Content="✖" Command="{Binding ViewModel.RemoveItemCommand, ElementName=RootPage}" CommandParameter="{Binding}" Margin="0,0,8,0" Width="30" Height="30" />
+                            <Button Grid.Column="0" Content="✖" Command="{Binding ViewModel.RemoveItemCommand, ElementName=RootPage}" CommandParameter="{Binding}" Margin="0,0,8,0" Width="60" Height="30" />
 
                             <TextBlock Grid.Column="1" Text="{x:Bind IngredientName}" VerticalAlignment="Center" />
 

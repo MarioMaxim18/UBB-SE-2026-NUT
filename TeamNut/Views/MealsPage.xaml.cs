@@ -71,6 +71,8 @@ namespace TeamNut
                 
                 meal.IsFavorite = !meal.IsFavorite;
 
+                btn.Content = meal.IsFavorite ? "★" : "☆";
+
                 
                 await viewModel.ToggleFavoriteAsync(meal);
 

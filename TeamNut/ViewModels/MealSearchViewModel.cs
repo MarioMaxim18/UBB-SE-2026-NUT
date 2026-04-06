@@ -55,7 +55,6 @@ namespace TeamNut.ViewModels
         public async Task ToggleFavoriteAsync(Meal meal)
         {
             if (meal == null) return;
-            meal.IsFavorite = !meal.IsFavorite;
             await _mealService.ToggleFavoriteAsync(meal);
         }
     }
