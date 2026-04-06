@@ -26,6 +26,22 @@ namespace TeamNut.Repositories
             return null;
         }
 
+        public async Task<MealPlan> GetLatestMealPlan(int userId)
+        {
+            using var conn = new SqliteConnection(_connectionString);
+            const string sql = @"SELECT * FROM MealPlan
+                                WHERE user_id = @userId
+                                ORDER BY created_at DESC
+                                LIMIT 1";
+            using var cmd = new SqliteCommand(sql, conn);
+            cmd.Parameters.AddWithValue("@userId", userId);
+
+            await conn.OpenAsync();
+            using var reader = await cmd.ExecuteReaderAsync();
+            if (await reader.ReadAsync()) return MapReaderToMealPlan(reader);
+            return null;
+        }
+
         public async Task<IEnumerable<MealPlan>> GetAll()
         {
             var plans = new List<MealPlan>();
@@ -80,10 +96,11 @@ namespace TeamNut.Repositories
         public async Task<MealPlan> GetTodaysMealPlan(int userId)
         {
             using var conn = new SqliteConnection(_connectionString);
-            const string sql = @"SELECT TOP 1 * FROM MealPlan 
-                                WHERE user_id = @userId 
-                                AND CAST(created_at AS DATE) = CAST(GETDATE() AS DATE)
-                                ORDER BY created_at DESC";
+            const string sql = @"SELECT * FROM MealPlan
+                                WHERE user_id = @userId
+                                  AND DATE(created_at) = DATE('now', 'localtime')
+                                ORDER BY created_at DESC
+                                LIMIT 1";
             using var cmd = new SqliteCommand(sql, conn);
             cmd.Parameters.AddWithValue("@userId", userId);
 

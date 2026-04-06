@@ -4,11 +4,19 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:vm="using:TeamNut.ViewModels"
-    xmlns:models="using:TeamNut.Models">
+    xmlns:models="using:TeamNut.Models"
+    xmlns:conv="using:TeamNut.Converters">
+
+    <Page.Resources>
+        <conv:BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+    </Page.Resources>
 
     <Grid Padding="12">
         <StackPanel>
-            <TextBlock Text="My Pantry" FontSize="24" FontWeight="Bold" Margin="0,0,0,12" />
+            <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,0,0,12">
+                <SymbolIcon Symbol="Library" VerticalAlignment="Center"/>
+                <TextBlock Text="Pantry" FontSize="24" FontWeight="SemiBold" VerticalAlignment="Center"/>
+            </StackPanel>
 
             <Grid Margin="0,0,0,14" ColumnSpacing="12">
                 <Grid.ColumnDefinitions>
@@ -34,9 +42,10 @@
                            SmallChange="10"
                            SpinButtonPlacementMode="Inline"/>
 
-                <Button Grid.Column="2"
-                        Content="Add"
-                        MinWidth="90"
+                <Button Grid.Column="4"
+                        Content="✚"
+                        ToolTipService.ToolTip="Add ingredient"
+                        MinWidth="60"
                         Command="{x:Bind ViewModel.AddNewIngredientCommand}"/>
             </Grid>
 
@@ -45,17 +54,19 @@
                     <DataTemplate x:DataType="models:Inventory">
                         <Grid Margin="0,4">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="80" />
                                 <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="100" />
                             </Grid.ColumnDefinitions>
 
-                            <TextBlock Text="{x:Bind IngredientName}" VerticalAlignment="Center" />
-                            <TextBlock Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right">
+                            <Button Grid.Column="0" Content="✖" Command="{Binding ViewModel.RemoveItemCommand, ElementName=RootPage}" CommandParameter="{Binding}" Margin="0,0,8,0" Width="60" Height="30" />
+
+                            <TextBlock Grid.Column="1" Text="{x:Bind IngredientName}" VerticalAlignment="Center" />
+
+                            <TextBlock Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Right">
                                 <Run Text="{x:Bind QuantityGrams}"/>
                                 <Run Text=" g"/>
                             </TextBlock>
-                            <Button Grid.Column="2" Content="Remove" Command="{Binding ViewModel.RemoveItemCommand, ElementName=RootPage}" CommandParameter="{Binding}" Margin="8,0,0,0"/>
                         </Grid>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>

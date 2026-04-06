@@ -164,16 +164,22 @@ namespace TeamNut.Repositories
         SELECT 
             mi.food_id as ingredient_id, 
             i.name as ingredient_name, 
-            (SUM(mi.quantity) - IFNULL(inv.quantity_grams, 0)) as quantity_needed
+            (SUM(mi.quantity) - IFNULL(MAX(inv.quantity_grams), 0)) as quantity_needed
         FROM MealPlan mp
         JOIN MealPlanMeal mpm ON mp.mealplan_id = mpm.mealPlanId
         JOIN MealsIngredients mi ON mpm.mealId = mi.meal_id
         JOIN Ingredients i ON mi.food_id = i.food_id
         LEFT JOIN Inventory inv ON i.food_id = inv.ingredient_id AND inv.user_id = @userId
-        WHERE mp.user_id = @userId 
-          AND mp.created_at >= date('now')
+        WHERE mp.mealplan_id = (
+            SELECT mealplan_id
+            FROM MealPlan
+            WHERE user_id = @userId
+              AND DATE(created_at) = DATE('now', 'localtime')
+            ORDER BY created_at DESC
+            LIMIT 1
+        )
         GROUP BY mi.food_id, i.name
-        HAVING quantity_needed > 0"; 
+        HAVING quantity_needed > 0";
 
             using var cmd = new SqliteCommand(query, conn);
             cmd.Parameters.AddWithValue("@userId", userId);

@@ -4,12 +4,6 @@
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
-  <Folder Name="/Solution Items/">
-    <File Path="NutData.db" />
-  </Folder>
-  <Folder Name="/SQLlite_master/">
-    <File Path="SQLScripts/MasterSQLlitescript_DB_browser.sql" />
-  </Folder>
   <Project Path="TeamNut.csproj">
     <Platform Solution="*|ARM64" Project="ARM64" />
     <Platform Solution="*|x64" Project="x64" />

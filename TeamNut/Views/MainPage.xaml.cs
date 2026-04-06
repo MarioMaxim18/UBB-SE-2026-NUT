@@ -10,7 +10,6 @@ namespace TeamNut.Views
     public sealed partial class MainPage : Page
     {
         private bool mealsLoaded = false;
-        private bool mealPlanLoaded = false;
         private bool chatLoaded = false;
         private bool shoppingListLoaded = false;
         private bool remindersLoaded = false; 
@@ -38,10 +37,9 @@ namespace TeamNut.Views
                     MealsFrame.Navigate(typeof(TeamNut.MealsPage));
                     mealsLoaded = true;
                 }
-                else if (selectedItem == MealPlanTab && !mealPlanLoaded)
+                else if (selectedItem == MealPlanTab)
                 {
                     MealPlanFrame.Navigate(typeof(TeamNut.Views.MealPlanView.MealPlanPage));
-                    mealPlanLoaded = true;
                 }
                 else if (selectedItem == DailyLogTab)
                 {
@@ -137,6 +135,28 @@ namespace TeamNut.Views
         public MainPage()
         {
             this.InitializeComponent();
+
+            // If current user is a nutritionist, restrict UI to chat only
+            try
+            {
+                if (TeamNut.Models.UserSession.Role == "Nutritionist")
+                {
+                    MealsTab.Visibility = Visibility.Collapsed;
+                    MealPlanTab.Visibility = Visibility.Collapsed;
+                    DailyLogTab.Visibility = Visibility.Collapsed;
+                    InventoryTab.Visibility = Visibility.Collapsed;
+                    ShoppingListTab.Visibility = Visibility.Collapsed;
+
+                    // Select and load chat tab
+                    if (!chatLoaded && ChatFrame != null)
+                    {
+                        ChatFrame.Navigate(typeof(TeamNut.Views.NutritionistChat.NutritionistChatPage));
+                        chatLoaded = true;
+                    }
+                    MainTabView.SelectedItem = ChatTab;
+                }
+            }
+            catch { }
         }
 
         private void MealsButton_Click(object sender, RoutedEventArgs e)

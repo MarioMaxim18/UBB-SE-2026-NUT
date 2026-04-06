@@ -57,7 +57,7 @@
                     <Frame x:Name="DailyLogFrame"/>
                 </TabViewItem>
 
-                <TabViewItem Header="Inventory" IsClosable="False" x:Name="InventoryTab">
+                <TabViewItem Header="Pantry" IsClosable="False" x:Name="InventoryTab">
                     <Frame x:Name="InventoryFrame"/>
                 </TabViewItem>
 
