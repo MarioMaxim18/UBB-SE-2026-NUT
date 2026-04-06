@@ -67,9 +67,6 @@
     <None Update="MealsPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </None>
-    <None Update="NutData.db">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Update="Views\MealPlanView\DailyMealPlanPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </None>

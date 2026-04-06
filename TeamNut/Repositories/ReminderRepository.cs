@@ -135,6 +135,25 @@ namespace TeamNut.Repositories
         public async Task<Reminder> GetNextReminder(int userId)
         {
             using var conn = new SqliteConnection(_connectionString);
+            
+            const string sql = @"SELECT * FROM Reminders 
+                         WHERE user_id = @uid AND 
+                         (reminder_date > date('now', 'localtime') 
+                          OR (reminder_date = date('now', 'localtime') AND time >= time('now', 'localtime')))
+                         ORDER BY reminder_date ASC, time ASC 
+                         LIMIT 1";
+
+            using var cmd = new SqliteCommand(sql, conn);
+            cmd.Parameters.AddWithValue("@uid", userId);
+
+            await conn.OpenAsync();
+            using var reader = await cmd.ExecuteReaderAsync();
+            return await reader.ReadAsync() ? MapReaderToReminder(reader) : null;
+        }
+
+        /*public async Task<Reminder> GetNextReminder(int userId)
+        {
+            using var conn = new SqliteConnection(_connectionString);
             const string sql = @"SELECT * FROM Reminders 
                          WHERE user_id = @uid AND 
                          (reminder_date > date('now') OR (reminder_date = date('now') AND time >= time('now')))
@@ -147,7 +166,7 @@ namespace TeamNut.Repositories
             await conn.OpenAsync();
             using var reader = await cmd.ExecuteReaderAsync();
             return await reader.ReadAsync() ? MapReaderToReminder(reader) : null;
-        }
+        }*/
 
 
     }

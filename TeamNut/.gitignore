@@ -3,7 +3,6 @@ bin/
 obj/
 *.user
 *.suo
-*.db
 *.cachegii
 Copilot*
 TeamNut/Repositories/DbConfig.cs

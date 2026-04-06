@@ -24,29 +24,8 @@ namespace TeamNut.ViewModels
         }
 
         
-        [RelayCommand]
-        public async Task LoadReminders()
-        {
-            if (IsBusy) return;
 
-            try
-            {
-                IsBusy = true;
-                Reminders.Clear();
-
-                var items = await _reminderService.GetUserReminders();
-
-                foreach (var item in items)
-                {
-                    Reminders.Add(item);
-                }
-            }
-            finally
-            {
-                IsBusy = false;
-            }
-        }
-
+     
        
         [RelayCommand]
         public async Task DeleteReminder(Reminder reminder)
@@ -77,7 +56,26 @@ namespace TeamNut.ViewModels
             }
         }
 
-        
+        [ObservableProperty]
+        private Reminder? _nextReminder;
+
+        [RelayCommand]
+        public async Task LoadReminders()
+        {
+            if (IsBusy) return;
+            try
+            {
+                IsBusy = true;
+                
+                var items = await _reminderService.GetUserReminders();
+                Reminders.Clear();
+                foreach (var item in items) Reminders.Add(item);
+
+                
+                //NextReminder = await _reminderService.GetNextReminder(2);
+            }
+            finally { IsBusy = false; }
+        }
 
         [RelayCommand]
         public void PrepareNewReminder()
