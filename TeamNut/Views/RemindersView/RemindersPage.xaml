@@ -78,8 +78,7 @@
                             <Button Content="Delete"
                                     Foreground="Red"
                                     FontSize="12"
-                                    Command="{Binding DataContext.DeleteReminderCommand, ElementName=RemindersRoot}"
-                                    CommandParameter="{Binding}" />
+                                    Click="DeleteButton_Click" />
                         </StackPanel>
                     </Grid>
                 </DataTemplate>

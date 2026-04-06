@@ -7,14 +7,12 @@ namespace TeamNut.Views.RemindersView
 {
     public sealed partial class RemindersPage : Page
     {
-       
-        
         public TeamNut.ViewModels.RemindersViewModel ViewModel { get; } = new();
+
         public RemindersPage()
         {
             this.InitializeComponent();
 
-            
             this.DataContext = ViewModel;
 
             this.Loaded += async (s, e) =>
@@ -22,7 +20,6 @@ namespace TeamNut.Views.RemindersView
                 await ViewModel.LoadReminders();
             };
 
-           
             ViewModel.PropertyChanged += async (s, e) =>
             {
                 if (e.PropertyName == nameof(ViewModel.SelectedReminder))
@@ -69,7 +66,6 @@ namespace TeamNut.Views.RemindersView
                         var result = await dialog.ShowAsync();
                         if (result == ContentDialogResult.Primary)
                         {
-                           
                             reminder.Name = nameBox.Text;
                             reminder.ReminderDate = datePicker.Date.ToString("yyyy-MM-dd");
                             reminder.Time = timePicker.Time;
@@ -96,14 +92,37 @@ namespace TeamNut.Views.RemindersView
                     }
                     finally
                     {
-                        
                         ViewModel.SelectedReminder = null;
                     }
                 }
             };
         }
 
-        
+        private async void DeleteButton_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+        {
+            if (sender is Microsoft.UI.Xaml.Controls.Button btn && btn.DataContext is TeamNut.Models.Reminder reminder)
+            {
+                var confirm = new ContentDialog
+                {
+                    Title = "Delete Reminder",
+                    Content = "Are you sure you want to delete this reminder?",
+                    PrimaryButtonText = "Yes",
+                    CloseButtonText = "Cancel",
+                    XamlRoot = this.XamlRoot
+                };
+
+                var result = await confirm.ShowAsync();
+                if (result == ContentDialogResult.Primary)
+                {
+                    await ViewModel.DeleteReminder(reminder);
+                    if (ViewModel != null)
+                    {
+                        ViewModel.Reminders.Remove(reminder);
+                    }
+                }
+            }
+        }
+
         protected override async void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
