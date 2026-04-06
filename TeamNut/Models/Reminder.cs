@@ -28,7 +28,7 @@ namespace TeamNut.Models
         public string ReminderDate { get; set; }
 
         [ObservableProperty]
-        public partial string Frequency { get; set; } = string.Empty;
+        public partial string Frequency { get; set; } = "Once";
 
         public string FullDateTimeDisplay => $"{ReminderDate} at {Time}"; 
     }

@@ -79,8 +79,8 @@ namespace TeamNut.Repositories
             cmd.Parameters.AddWithValue("@sound", entity.HasSound ? 1 : 0);
            
             cmd.Parameters.AddWithValue("@time", entity.Time.ToString());
-            cmd.Parameters.AddWithValue("@date", entity.ReminderDate); 
-            cmd.Parameters.AddWithValue("@freq", entity.Frequency);
+            cmd.Parameters.AddWithValue("@date", entity.ReminderDate);
+            cmd.Parameters.AddWithValue("@freq", entity.Frequency ?? string.Empty);
 
             await conn.OpenAsync();
             await cmd.ExecuteNonQueryAsync();
@@ -109,7 +109,7 @@ namespace TeamNut.Repositories
             cmd.Parameters.AddWithValue("@sound", entity.HasSound ? 1 : 0);
             cmd.Parameters.AddWithValue("@time", entity.Time.ToString());
             cmd.Parameters.AddWithValue("@date", entity.ReminderDate);
-            cmd.Parameters.AddWithValue("@freq", entity.Frequency);
+            cmd.Parameters.AddWithValue("@freq", entity.Frequency ?? string.Empty);
 
             await conn.OpenAsync();
             await cmd.ExecuteNonQueryAsync();
