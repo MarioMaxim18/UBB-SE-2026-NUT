@@ -1,4 +1,4 @@
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System;
 using System.Collections.Generic;
@@ -59,6 +59,13 @@ namespace TeamNut.ViewModels
 
         partial void OnInputTextChanged(string value)
         {
+            if (TeamNut.Models.UserSession.Role == "Nutritionist" && _currentConversationId == null)
+            {
+                CanSend = false;
+                StatusMessage = "Please select a conversation to respond.";
+                return;
+            }
+
             if (string.IsNullOrWhiteSpace(value))
             {
                 CanSend = false;
@@ -192,6 +199,11 @@ namespace TeamNut.ViewModels
 
             if (_currentConversationId == null)
             {
+                if (TeamNut.Models.UserSession.Role == "Nutritionist")
+                {
+                    StatusMessage = "Nutritionists can only respond to existing conversations.";
+                    return;
+                }
                 if (TeamNut.Models.UserSession.UserId == null) return;
                 var conv = await _chatService.GetOrCreateConversationForUserAsync(TeamNut.Models.UserSession.UserId.Value);
                 _currentConversationId = conv.Id;
@@ -205,3 +217,5 @@ namespace TeamNut.ViewModels
         }
     }
 }
+
+
