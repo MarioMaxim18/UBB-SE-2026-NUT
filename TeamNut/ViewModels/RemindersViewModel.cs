@@ -1,10 +1,13 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.UI.Dispatching;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
 using TeamNut.Models;
 using TeamNut.Services;
-
+using Windows.System;
+using System;
 namespace TeamNut.ViewModels
 {
     public partial class RemindersViewModel : ObservableObject
@@ -59,23 +62,62 @@ namespace TeamNut.ViewModels
         [ObservableProperty]
         private Reminder? _nextReminder;
 
+
         [RelayCommand]
         public async Task LoadReminders()
         {
+            // 1. Safety check to prevent double-loading
             if (IsBusy) return;
+
             try
             {
                 IsBusy = true;
-                
-                var items = await _reminderService.GetUserReminders();
-                Reminders.Clear();
-                foreach (var item in items) Reminders.Add(item);
+                int currentId = UserSession.UserId ?? 0;
 
-                
-                //NextReminder = await _reminderService.GetNextReminder(2);
+                if (currentId != 0)
+                {
+                    
+                    var items = (await _reminderService.GetUserReminders(currentId)).ToList();
+
+                    
+
+                    var dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
+
+                    if (dispatcher != null)
+                    {
+                        dispatcher.TryEnqueue(() =>
+                        {
+                            Reminders.Clear();
+                            foreach (var item in items)
+                            {
+                                Reminders.Add(item);
+                            }
+                        });
+                    }
+                    else
+                    {
+                       
+                        Reminders.Clear();
+                        foreach (var item in items) Reminders.Add(item);
+                    }
+
+                    
+                    NextReminder = await _reminderService.GetNextReminder(currentId);
+                }
             }
-            finally { IsBusy = false; }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Reminders Load Error: {ex.Message}");
+            }
+            finally
+            {
+                
+                IsBusy = false;
+            }
         }
+
+      
+
 
         [RelayCommand]
         public void PrepareNewReminder()

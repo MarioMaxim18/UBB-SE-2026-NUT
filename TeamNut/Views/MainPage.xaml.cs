@@ -16,36 +16,15 @@ namespace TeamNut.Views
         private bool remindersLoaded = false; 
 
         private readonly ReminderService _reminderService = new();
-
+        public MainViewModel ViewModel { get; } = new();
         public MainPage()
         {
             this.InitializeComponent();
-            //LoadTopReminder(); 
+            _ = ViewModel.LoadHeaderData();
+            LoadTopReminder(); 
         }
 
-        /*private async void LoadTopReminder()
-        {
-            try
-            {
-                
-                var next = await _reminderService.GetNextReminder(2);
-
-                if (next != null)
-                {
-                   
-                    MainNextReminderText.Text = $"{next.Name} at {next.Time}";
-                }
-                else
-                {
-                    MainNextReminderText.Text = "No upcoming meals";
-                }
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"Error loading header reminder: {ex.Message}");
-            }
-        }*/
-
+        
         private void MainTabView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             try
@@ -82,11 +61,21 @@ namespace TeamNut.Views
                     shoppingListLoaded = true;
                 }
                 
-                else if (selectedItem == RemindersTab && !remindersLoaded)
-                {
-                    RemindersFrame.Navigate(typeof(TeamNut.Views.RemindersView.RemindersPage));
-                    remindersLoaded = true;
+                
+                 else if (selectedItem == RemindersTab && !remindersLoaded)
+                 {
+                    try
+                    {
+                        RemindersFrame.Navigate(typeof(TeamNut.Views.RemindersView.RemindersPage));
+                        remindersLoaded = true;
+                    }
+                    catch (Exception ex)
+                    {
+                          
+                        System.Diagnostics.Debug.WriteLine($"NAVIGATION ERROR: {ex.Message}");
+                    }
                 }
+                
             }
             catch (Exception ex)
             {

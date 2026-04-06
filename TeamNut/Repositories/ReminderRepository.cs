@@ -92,7 +92,7 @@ namespace TeamNut.Repositories
             const string sql = @"UPDATE Reminders 
                          SET name = @name, has_sound = @sound, time = @time, 
                              reminder_date = @date, frequency = @freq 
-                         WHERE id = @id";
+                         WHERE id = @id AND user_id = @uid";
 
             using var cmd = new SqliteCommand(sql, conn);
             cmd.Parameters.AddWithValue("@id", entity.Id);

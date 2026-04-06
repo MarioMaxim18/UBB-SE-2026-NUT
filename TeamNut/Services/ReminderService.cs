@@ -44,11 +44,12 @@ namespace TeamNut.Services
             Console.WriteLine($"User {userId} confirmed meal {mealId}. Updating logs...");
         }
 
-        
-        public async Task<IEnumerable<Reminder>> GetUserReminders()
+        public async Task<IEnumerable<Reminder>> GetUserReminders(int userId)
         {
-            return await _reminderRepository.GetAll();
+            
+            return await _reminderRepository.GetAllByUserId(userId);
         }
+        
 
         public async Task DeleteReminder(int id)
         {

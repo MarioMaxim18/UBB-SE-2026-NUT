@@ -8,8 +8,8 @@ namespace TeamNut.Views.RemindersView
     public sealed partial class RemindersPage : Page
     {
        
-        public RemindersViewModel ViewModel { get; }
-
+        //public RemindersViewModel ViewModel { get; }
+        public TeamNut.ViewModels.RemindersViewModel ViewModel { get; } = new();
         public RemindersPage()
         {
             this.InitializeComponent();
