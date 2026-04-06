@@ -1,4 +1,4 @@
-using Microsoft.Data.SqlClient;
+using Microsoft.Data.Sqlite;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -13,8 +13,8 @@ namespace TeamNut.Repositories
         public async Task<IEnumerable<Conversation>> GetAllConversationsAsync()
         {
             var list = new List<Conversation>();
-            using var conn = new SqlConnection(_connectionString);
-            using var cmd = new SqlCommand("SELECT c.id, c.has_unanswered, c.user_id, u.username FROM Conversations c JOIN Users u ON c.user_id = u.id ORDER BY c.has_unanswered DESC, c.id DESC", conn);
+            using var conn = new SqliteConnection(_connectionString);
+            using var cmd = new SqliteCommand("SELECT c.id, c.has_unanswered, c.user_id, u.username FROM Conversations c JOIN Users u ON c.user_id = u.id ORDER BY c.has_unanswered DESC, c.id DESC", conn);
             await conn.OpenAsync();
             using var reader = await cmd.ExecuteReaderAsync();
             while (await reader.ReadAsync())
@@ -33,8 +33,8 @@ namespace TeamNut.Repositories
         public async Task<IEnumerable<Conversation>> GetConversationsWithUserMessagesAsync()
         {
             var list = new List<Conversation>();
-            using var conn = new SqlConnection(_connectionString);
-            using var cmd = new SqlCommand("SELECT DISTINCT c.id, c.has_unanswered, c.user_id, u.username FROM Conversations c JOIN Users u ON c.user_id = u.id JOIN Messages m ON m.conversation_id = c.id JOIN Users su ON m.sender_id = su.id WHERE su.role <> 'Nutritionist' ORDER BY c.has_unanswered DESC, c.id DESC", conn);
+            using var conn = new SqliteConnection(_connectionString);
+            using var cmd = new SqliteCommand("SELECT DISTINCT c.id, c.has_unanswered, c.user_id, u.username FROM Conversations c JOIN Users u ON c.user_id = u.id JOIN Messages m ON m.conversation_id = c.id JOIN Users su ON m.sender_id = su.id WHERE su.role <> 'Nutritionist' ORDER BY c.has_unanswered DESC, c.id DESC", conn);
             await conn.OpenAsync();
             using var reader = await cmd.ExecuteReaderAsync();
             while (await reader.ReadAsync())
@@ -53,8 +53,8 @@ namespace TeamNut.Repositories
         public async Task<IEnumerable<Conversation>> GetConversationsWithMessagesAsync()
         {
             var list = new List<Conversation>();
-            using var conn = new SqlConnection(_connectionString);
-            using var cmd = new SqlCommand("SELECT DISTINCT c.id, c.has_unanswered, c.user_id, u.username FROM Conversations c JOIN Users u ON c.user_id = u.id JOIN Messages m ON m.conversation_id = c.id ORDER BY c.has_unanswered DESC, c.id DESC", conn);
+            using var conn = new SqliteConnection(_connectionString);
+            using var cmd = new SqliteCommand("SELECT DISTINCT c.id, c.has_unanswered, c.user_id, u.username FROM Conversations c JOIN Users u ON c.user_id = u.id JOIN Messages m ON m.conversation_id = c.id ORDER BY c.has_unanswered DESC, c.id DESC", conn);
             await conn.OpenAsync();
             using var reader = await cmd.ExecuteReaderAsync();
             while (await reader.ReadAsync())
@@ -73,8 +73,8 @@ namespace TeamNut.Repositories
         public async Task<IEnumerable<Conversation>> GetConversationsWhereNutritionistRespondedAsync(int nutritionistId)
         {
             var list = new List<Conversation>();
-            using var conn = new SqlConnection(_connectionString);
-            using var cmd = new SqlCommand("SELECT DISTINCT c.id, c.has_unanswered, c.user_id, u.username FROM Conversations c JOIN Users u ON c.user_id = u.id JOIN Messages m ON m.conversation_id = c.id WHERE m.sender_id = @nid ORDER BY c.has_unanswered DESC, c.id DESC", conn);
+            using var conn = new SqliteConnection(_connectionString);
+            using var cmd = new SqliteCommand("SELECT DISTINCT c.id, c.has_unanswered, c.user_id, u.username FROM Conversations c JOIN Users u ON c.user_id = u.id JOIN Messages m ON m.conversation_id = c.id WHERE m.sender_id = @nid ORDER BY c.has_unanswered DESC, c.id DESC", conn);
             cmd.Parameters.AddWithValue("@nid", nutritionistId);
             await conn.OpenAsync();
             using var reader = await cmd.ExecuteReaderAsync();
@@ -93,8 +93,8 @@ namespace TeamNut.Repositories
 
         public async Task<Conversation> GetOrCreateConversationForUserAsync(int userId)
         {
-            using var conn = new SqlConnection(_connectionString);
-            using var check = new SqlCommand("SELECT id, has_unanswered FROM Conversations WHERE user_id = @uid", conn);
+            using var conn = new SqliteConnection(_connectionString);
+            using var check = new SqliteCommand("SELECT id, has_unanswered FROM Conversations WHERE user_id = @uid", conn);
             check.Parameters.AddWithValue("@uid", userId);
             await conn.OpenAsync();
             using var reader = await check.ExecuteReaderAsync();
@@ -109,7 +109,7 @@ namespace TeamNut.Repositories
             }
             reader.Close();
 
-            using var ins = new SqlCommand("INSERT INTO Conversations (user_id, has_unanswered) OUTPUT INSERTED.id VALUES (@uid, 0)", conn);
+            using var ins = new SqliteCommand("INSERT INTO Conversations (user_id, has_unanswered) VALUES (@uid, 0); SELECT last_insert_rowid();", conn);
             ins.Parameters.AddWithValue("@uid", userId);
             var res = await ins.ExecuteScalarAsync();
             return new Conversation { Id = Convert.ToInt32(res), UserId = userId, HasUnanswered = false };
@@ -118,8 +118,8 @@ namespace TeamNut.Repositories
         public async Task<IEnumerable<Message>> GetMessagesForConversationAsync(int conversationId)
         {
             var list = new List<Message>();
-            using var conn = new SqlConnection(_connectionString);
-            using var cmd = new SqlCommand("SELECT m.id, m.sent_at, m.conversation_id, m.sender_id, m.text_content, u.username, u.role FROM Messages m JOIN Users u ON m.sender_id = u.id WHERE m.conversation_id = @cid ORDER BY m.sent_at", conn);
+            using var conn = new SqliteConnection(_connectionString);
+            using var cmd = new SqliteCommand("SELECT m.id, m.sent_at, m.conversation_id, m.sender_id, m.text_content, u.username, u.role FROM Messages m JOIN Users u ON m.sender_id = u.id WHERE m.conversation_id = @cid ORDER BY m.sent_at", conn);
             cmd.Parameters.AddWithValue("@cid", conversationId);
             await conn.OpenAsync();
             using var reader = await cmd.ExecuteReaderAsync();
@@ -148,8 +148,8 @@ namespace TeamNut.Repositories
 
         public async Task AddMessageAsync(int conversationId, int senderId, string text, bool isNutritionist)
         {
-            using var conn = new SqlConnection(_connectionString);
-            using var cmd = new SqlCommand("INSERT INTO Messages (conversation_id, sender_id, text_content) VALUES (@cid, @sid, @txt)", conn);
+            using var conn = new SqliteConnection(_connectionString);
+            using var cmd = new SqliteCommand("INSERT INTO Messages (conversation_id, sender_id, text_content) VALUES (@cid, @sid, @txt)", conn);
             cmd.Parameters.AddWithValue("@cid", conversationId);
             cmd.Parameters.AddWithValue("@sid", senderId);
             cmd.Parameters.AddWithValue("@txt", text);
@@ -157,7 +157,7 @@ namespace TeamNut.Repositories
             await cmd.ExecuteNonQueryAsync();
 
             // if sender is user (not nutritionist), mark conversation as unanswered
-            using var update = new SqlCommand("UPDATE Conversations SET has_unanswered = CASE WHEN @isUser = 1 THEN 1 ELSE 0 END WHERE id = @cid", conn);
+            using var update = new SqliteCommand("UPDATE Conversations SET has_unanswered = CASE WHEN @isUser = 1 THEN 1 ELSE 0 END WHERE id = @cid", conn);
             // @isUser should be 1 when the sender is a regular user, 0 when sender is a nutritionist
             update.Parameters.AddWithValue("@isUser", isNutritionist ? 0 : 1);
             update.Parameters.AddWithValue("@cid", conversationId);

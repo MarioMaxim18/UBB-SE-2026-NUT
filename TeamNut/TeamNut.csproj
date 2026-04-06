@@ -16,16 +16,9 @@
     <EnableMsixTooling>true</EnableMsixTooling>
     <Nullable>enable</Nullable>
   </PropertyGroup>
-  <ItemGroup>
-    <Compile Remove="SQLScripts\**" />
-    <EmbeddedResource Remove="SQLScripts\**" />
-    <None Remove="SQLScripts\**" />
-    <Page Remove="SQLScripts\**" />
-  </ItemGroup>
 
   <ItemGroup>
     <None Remove="Views\RemindersView\RemindersPage.xaml" />
-    <None Remove="Views\RemindersView\RemindersView %28old%29.xaml" />
     <None Remove="Views\UserView\LoginPage.xaml" />
     <None Remove="Views\UserView\RegisterPage.xaml" />
     <None Remove="Views\UserView\UserDataPage.xaml" />
@@ -112,5 +105,16 @@
 
   <ItemGroup>
     <PRIResource Remove="SQLScripts\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove=".SQLScripts\**\*.sql;SQLScripts\**\*.sql" />
+    <Content Remove=".SQLScripts\**\*.sql;SQLScripts\**\*.sql" />
+    <EmbeddedResource Remove=".SQLScripts\**\*.sql;SQLScripts\**\*.sql" />
+    <Page Remove=".SQLScripts\**\*.sql;SQLScripts\**\*.sql" />
+    <PRIResource Remove=".SQLScripts\**\*.sql;SQLScripts\**\*.sql" />
+    <None Include=".SQLScripts\**\*.sql;SQLScripts\**\*.sql">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 </Project>
