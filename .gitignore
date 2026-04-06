@@ -30,3 +30,8 @@ TestResults/
 # Azure / Secrets (Safety First!)
 serviceDependencies.json
 serviceDependencies.local.json
+/TeamNut/SQLScripts/MasterSQLlitescript.sql
+/TeamNut/SQLScripts/MasterSQLlitescript_DB_browser.sql
+*.cs
+*.xaml
+/.gitignore
