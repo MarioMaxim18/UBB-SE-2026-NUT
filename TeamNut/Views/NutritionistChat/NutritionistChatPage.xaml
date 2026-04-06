@@ -4,25 +4,72 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d">
+    mc:Ignorable="d"
+    xmlns:vm="using:TeamNut.ViewModels">
 
     <Grid Padding="12">
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="260" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
 
-        <ListView x:Name="MessagesList" Grid.Row="0">
-            <ListView.ItemTemplate>
-                <DataTemplate>
-                    <StackPanel Margin="0,6">
-                        <TextBlock x:Name="AuthorText" FontWeight="SemiBold" />
-                        <TextBlock x:Name="MessageText" TextWrapping="WrapWholeWords" />
-                        <TextBlock x:Name="TimestampText" FontSize="10" Opacity="0.6" />
-                    </StackPanel>
-                </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
+            <!-- Conversations list / nutritionist tabs -->
+            <StackPanel Grid.Column="0">
+                <!-- tabs only for nutritionist -->
+                <StackPanel Orientation="Horizontal" Visibility="{Binding IsNutritionistUser, Converter={StaticResource BoolToVisibilityConverter}}">
+                    <ToggleSwitch OnContent="All chats" OffContent="My chats" IsOn="{Binding IsNutritionistView, Mode=TwoWay}" Margin="0,0,8,8" />
+                </StackPanel>
+
+                <ListView x:Name="ConversationsList" ItemsSource="{Binding Conversations}" SelectedItem="{Binding SelectedConversation, Mode=TwoWay}">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <Border Background="{Binding HasUnanswered, Converter={StaticResource UnansweredToHighlightConverter}}" CornerRadius="6" Margin="4" Padding="4">
+                                <StackPanel Margin="6">
+                                    <TextBlock Text="{Binding Username}" FontWeight="{Binding HasUnanswered, Converter={StaticResource BoolToFontWeightConverter}}" />
+                                    <TextBlock Text="{Binding HasUnanswered, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Inverse}" FontSize="10" Opacity="0.6" />
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+
+                <!-- status message when no conversations -->
+                <TextBlock Text="{Binding StatusMessage}" Visibility="{Binding Conversations.Count, Converter={StaticResource IntZeroToVisibilityConverter}}" Margin="6" />
+            </StackPanel>
+
+            <!-- messages column -->
+            <Grid Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <ScrollViewer x:Name="MessagesScrollViewer" Grid.Row="0">
+                    <ItemsControl x:Name="MessagesItems" ItemsSource="{Binding Messages}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Padding="8" Margin="6" Background="{Binding SenderRole, Converter={StaticResource RoleToBackgroundConverter}}" CornerRadius="8" MaxWidth="500">
+                                    <StackPanel HorizontalAlignment="{Binding SenderRole, Converter={StaticResource RoleToHorizontalAlignmentConverter}}">
+                                        <TextBlock Text="{Binding SenderUsername}" FontWeight="SemiBold" Foreground="#222" />
+                                        <TextBlock Text="{Binding TextContent}" TextWrapping="WrapWholeWords" Foreground="#111" />
+                                        <TextBlock Text="{Binding SentAtFormatted}" FontSize="10" Opacity="0.6" Foreground="#333" />
+                                    </StackPanel>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+
+                <StackPanel Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="{Binding IsNutritionistUser, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Inverse}">
+                    <TextBlock Text="start a conversation with our professional nutritionist" Opacity="0.6" />
+                </StackPanel>
+            </Grid>
+        </Grid>
 
         <Grid Grid.Row="1" Margin="0,8,0,0" ColumnSpacing="8">
             <Grid.ColumnDefinitions>
@@ -30,8 +77,8 @@
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
 
-            <TextBox x:Name="InputBox" Grid.Column="0" AcceptsReturn="False" />
-            <Button x:Name="SendButton" Grid.Column="1" Content="Send" />
+            <TextBox x:Name="InputBox" Grid.Column="0" AcceptsReturn="False" Text="{Binding InputText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+            <Button x:Name="SendButton" Grid.Column="1" Content="Send" Click="SendButton_Click" IsEnabled="{Binding CanSend}" />
         </Grid>
     </Grid>
 </Page>

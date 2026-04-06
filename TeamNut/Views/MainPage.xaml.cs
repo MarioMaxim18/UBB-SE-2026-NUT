@@ -103,6 +103,28 @@ namespace TeamNut.Views
         public MainPage()
         {
             this.InitializeComponent();
+
+            // If current user is a nutritionist, restrict UI to chat only
+            try
+            {
+                if (TeamNut.Models.UserSession.Role == "Nutritionist")
+                {
+                    MealsTab.Visibility = Visibility.Collapsed;
+                    MealPlanTab.Visibility = Visibility.Collapsed;
+                    DailyLogTab.Visibility = Visibility.Collapsed;
+                    InventoryTab.Visibility = Visibility.Collapsed;
+                    ShoppingListTab.Visibility = Visibility.Collapsed;
+
+                    // Select and load chat tab
+                    if (!chatLoaded && ChatFrame != null)
+                    {
+                        ChatFrame.Navigate(typeof(TeamNut.Views.NutritionistChat.NutritionistChatPage));
+                        chatLoaded = true;
+                    }
+                    MainTabView.SelectedItem = ChatTab;
+                }
+            }
+            catch { }
         }
 
         private void MealsButton_Click(object sender, RoutedEventArgs e)
