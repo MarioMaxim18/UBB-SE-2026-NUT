@@ -1,4 +1,7 @@
 using System.Threading.Tasks;
+using System.Collections.ObjectModel;
+using System;
+using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
 using TeamNut.Models;
 using TeamNut.Services;
@@ -24,10 +27,17 @@ namespace TeamNut.ViewModels
         private string _weeklyProteinText = string.Empty;
         private string _weeklyCarbsText = string.Empty;
         private string _weeklyFatsText = string.Empty;
+        private string _dailyBurnedCaloriesText = string.Empty;
+        private string _mealSearchText = string.Empty;
+        private ObservableCollection<Meal> _availableMeals = new();
+        private ObservableCollection<Meal> _filteredMeals = new();
+        private Meal? _selectedMeal;
+        private string _logMealStatusMessage = string.Empty;
 
         public DailyLogViewModel()
         {
             _service = new DailyLogService();
+            _ = LoadMealsForAutocompleteAsync();
         }
 
         public bool HasData
@@ -131,6 +141,94 @@ namespace TeamNut.ViewModels
             set => SetProperty(ref _weeklyFatsText, value);
         }
 
+        public string DailyBurnedCaloriesText
+        {
+            get => _dailyBurnedCaloriesText;
+            set => SetProperty(ref _dailyBurnedCaloriesText, value);
+        }
+
+        public string MealSearchText
+        {
+            get => _mealSearchText;
+            set
+            {
+                if (SetProperty(ref _mealSearchText, value))
+                {
+                    UpdateFilteredMeals();
+                }
+            }
+        }
+
+        public ObservableCollection<Meal> AvailableMeals
+        {
+            get => _availableMeals;
+            set => SetProperty(ref _availableMeals, value);
+        }
+
+        public ObservableCollection<Meal> FilteredMeals
+        {
+            get => _filteredMeals;
+            set => SetProperty(ref _filteredMeals, value);
+        }
+
+        public Meal? SelectedMeal
+        {
+            get => _selectedMeal;
+            set => SetProperty(ref _selectedMeal, value);
+        }
+
+        public string LogMealStatusMessage
+        {
+            get => _logMealStatusMessage;
+            set => SetProperty(ref _logMealStatusMessage, value);
+        }
+
+        public async Task LoadMealsForAutocompleteAsync()
+        {
+            var meals = await _service.GetMealsForAutocompleteAsync();
+            AvailableMeals = new ObservableCollection<Meal>(meals);
+            UpdateFilteredMeals();
+        }
+
+        public async Task LogSelectedMealAsync()
+        {
+            if (SelectedMeal == null)
+            {
+                LogMealStatusMessage = "Select a meal first.";
+                return;
+            }
+
+            await _service.LogMealAsync(SelectedMeal);
+            LogMealStatusMessage = $"Logged {SelectedMeal.Name}.";
+            MealSearchText = string.Empty;
+            SelectedMeal = null;
+            await LoadAsync();
+        }
+
+        private void UpdateFilteredMeals()
+        {
+            FilteredMeals.Clear();
+
+            var query = MealSearchText?.Trim() ?? string.Empty;
+            var filtered = string.IsNullOrWhiteSpace(query)
+                ? AvailableMeals
+                : new ObservableCollection<Meal>(AvailableMeals.Where(m => m.Name.Contains(query, StringComparison.OrdinalIgnoreCase)));
+
+            foreach (var meal in filtered)
+            {
+                FilteredMeals.Add(meal);
+            }
+
+            if (!string.IsNullOrWhiteSpace(query) && FilteredMeals.Count == 0)
+            {
+                LogMealStatusMessage = "No meals found.";
+            }
+            else
+            {
+                LogMealStatusMessage = string.Empty;
+            }
+        }
+
         public async Task LoadAsync()
         {
             if (!await _service.HasAnyLogsAsync())
@@ -164,6 +262,8 @@ namespace TeamNut.ViewModels
             DailyProteinText = BuildMetricText(DailyTotals.Protein, DailyProteinGoal, "g");
             DailyCarbsText = BuildMetricText(DailyTotals.Carbs, DailyCarbsGoal, "g");
             DailyFatsText = BuildMetricText(DailyTotals.Fats, DailyFatsGoal, "g");
+            var burnedCalories = await _service.GetTodayBurnedCaloriesAsync();
+            DailyBurnedCaloriesText = $"{burnedCalories:F0} kcal";
 
             WeeklyCaloriesText = BuildMetricText(WeeklyTotals.Calories, WeeklyCaloriesGoal, "kcal");
             WeeklyProteinText = BuildMetricText(WeeklyTotals.Protein, WeeklyProteinGoal, "g");

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using TeamNut.Models;
 using TeamNut.Repositories;
@@ -9,11 +10,13 @@ namespace TeamNut.Services
     {
         private readonly DailyLogRepository _repository;
         private readonly UserRepository _userRepository;
+        private readonly MealService _mealService;
 
         public DailyLogService()
         {
             _repository = new DailyLogRepository();
             _userRepository = new UserRepository();
+            _mealService = new MealService();
         }
 
         private int GetUserId()
@@ -50,6 +53,42 @@ namespace TeamNut.Services
         public async Task<UserData> GetCurrentUserNutritionTargetsAsync()
         {
             return await _userRepository.GetUserDataByUserId(GetUserId());
+        }
+
+        public Task<double> GetTodayBurnedCaloriesAsync()
+        {
+            return Task.FromResult(500d);
+        }
+
+        public async Task<List<Meal>> SearchMealsAsync(string? searchTerm)
+        {
+            var filter = new MealFilter
+            {
+                SearchTerm = searchTerm ?? string.Empty
+            };
+
+            return await _mealService.GetFilteredMealsAsync(filter);
+        }
+
+        public async Task<List<Meal>> GetMealsForAutocompleteAsync()
+        {
+            return await _mealService.GetFilteredMealsAsync(new MealFilter());
+        }
+
+        public async Task LogMealAsync(Meal meal)
+        {
+            if (meal == null)
+            {
+                throw new ArgumentNullException(nameof(meal));
+            }
+
+            await _repository.Add(new DailyLog
+            {
+                UserId = GetUserId(),
+                MealId = meal.Id,
+                Calories = meal.Calories,
+                LoggedAt = DateTime.Now
+            });
         }
     }
 }

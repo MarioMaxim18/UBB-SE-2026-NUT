@@ -6,13 +6,33 @@
     <Grid Padding="16" RowSpacing="12">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <TextBlock Text="{Binding StatusMessage}" FontSize="16" TextWrapping="WrapWholeWords"
+        <Border Padding="12" CornerRadius="10" BorderThickness="1" BorderBrush="Gray">
+            <StackPanel Spacing="8">
+                <TextBlock Text="Log a meal" FontSize="16" FontWeight="SemiBold"/>
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <AutoSuggestBox x:Name="MealSuggestBox"
+                                    Width="420"
+                                    PlaceholderText="Search meal"
+                                    Text="{Binding MealSearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                    ItemsSource="{Binding FilteredMeals}"
+                                    DisplayMemberPath="Name"
+                                    TextMemberPath="Name"
+                                    UpdateTextOnSelect="True"
+                                    SuggestionChosen="MealSuggestBox_SuggestionChosen"/>
+                    <Button Content="Log a meal" Click="LogMeal_Click"/>
+                </StackPanel>
+                <TextBlock Text="{Binding LogMealStatusMessage}" Foreground="DarkOrange"/>
+            </StackPanel>
+        </Border>
+
+        <TextBlock Grid.Row="1" Text="{Binding StatusMessage}" FontSize="16" TextWrapping="WrapWholeWords"
                    Visibility="{Binding HasData, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Inverse}"/>
 
-        <Grid Grid.Row="1" ColumnSpacing="16"
+        <Grid Grid.Row="2" ColumnSpacing="16"
               Visibility="{Binding HasData, Converter={StaticResource BoolToVisibilityConverter}}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
@@ -25,6 +45,8 @@
                     <TextBlock Text="Calories"/>
                     <TextBlock Text="{Binding DailyCaloriesText}" FontWeight="SemiBold"/>
                     <ProgressBar Minimum="0" Maximum="{Binding DailyCaloriesGoal}" Value="{Binding DailyTotals.Calories}" Height="16"/>
+                    <TextBlock Text="Calories Burned"/>
+                    <TextBlock Text="{Binding DailyBurnedCaloriesText}" FontWeight="SemiBold"/>
                     <TextBlock Text="Protein"/>
                     <TextBlock Text="{Binding DailyProteinText}" FontWeight="SemiBold"/>
                     <ProgressBar Minimum="0" Maximum="{Binding DailyProteinGoal}" Value="{Binding DailyTotals.Protein}" Height="16"/>
@@ -39,10 +61,12 @@
 
             <Border Grid.Column="1" Padding="12" CornerRadius="10" BorderThickness="1" BorderBrush="Gray">
                 <StackPanel Spacing="8">
-                    <TextBlock Text="Weekly Log (Monday-Sunday)" FontSize="18" FontWeight="SemiBold"/>
+                    <TextBlock Text="Weekly Log (Monday to Current time)" FontSize="18" FontWeight="SemiBold"/>
                     <TextBlock Text="Calories"/>
                     <TextBlock Text="{Binding WeeklyCaloriesText}" FontWeight="SemiBold"/>
                     <ProgressBar Minimum="0" Maximum="{Binding WeeklyCaloriesGoal}" Value="{Binding WeeklyTotals.Calories}" Height="16"/>
+                    <TextBlock Text="Calories Burned"/>
+                    <TextBlock Text="{Binding DailyBurnedCaloriesText}" FontWeight="SemiBold"/>
                     <TextBlock Text="Protein"/>
                     <TextBlock Text="{Binding WeeklyProteinText}" FontWeight="SemiBold"/>
                     <ProgressBar Minimum="0" Maximum="{Binding WeeklyProteinGoal}" Value="{Binding WeeklyTotals.Protein}" Height="16"/>
