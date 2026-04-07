@@ -51,7 +51,7 @@ namespace TeamNut.Views
                     if (rem.ReminderDate != today) continue;
                     if (_shownReminders.Contains(rem.Id)) continue;
 
-                    // If reminder time is due (within +/- 30s)
+                    
                     var diff = (rem.Time - now).Duration();
                     if (diff <= TimeSpan.FromSeconds(30))
                     {
