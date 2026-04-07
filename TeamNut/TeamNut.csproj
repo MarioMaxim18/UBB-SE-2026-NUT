@@ -61,9 +61,6 @@
     <None Update="MealsPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </None>
-    <None Update="Views\MealPlanView\DailyMealPlanPage.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </None>
     <Page Update="Views\RemindersView\RemindersPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
