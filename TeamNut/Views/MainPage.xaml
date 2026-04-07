@@ -59,7 +59,7 @@
                     <Frame x:Name="MealPlanFrame"/>
                 </TabViewItem>
 
-                <TabViewItem Header="Daily Logs" IsClosable="False" x:Name="DailyLogTab">
+                <TabViewItem Header="Progress" IsClosable="False" x:Name="DailyLogTab">
                     <Frame x:Name="DailyLogFrame"/>
                 </TabViewItem>
 
