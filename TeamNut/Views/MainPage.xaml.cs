@@ -14,6 +14,8 @@ namespace TeamNut.Views
         private bool shoppingListLoaded = false;
         private bool remindersLoaded = false; 
         private readonly Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
+        private readonly Microsoft.UI.Xaml.DispatcherTimer _reminderTimer;
+        private readonly System.Collections.Generic.HashSet<int> _shownReminders = new();
 
         private readonly ReminderService _reminderService = new();
         public MainViewModel ViewModel { get; } = new();
@@ -25,6 +27,90 @@ namespace TeamNut.Views
             _ = ViewModel.LoadHeaderData();
             LoadTopReminder();
             ReminderService.RemindersChanged += OnRemindersChanged;
+
+            _reminderTimer = new Microsoft.UI.Xaml.DispatcherTimer();
+            _reminderTimer.Interval = TimeSpan.FromSeconds(30);
+            _reminderTimer.Tick += ReminderTimer_Tick;
+            _reminderTimer.Start();
+        }
+
+        private async void ReminderTimer_Tick(object? sender, object? e)
+        {
+            try
+            {
+                int userId = UserSession.UserId ?? 0;
+                if (userId == 0) return;
+
+                var reminders = await _reminderService.GetUserReminders(userId);
+                var today = DateTime.Today.ToString("yyyy-MM-dd");
+                var now = DateTime.Now.TimeOfDay;
+
+                foreach (var rem in reminders)
+                {
+                    if (rem == null) continue;
+                    if (rem.ReminderDate != today) continue;
+                    if (_shownReminders.Contains(rem.Id)) continue;
+
+                    // If reminder time is due (within +/- 30s)
+                    var diff = (rem.Time - now).Duration();
+                    if (diff <= TimeSpan.FromSeconds(30))
+                    {
+                        _shownReminders.Add(rem.Id);
+                        await ShowReminderDialog(rem);
+                    }
+                }
+            }
+            catch { }
+        }
+
+        private async System.Threading.Tasks.Task ShowReminderDialog(TeamNut.Models.Reminder rem)
+        {
+            try
+            {
+                var dialog = new ContentDialog
+                {
+                    Title = rem.Name ?? "Reminder",
+                    Content = "Did you consume this meal?",
+                    PrimaryButtonText = "Confirm",
+                    CloseButtonText = "Decline",
+                    XamlRoot = this.XamlRoot
+                };
+
+                var res = await dialog.ShowAsync();
+                if (res == ContentDialogResult.Primary)
+                {
+                    try
+                    {
+                        var mealService = new TeamNut.Services.MealService();
+                        var meals = await mealService.GetMealsAsync();
+                        var matched = meals.Find(m => string.Equals(m.Name?.Trim(), rem.Name?.Trim(), StringComparison.OrdinalIgnoreCase));
+                        int userId = UserSession.UserId ?? 0;
+
+                        if (matched != null)
+                        {
+                            var repo = new TeamNut.Repositories.MealPlanRepository();
+                            await repo.SaveMealToDailyLog(userId, matched.Id, matched.Calories);
+
+                            var inventory = new TeamNut.Services.InventoryService();
+                            await inventory.ConsumeMeal(userId, matched.Id);
+                        }
+
+                        
+                        await _reminderService.DeleteReminder(rem.Id);
+                        
+                        ReminderService.NotifyRemindersChangedForUser(userId);
+                    }
+                    catch (Exception ex)
+                    {
+                        System.Diagnostics.Debug.WriteLine($"Error confirming reminder: {ex.Message}");
+                    }
+                }
+                else
+                {
+                    
+                }
+            }
+            catch { }
         }
 
         private void OnRemindersChanged(object? sender, int userId)
