@@ -1,4 +1,6 @@
 using System;
+using Windows.Media.Playback;
+using Windows.Media.Core;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using TeamNut.Models;
