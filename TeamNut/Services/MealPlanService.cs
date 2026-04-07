@@ -28,6 +28,31 @@ namespace TeamNut.Services
             {
                 int mealPlanId = await _mealPlanRepository.GeneratePersonalizedDailyMealPlan(userId);
 
+                try
+                {
+                    var reminderService = new ReminderService();
+                    var todays = DateTime.Today.ToString("yyyy-MM-dd");
+                    var existing = (await reminderService.GetUserReminders(userId));
+                    bool anyToday = false;
+                    foreach (var r in existing)
+                    {
+                        if (r.ReminderDate == todays) { anyToday = true; break; }
+                    }
+
+                    if (!anyToday)
+                    {
+                        var breakfast = new Reminder { UserId = userId, Name = "Breakfast", ReminderDate = todays, Time = new TimeSpan(8,0,0), HasSound = false, Frequency = "Once" };
+                        var lunch = new Reminder { UserId = userId, Name = "Lunch", ReminderDate = todays, Time = new TimeSpan(13,0,0), HasSound = false, Frequency = "Once" };
+                        var dinner = new Reminder { UserId = userId, Name = "Dinner", ReminderDate = todays, Time = new TimeSpan(17,0,0), HasSound = false, Frequency = "Once" };
+
+                        await reminderService.SaveReminder(breakfast);
+                        await reminderService.SaveReminder(lunch);
+                        await reminderService.SaveReminder(dinner);
+
+                        ReminderService.NotifyRemindersChangedForUser(userId);
+                    }
+                }
+                catch { }
                 if (mealPlanId <= 0)
                 {
                     throw new InvalidOperationException("Failed to generate meal plan. Please try again.");
