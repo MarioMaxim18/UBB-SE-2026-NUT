@@ -28,10 +28,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="obj\x64\Debug\net8.0-windows10.0.19041.0\win-x64\App.g.i.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Content Include="Assets\SplashScreen.scale-200.png" />
     <Content Include="Assets\LockScreenLogo.scale-200.png" />
     <Content Include="Assets\Square150x150Logo.scale-200.png" />
