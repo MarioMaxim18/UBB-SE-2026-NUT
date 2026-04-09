@@ -53,6 +53,30 @@ namespace TeamNut.Services
             return data;
         }
 
+        public async Task<User?> RegisterUserWithProfileAsync(User user, UserData data, DateTimeOffset birthDate)
+        {
+            if (user == null) return null;
+            if (data == null) return null;
+
+            data.Age = data.CalculateAge(birthDate);
+            if (data.Age <= 0)
+            {
+                throw new InvalidOperationException("Please select a valid birthdate.");
+            }
+
+            ApplyCalculatedNutrition(data);
+
+            var registeredUser = await RegisterUserAsync(user);
+            if (registeredUser == null)
+            {
+                return null;
+            }
+
+            data.UserId = registeredUser.Id;
+            await _userRepository.AddUserData(data);
+            return registeredUser;
+        }
+
         public async Task<UserData> GetUserDataAsync(int userId)
         {
             return await _userRepository.GetUserDataByUserId(userId);

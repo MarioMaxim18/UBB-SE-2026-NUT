@@ -186,6 +186,17 @@ namespace TeamNut.Services
             return (totalCalories, totalProtein, totalCarbs, totalFat);
         }
 
+        public string GetMealTypeForIndex(int index)
+        {
+            return index switch
+            {
+                0 => "BREAKFAST",
+                1 => "LUNCH",
+                2 => "DINNER",
+                _ => "MEAL"
+            };
+        }
+
         public bool ValidateMealPlan(List<Meal> meals, int targetCalories, int targetProtein, int targetCarbs, int targetFat, double tolerance = 0.10)
         {
             var (totalCalories, totalProtein, totalCarbs, totalFat) = CalculateTotalNutrition(meals);
@@ -256,6 +267,16 @@ namespace TeamNut.Services
             }
 
             await _mealPlanRepository.SaveMealToDailyLog(UserSession.UserId.Value, mealId, calories);
+        }
+
+        public async Task SaveMealToDailyLogForUserAsync(int userId, int mealId, int calories)
+        {
+            if (userId <= 0)
+            {
+                throw new InvalidOperationException("Invalid user ID.");
+            }
+
+            await _mealPlanRepository.SaveMealToDailyLog(userId, mealId, calories);
         }
     }
 }

@@ -1,6 +1,7 @@
 using Microsoft.WindowsAppSDK.Runtime;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using TeamNut.Models;
 using TeamNut.Repositories;
@@ -16,6 +17,17 @@ namespace TeamNut.Services
         {
             _reminderRepository = new ReminderRepository();
             
+        }
+
+        public async Task<IEnumerable<Reminder>> GetDueRemindersAsync(int userId, DateTime today, TimeSpan currentTime, TimeSpan triggerWindow)
+        {
+            var reminders = await GetUserReminders(userId);
+            var todayString = today.ToString("yyyy-MM-dd");
+
+            return reminders.Where(reminder =>
+                reminder != null &&
+                reminder.ReminderDate == todayString &&
+                (reminder.Time - currentTime).Duration() <= triggerWindow);
         }
 
         public async Task<Reminder?> GetNextReminder(int userId)
@@ -37,9 +49,10 @@ namespace TeamNut.Services
                 reminder.UserId = TeamNut.Models.UserSession.UserId ?? reminder.UserId;
             }
 
-            if (string.IsNullOrWhiteSpace(reminder.Name) || reminder.Name.Length > 50)
+            var errors = reminder.GetValidationErrors();
+            if (errors.Any())
             {
-                return "Error: Name must be between 1 and 50 characters.";
+                return string.Join(Environment.NewLine, errors);
             }
 
             if (reminder.Id == 0)
@@ -63,6 +76,31 @@ namespace TeamNut.Services
         {
 
             Console.WriteLine($"User {userId} confirmed meal {mealId}. Updating logs...");
+        }
+
+        public async Task<bool> ConfirmReminderConsumptionAsync(Reminder reminder, int userId)
+        {
+            if (reminder == null)
+            {
+                return false;
+            }
+
+            var mealService = new MealService();
+            var meals = await mealService.GetMealsAsync();
+            var matchedMeal = meals.FirstOrDefault(meal => string.Equals(meal.Name?.Trim(), reminder.Name?.Trim(), StringComparison.OrdinalIgnoreCase));
+
+            if (matchedMeal != null)
+            {
+                var mealPlanService = new MealPlanService();
+                await mealPlanService.SaveMealToDailyLogForUserAsync(userId, matchedMeal.Id, matchedMeal.Calories);
+
+                var inventoryService = new InventoryService();
+                await inventoryService.ConsumeMeal(userId, matchedMeal.Id);
+            }
+
+            await DeleteReminder(reminder.Id);
+            NotifyRemindersChangedForUser(userId);
+            return true;
         }
 
         public async Task<IEnumerable<Reminder>> GetUserReminders(int userId)

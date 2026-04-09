@@ -89,29 +89,13 @@ namespace TeamNut.ViewModels
                     return;
                 }
 
-                CurrentUserData.Age = CurrentUserData.CalculateAge(SelectedDate);
-                if (CurrentUserData.Age <= 0)
-                {
-                    StatusMessage = "Please select a valid birthdate.";
-                    return;
-                }
-                CurrentUserData.Bmi = CurrentUserData.CalculateBmi();
-                CurrentUserData.CalorieNeeds = CurrentUserData.CalculateCalorieNeeds();
-                CurrentUserData.ProteinNeeds = CurrentUserData.CalculateProteinNeeds();
-                CurrentUserData.FatNeeds = CurrentUserData.CalculateFatNeeds();
-                CurrentUserData.CarbNeeds = CurrentUserData.CalculateCarbNeeds();
-
-                var registeredUser = await _userService.RegisterUserAsync(CurrentUser);
+                var registeredUser = await _userService.RegisterUserWithProfileAsync(CurrentUser, CurrentUserData, SelectedDate);
                 if (registeredUser == null)
                 {
                     StatusMessage = "Registration failed. Username might already exist.";
                     return;
                 }
 
-                CurrentUserData.UserId = registeredUser.Id;
-                await _userService.AddUserDataAsync(CurrentUserData);
-
-                UserSession.Login(registeredUser.Id, registeredUser.Username, registeredUser.Role);
                 SaveDataSuccess?.Invoke(this, EventArgs.Empty);
             }
             catch (Exception ex)

@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using TeamNut.Models;
 using TeamNut.Services;
@@ -59,36 +58,9 @@ namespace TeamNut.ViewModels
 
         partial void OnInputTextChanged(string value)
         {
-            if (TeamNut.Models.UserSession.Role == "Nutritionist" && _currentConversationId == null)
-            {
-                CanSend = false;
-                StatusMessage = "Please select a conversation to respond.";
-                return;
-            }
-
-            if (string.IsNullOrWhiteSpace(value))
-            {
-                CanSend = false;
-                StatusMessage = string.Empty;
-                return;
-            }
-
-            if (value.Length > 1000)
-            {
-                CanSend = false;
-                StatusMessage = "message too long";
-                return;
-            }
-
-            if (!Regex.IsMatch(value, "^[a-zA-Z0-9 .,!?'\\-()]+$"))
-            {
-                CanSend = false;
-                StatusMessage = "Only alphanumeric characters and basic punctuation are allowed.";
-                return;
-            }
-
-            CanSend = true;
-            StatusMessage = string.Empty;
+            var validation = _chatService.ValidateMessageInput(value, _currentConversationId != null, TeamNut.Models.UserSession.Role == "Nutritionist");
+            CanSend = validation.CanSend;
+            StatusMessage = validation.StatusMessage;
         }
 
         [ObservableProperty]
@@ -184,16 +156,10 @@ namespace TeamNut.ViewModels
         [RelayCommand]
         public async Task SendMessageAsync()
         {
-            if (string.IsNullOrWhiteSpace(InputText)) return;
-            if (InputText.Length > 1000)
+            var validation = _chatService.ValidateMessageInput(InputText, _currentConversationId != null, TeamNut.Models.UserSession.Role == "Nutritionist");
+            if (!validation.CanSend)
             {
-                StatusMessage = "message too long";
-                return;
-            }
-
-            if (!System.Text.RegularExpressions.Regex.IsMatch(InputText, "^[a-zA-Z0-9 .,!?'\\-()]+$"))
-            {
-                StatusMessage = "Only alphanumeric characters and basic punctuation are allowed.";
+                StatusMessage = validation.StatusMessage;
                 return;
             }
 
@@ -201,7 +167,7 @@ namespace TeamNut.ViewModels
             {
                 if (TeamNut.Models.UserSession.Role == "Nutritionist")
                 {
-                    StatusMessage = "Nutritionists can only respond to existing conversations.";
+                    StatusMessage = "Please select a conversation to respond.";
                     return;
                 }
                 if (TeamNut.Models.UserSession.UserId == null) return;

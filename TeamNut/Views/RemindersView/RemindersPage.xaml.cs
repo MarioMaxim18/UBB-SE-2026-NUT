@@ -1,5 +1,6 @@
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
+using TeamNut.Models;
 using TeamNut.ViewModels;
 using System;
 
@@ -71,11 +72,15 @@ namespace TeamNut.Views.RemindersView
 
                         bool ValidateInputs()
                         {
-                            var name = nameBox.Text ?? string.Empty;
-                            if (string.IsNullOrWhiteSpace(name)) return false;
-                            if (name.Length > 50) return false;
-                            if (freqCombo.SelectedItem == null) return false;
-                            return true;
+                            var candidate = new Reminder
+                            {
+                                UserId = reminder.UserId,
+                                Name = nameBox.Text ?? string.Empty,
+                                Time = timePicker.Time,
+                                Frequency = freqCombo.SelectedItem?.ToString() ?? string.Empty
+                            };
+
+                            return candidate.GetValidationErrors().Count == 0;
                         }
 
                         var dialog = new ContentDialog()

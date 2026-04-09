@@ -43,23 +43,15 @@ namespace TeamNut.Views
                 int userId = UserSession.UserId ?? 0;
                 if (userId == 0) return;
 
-                var reminders = await _reminderService.GetUserReminders(userId);
-                var today = DateTime.Today.ToString("yyyy-MM-dd");
-                var now = DateTime.Now.TimeOfDay;
+                var reminders = await _reminderService.GetDueRemindersAsync(userId, DateTime.Today, DateTime.Now.TimeOfDay, TimeSpan.FromSeconds(30));
 
                 foreach (var rem in reminders)
                 {
                     if (rem == null) continue;
-                    if (rem.ReminderDate != today) continue;
                     if (_shownReminders.Contains(rem.Id)) continue;
 
-                    
-                    var diff = (rem.Time - now).Duration();
-                    if (diff <= TimeSpan.FromSeconds(30))
-                    {
-                        _shownReminders.Add(rem.Id);
-                        await ShowReminderDialog(rem);
-                    }
+                    _shownReminders.Add(rem.Id);
+                    await ShowReminderDialog(rem);
                 }
             }
             catch { }
@@ -83,24 +75,9 @@ namespace TeamNut.Views
                 {
                     try
                     {
-                        var mealService = new TeamNut.Services.MealService();
-                        var meals = await mealService.GetMealsAsync();
-                        var matched = meals.Find(m => string.Equals(m.Name?.Trim(), rem.Name?.Trim(), StringComparison.OrdinalIgnoreCase));
                         int userId = UserSession.UserId ?? 0;
 
-                        if (matched != null)
-                        {
-                            var repo = new TeamNut.Repositories.MealPlanRepository();
-                            await repo.SaveMealToDailyLog(userId, matched.Id, matched.Calories);
-
-                            var inventory = new TeamNut.Services.InventoryService();
-                            await inventory.ConsumeMeal(userId, matched.Id);
-                        }
-
-                        
-                        await _reminderService.DeleteReminder(rem.Id);
-                        
-                        ReminderService.NotifyRemindersChangedForUser(userId);
+                        await _reminderService.ConfirmReminderConsumptionAsync(rem, userId);
                     }
                     catch (Exception ex)
                     {

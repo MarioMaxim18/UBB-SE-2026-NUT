@@ -1,6 +1,8 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 
 namespace TeamNut.Models
 {
@@ -16,6 +18,7 @@ namespace TeamNut.Models
 
         [ObservableProperty]
         [Required]
+        [StringLength(50, MinimumLength = 1, ErrorMessage = "Name must be between 1 and 50 characters.")]
         public partial string Name { get; set; } = string.Empty;
 
         [ObservableProperty]
@@ -28,8 +31,19 @@ namespace TeamNut.Models
         public string ReminderDate { get; set; }
 
         [ObservableProperty]
+        [Required]
         public partial string Frequency { get; set; } = "Once";
 
         public string FullDateTimeDisplay => $"{ReminderDate} at {Time}"; 
+
+        public List<string> GetValidationErrors()
+        {
+            ValidateAllProperties();
+
+            return GetErrors()
+                .Select(error => error.ErrorMessage!)
+                .Where(message => message != null)
+                .ToList();
+        }
     }
 }

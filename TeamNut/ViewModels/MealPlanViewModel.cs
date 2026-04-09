@@ -3,7 +3,6 @@ using CommunityToolkit.Mvvm.Input;
 using System;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
-using System.Collections.Generic;
 using System.Linq;
 using TeamNut.Models;
 using TeamNut.Services;
@@ -176,24 +175,20 @@ namespace TeamNut.ModelViews
                 }
 
                 int index = 0;
-                var mealTypes = new Dictionary<int, string>
-                {
-                    { 0, "BREAKFAST" },
-                    { 1, "LUNCH" },
-                    { 2, "DINNER" }
-                };
 
                 foreach (var meal in meals)
                 {
-                    var mealType = mealTypes.ContainsKey(index) ? mealTypes[index] : "MEAL";
+                    var mealType = _mealPlanService.GetMealTypeForIndex(index);
                     var mealViewModel = MealViewModel.FromMeal(meal, mealType);
                     GeneratedMeals.Add(mealViewModel);
                     index++;
                 }
 
-                CalculateTotals();
-
                 var (totalCalories, totalProtein, totalCarbs, totalFat) = _mealPlanService.CalculateTotalNutrition(meals);
+                TotalCalories = totalCalories;
+                TotalProtein = totalProtein;
+                TotalCarbs = totalCarbs;
+                TotalFat = totalFat;
 
                 string goalName = char.ToUpper(userGoal[0]) + userGoal.Substring(1);
                 GoalDescription = $"{goalName} Goal";
@@ -243,14 +238,6 @@ namespace TeamNut.ModelViews
         public async void LoadTodaysMealPlan()
         {
             await LoadOrGenerateTodaysMealPlanAsync();
-        }
-
-        private void CalculateTotals()
-        {
-            TotalCalories = GeneratedMeals.Sum(m => m.Calories);
-            TotalProtein = GeneratedMeals.Sum(m => m.Protein);
-            TotalCarbs = GeneratedMeals.Sum(m => m.Carbs);
-            TotalFat = GeneratedMeals.Sum(m => m.Fat);
         }
 
         [RelayCommand]

@@ -183,12 +183,6 @@ namespace TeamNut.Views.MealPlanView
                 userData.Gender = genderCombo.SelectedIndex == 0 ? "male" : "female";
                 userData.Goal = goalCombo.SelectedItem.ToString().ToLower();
 
-                userData.Bmi = userData.CalculateBmi();
-                userData.CalorieNeeds = userData.CalculateCalorieNeeds();
-                userData.ProteinNeeds = userData.CalculateProteinNeeds();
-                userData.CarbNeeds = userData.CalculateCarbNeeds();
-                userData.FatNeeds = userData.CalculateFatNeeds();
-
                 try
                 {
                     await _userService.UpdateUserDataAsync(userData);
@@ -272,7 +266,7 @@ namespace TeamNut.Views.MealPlanView
                 var messageText = $"Successfully saved {ViewModel.GeneratedMeals.Count} meals to daily log:\n\n";
                 foreach (var meal in ViewModel.GeneratedMeals)
                 {
-                    messageText += $"• {meal.Name}: {meal.Calories} kcal\n";
+                    messageText += $"ï¿½ {meal.Name}: {meal.Calories} kcal\n";
                 }
 
                 var successDialog = new ContentDialog
