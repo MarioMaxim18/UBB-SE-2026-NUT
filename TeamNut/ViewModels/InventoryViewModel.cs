@@ -13,32 +13,38 @@ namespace TeamNut.ViewModels
     {
         private readonly InventoryService _inventoryService;
         private readonly int _currentUserId;
-
+        private const double DefaultQuantityToAdd = 100;
+        private const double MinQuantityAllowed = 0;
+        private const string EmptyInventoryMessage = "Your pantry is empty. Start adding items!";
+        private const string SelectIngredientMessage = "Please choose an ingredient from suggestions.";
+        private const string InvalidQuantityMessage = "Quantity must be greater than 0.";
+        private const string LoadInventoryErrorMessage = "Error loading inventory: {0}";
+        private const string LoadIngredientsErrorMessage = "Error loading ingredients: {0}";
+        private const string DeleteItemErrorMessage = "Could not delete item: {0}";
+        private const string AddItemErrorMessage = "Could not add item: {0}";
+        private const string AddItemSuccessMessage = "Added {0}g of {1}.";
+        private const StringComparison IngredientSearchComparison = StringComparison.OrdinalIgnoreCase;
         private bool _isBusy;
-        private string _emptyListMessage = "Your pantry is empty. Start adding items!";
+        private string _emptyListMessage = EmptyInventoryMessage;
         private string _statusMessage = string.Empty;
         private string _ingredientSearchText = string.Empty;
         private Ingredient? _selectedIngredient;
-        private double _quantityToAdd = 100;
-
+        private double _quantityToAdd = DefaultQuantityToAdd;
         public bool IsBusy
         {
             get => _isBusy;
             set => SetProperty(ref _isBusy, value);
-        }
-
+        } 
         public string EmptyListMessage
         {
             get => _emptyListMessage;
             set => SetProperty(ref _emptyListMessage, value);
         }
-
         public string StatusMessage
         {
             get => _statusMessage;
             set => SetProperty(ref _statusMessage, value);
         }
-
         public string IngredientSearchText
         {
             get => _ingredientSearchText;
@@ -50,34 +56,26 @@ namespace TeamNut.ViewModels
                 }
             }
         }
-
         public Ingredient? SelectedIngredient
         {
             get => _selectedIngredient;
             set => SetProperty(ref _selectedIngredient, value);
         }
-
         public double QuantityToAdd
         {
             get => _quantityToAdd;
             set => SetProperty(ref _quantityToAdd, value);
         }
-
-        
         public ObservableCollection<Inventory> Items { get; } = new();
         public ObservableCollection<Ingredient> AvailableIngredients { get; } = new();
         public ObservableCollection<Ingredient> FilteredIngredients { get; } = new();
-
         public InventoryViewModel(int userId)
         {
             _inventoryService = new InventoryService();
             _currentUserId = userId;
-
             _ = LoadInventoryAsync();
             _ = LoadIngredientsAsync();
         }
-
-       
         [RelayCommand]
         public async Task LoadInventoryAsync()
         {
@@ -98,7 +96,7 @@ namespace TeamNut.ViewModels
             }
             catch (Exception ex)
             {
-                StatusMessage = $"Error loading inventory: {ex.Message}";
+                StatusMessage = string.Format(LoadInventoryErrorMessage, ex.Message);
             }
             finally
             {
@@ -106,7 +104,6 @@ namespace TeamNut.ViewModels
             }
         }
 
-        
         [RelayCommand]
         private async Task RemoveItemAsync(Inventory item)
         {
@@ -120,39 +117,49 @@ namespace TeamNut.ViewModels
             }
             catch (Exception ex)
             {
-                StatusMessage = $"Could not delete item: {ex.Message}";
+                StatusMessage = string.Format(DeleteItemErrorMessage, ex.Message);
             }
         }
 
-        
         [RelayCommand]
         private async Task AddNewIngredientAsync()
         {
             if (SelectedIngredient == null)
             {
-                StatusMessage = "Please choose an ingredient from suggestions.";
+                StatusMessage = SelectIngredientMessage;
                 return;
             }
 
-            if (QuantityToAdd <= 0)
+            if (QuantityToAdd <= MinQuantityAllowed)
             {
-                StatusMessage = "Quantity must be greater than 0.";
+                StatusMessage = InvalidQuantityMessage;
                 return;
             }
 
             try
             {
                 int qty = (int)Math.Round(QuantityToAdd);
-                await _inventoryService.AddToPantry(_currentUserId, SelectedIngredient.FoodId, qty);
+                await _inventoryService.AddToPantry(
+                    _currentUserId,
+                    SelectedIngredient.FoodId,
+                    qty
+                );
+
                 await LoadInventoryAsync();
-                StatusMessage = $"Added {qty}g of {SelectedIngredient.Name}.";
+
+                StatusMessage = string.Format(
+                    AddItemSuccessMessage,
+                    qty,
+                    SelectedIngredient.Name
+                );
+
                 IngredientSearchText = string.Empty;
                 SelectedIngredient = null;
                 UpdateFilteredIngredients();
             }
             catch (Exception ex)
             {
-                StatusMessage = $"Could not add item: {ex.Message}";
+                StatusMessage = string.Format(AddItemErrorMessage, ex.Message);
             }
         }
 
@@ -163,6 +170,7 @@ namespace TeamNut.ViewModels
             {
                 var ingredients = await _inventoryService.GetAllIngredients();
                 AvailableIngredients.Clear();
+
                 foreach (var ingredient in ingredients)
                 {
                     AvailableIngredients.Add(ingredient);
@@ -172,7 +180,7 @@ namespace TeamNut.ViewModels
             }
             catch (Exception ex)
             {
-                StatusMessage = $"Error loading ingredients: {ex.Message}";
+                StatusMessage = string.Format(LoadIngredientsErrorMessage, ex.Message);
             }
         }
 
@@ -181,9 +189,11 @@ namespace TeamNut.ViewModels
             FilteredIngredients.Clear();
 
             var query = IngredientSearchText?.Trim() ?? string.Empty;
+
             var filtered = string.IsNullOrWhiteSpace(query)
                 ? AvailableIngredients
-                : new ObservableCollection<Ingredient>(AvailableIngredients.Where(i => i.Name.Contains(query, StringComparison.OrdinalIgnoreCase)));
+                : AvailableIngredients.Where(i =>
+                    i.Name.Contains(query, IngredientSearchComparison));
 
             foreach (var ingredient in filtered)
             {
@@ -191,7 +201,6 @@ namespace TeamNut.ViewModels
             }
         }
 
-        
         public bool IsListEmpty => !Items.Any();
     }
 }
