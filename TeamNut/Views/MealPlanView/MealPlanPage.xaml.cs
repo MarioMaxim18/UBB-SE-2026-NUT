@@ -183,10 +183,10 @@ namespace TeamNut.Views.MealPlanView
                 userData.Gender = genderCombo.SelectedIndex == 0 ? "male" : "female";
                 userData.Goal = goalCombo.SelectedItem.ToString().ToLower();
 
-                userData.Bmi = userData.CalculateBmi();
+                userData.BodyMassIndex = userData.CalculateBmi();
                 userData.CalorieNeeds = userData.CalculateCalorieNeeds();
                 userData.ProteinNeeds = userData.CalculateProteinNeeds();
-                userData.CarbNeeds = userData.CalculateCarbNeeds();
+                userData.CarbohydrateNeeds = userData.CalculateCarbNeeds();
                 userData.FatNeeds = userData.CalculateFatNeeds();
 
                 try

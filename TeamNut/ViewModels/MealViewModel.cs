@@ -32,7 +32,7 @@ namespace TeamNut.Views.MealPlanView
                 MealType = mealType,
                 Calories = meal.Calories,
                 Protein = meal.Protein,
-                Carbs = meal.Carbs,
+                Carbs = meal.Carbohydrates,
                 Fat = meal.Fat,
                 IsVegan = meal.IsVegan,
                 IsKeto = meal.IsKeto,

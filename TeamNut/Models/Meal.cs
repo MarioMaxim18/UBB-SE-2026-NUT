@@ -17,7 +17,7 @@ namespace TeamNut.Models
         public partial int Calories { get; set; }
 
         [ObservableProperty]
-        public partial int Carbs { get; set; }
+        public partial int Carbohydrates { get; set; }
 
         [ObservableProperty]
         public partial int Fat { get; set; }

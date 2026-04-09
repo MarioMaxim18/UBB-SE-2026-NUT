@@ -97,7 +97,7 @@ namespace TeamNut
             {
                 panel.Children.Add(new Image { Source = new Microsoft.UI.Xaml.Media.Imaging.BitmapImage(new Uri(meal.ImageUrl)), Height = 150 });
             }
-            panel.Children.Add(new TextBlock { Text = $"Calories: {meal.Calories}\nProtein: {meal.Protein}g\nCarbs: {meal.Carbs}g\nFat: {meal.Fat}g\n\nIngredients:\n{ingredientsText}" });
+            panel.Children.Add(new TextBlock { Text = $"Calories: {meal.Calories}\nProtein: {meal.Protein}g\nCarbs: {meal.Carbohydrates}g\nFat: {meal.Fat}g\n\nIngredients:\n{ingredientsText}" });
             ContentDialog dialog = new ContentDialog { Title = meal.Name, Content = panel, CloseButtonText = "Close", XamlRoot = this.XamlRoot };
             await dialog.ShowAsync();
         }

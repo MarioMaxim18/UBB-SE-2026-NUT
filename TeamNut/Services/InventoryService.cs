@@ -25,23 +25,23 @@ namespace TeamNut.Services
             
             var requiredIngredients = await _mealPlanRepository.GetIngredientsForMeal(mealId);
 
-            foreach (var req in requiredIngredients)
+            foreach (var ingredient in requiredIngredients)
             {
                 var inventoryItems = await _inventoryRepository.GetAllByUserId(userId);
-                var stock = inventoryItems.FirstOrDefault(i => i.IngredientId == req.IngredientId);
+                var inventoryItem = inventoryItems.FirstOrDefault(i => i.IngredientId == ingredient.IngredientId);
 
-                if (stock != null)
+                if (inventoryItem != null)
                 {
-                    int qtyToRemove = (int)Math.Round(req.Quantity);
-                    stock.QuantityGrams -= qtyToRemove;
+                    int qtyToRemove = (int)Math.Round(ingredient.Quantity);
+                    inventoryItem.QuantityGrams -= qtyToRemove;
 
-                    if (stock.QuantityGrams <= 0)
+                    if (inventoryItem.QuantityGrams <= 0)
                     {
-                        await _inventoryRepository.Delete(stock.Id);
+                        await _inventoryRepository.Delete(inventoryItem.Id);
                     }
                     else
                     {
-                        await _inventoryRepository.Update(stock);
+                        await _inventoryRepository.Update(inventoryItem);
                     }
                 }
             }

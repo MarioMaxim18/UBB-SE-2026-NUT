@@ -13,133 +13,133 @@ namespace TeamNut.Repositories
     {
         private readonly string _connectionString = DbConfig.ConnectionString;
 
-        public async Task<MealPlan> GetById(int id)
+        public async Task<MealPlan> GetById(int mealPlanId)
         {
-            using var conn = new SqliteConnection(_connectionString);
-            const string sql = "SELECT * FROM MealPlan WHERE mealplan_id = @id";
-            using var cmd = new SqliteCommand(sql, conn);
-            cmd.Parameters.AddWithValue("@id", id);
+            using var connection = new SqliteConnection(_connectionString);
+            const string query = "SELECT * FROM MealPlan WHERE mealplan_id = @mealPlanId";
+            using var command = new SqliteCommand(query, connection);
+            command.Parameters.AddWithValue("@id", mealPlanId);
 
-            await conn.OpenAsync();
-            using var reader = await cmd.ExecuteReaderAsync();
+            await connection.OpenAsync();
+            using var reader = await command.ExecuteReaderAsync();
             if (await reader.ReadAsync()) return MapReaderToMealPlan(reader);
             return null;
         }
 
         public async Task<MealPlan> GetLatestMealPlan(int userId)
         {
-            using var conn = new SqliteConnection(_connectionString);
-            const string sql = @"SELECT * FROM MealPlan
+            using var connection = new SqliteConnection(_connectionString);
+            const string query = @"SELECT * FROM MealPlan
                                 WHERE user_id = @userId
                                 ORDER BY created_at DESC
                                 LIMIT 1";
-            using var cmd = new SqliteCommand(sql, conn);
-            cmd.Parameters.AddWithValue("@userId", userId);
+            using var command = new SqliteCommand(query, connection);
+            command.Parameters.AddWithValue("@userId", userId);
 
-            await conn.OpenAsync();
-            using var reader = await cmd.ExecuteReaderAsync();
+            await connection.OpenAsync();
+            using var reader = await command.ExecuteReaderAsync();
             if (await reader.ReadAsync()) return MapReaderToMealPlan(reader);
             return null;
         }
 
         public async Task<IEnumerable<MealPlan>> GetAll()
         {
-            var plans = new List<MealPlan>();
-            using var conn = new SqliteConnection(_connectionString);
-            const string sql = "SELECT * FROM MealPlan";
-            using var cmd = new SqliteCommand(sql, conn);
+            var mealPlansList = new List<MealPlan>();
+            using var connection = new SqliteConnection(_connectionString);
+            const string query = "SELECT * FROM MealPlan";
+            using var command = new SqliteCommand(query, connection);
 
-            await conn.OpenAsync();
-            using var reader = await cmd.ExecuteReaderAsync();
-            while (await reader.ReadAsync()) plans.Add(MapReaderToMealPlan(reader));
-            return plans;
+            await connection.OpenAsync();
+            using var reader = await command.ExecuteReaderAsync();
+            while (await reader.ReadAsync()) mealPlansList.Add(MapReaderToMealPlan(reader));
+            return mealPlansList;
         }
 
         public async Task Add(MealPlan entity)
         {
-            using var conn = new SqliteConnection(_connectionString);
-            const string sql = @"INSERT INTO MealPlan (user_id, created_at, goal_type) 
-                                VALUES (@uid, @created, @goal)";
-            using var cmd = new SqliteCommand(sql, conn);
-            cmd.Parameters.AddWithValue("@uid", entity.UserId);
-            cmd.Parameters.AddWithValue("@created", entity.CreatedAt);
-            cmd.Parameters.AddWithValue("@goal", entity.GoalType ?? (object)DBNull.Value);
+            using var connection = new SqliteConnection(_connectionString);
+            const string query = @"INSERT INTO MealPlan (user_id, created_at, goal_type) 
+                                VALUES (@userid, @createdAt, @goalType)";
+            using var command = new SqliteCommand(query, connection);
+            command.Parameters.AddWithValue("@userid", entity.UserId);
+            command.Parameters.AddWithValue("@createdAt", entity.CreatedAt);
+            command.Parameters.AddWithValue("@goalType", entity.GoalType ?? (object)DBNull.Value);
 
-            await conn.OpenAsync();
-            await cmd.ExecuteNonQueryAsync();
+            await connection.OpenAsync();
+            await command.ExecuteNonQueryAsync();
         }
 
-        public async Task Update(MealPlan entity)
+        public async Task Update(MealPlan MealPlan)
         {
-            using var conn = new SqliteConnection(_connectionString);
-            const string sql = @"UPDATE MealPlan SET goal_type = @goal 
-                                 WHERE mealplan_id = @id";
-            using var cmd = new SqliteCommand(sql, conn);
-            cmd.Parameters.AddWithValue("@id", entity.Id);
-            cmd.Parameters.AddWithValue("@goal", entity.GoalType);
+            using var connection = new SqliteConnection(_connectionString);
+            const string query = @"UPDATE MealPlan SET goal_type = @goalType 
+                                 WHERE mealplan_id = @mealPlanId";
+            using var command = new SqliteCommand(query, connection);
+            command.Parameters.AddWithValue("@mealPlanId", MealPlan.Id);
+            command.Parameters.AddWithValue("@goalType", MealPlan.GoalType);
 
-            await conn.OpenAsync();
-            await cmd.ExecuteNonQueryAsync();
+            await connection.OpenAsync();
+            await command.ExecuteNonQueryAsync();
         }
 
-        public async Task Delete(int id)
+        public async Task Delete(int mealPlanId)
         {
-            using var conn = new SqliteConnection(_connectionString);
-            const string sql = "DELETE FROM MealPlan WHERE mealplan_id = @id";
-            using var cmd = new SqliteCommand(sql, conn);
-            cmd.Parameters.AddWithValue("@id", id);
+            using var connection = new SqliteConnection(_connectionString);
+            const string query = "DELETE FROM MealPlan WHERE mealplan_id = @mealPlanId";
+            using var command = new SqliteCommand(query, connection);
+            command.Parameters.AddWithValue("@mealPlanId", mealPlanId);
 
-            await conn.OpenAsync();
-            await cmd.ExecuteNonQueryAsync();
+            await connection.OpenAsync();
+            await command.ExecuteNonQueryAsync();
         }
 
         public async Task<MealPlan> GetTodaysMealPlan(int userId)
         {
-            using var conn = new SqliteConnection(_connectionString);
-            const string sql = @"SELECT * FROM MealPlan
+            using var connection = new SqliteConnection(_connectionString);
+            const string query = @"SELECT * FROM MealPlan
                                 WHERE user_id = @userId
                                   AND DATE(created_at) = DATE('now', 'localtime')
                                 ORDER BY created_at DESC
                                 LIMIT 1";
-            using var cmd = new SqliteCommand(sql, conn);
-            cmd.Parameters.AddWithValue("@userId", userId);
+            using var command = new SqliteCommand(query, connection);
+            command.Parameters.AddWithValue("@userId", userId);
 
-            await conn.OpenAsync();
-            using var reader = await cmd.ExecuteReaderAsync();
+            await connection.OpenAsync();
+            using var reader = await command.ExecuteReaderAsync();
             if (await reader.ReadAsync()) return MapReaderToMealPlan(reader);
             return null;
         }
 
         public async Task<int> GeneratePersonalizedDailyMealPlan(int userId)
         {
-            using var conn = new SqliteConnection(_connectionString);
-            await conn.OpenAsync();
-            using var transaction = conn.BeginTransaction();
+            using var connection = new SqliteConnection(_connectionString);
+            await connection.OpenAsync();
+            using var transaction = connection.BeginTransaction();
 
             try
             {
                
 
-                const string checkMealsSql = "SELECT COUNT(*) FROM Meals";
-                using var checkCmd = new SqliteCommand(checkMealsSql, conn, transaction);
-                long mealCount = (long)await checkCmd.ExecuteScalarAsync();
+                const string query = "SELECT COUNT(*) FROM Meals";
+                using var checkCommand = new SqliteCommand(query, connection, transaction);
+                long mealCount = (long)await checkCommand.ExecuteScalarAsync();
 
                 if (mealCount == 0)
                     throw new Exception("No meals found in database.");
 
                 
-                const string insertPlanSql = @"INSERT INTO MealPlan (user_id, created_at, goal_type) 
+                const string insertQuery = @"INSERT INTO MealPlan (user_id, created_at, goal_type) 
                                      VALUES (@uid, @created, @goal);
                                      SELECT last_insert_rowid();";
-                using var planCmd = new SqliteCommand(insertPlanSql, conn, transaction);
-                planCmd.Parameters.AddWithValue("@uid", userId);
-                planCmd.Parameters.AddWithValue("@created", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
-                planCmd.Parameters.AddWithValue("@goal", "general"); // Simplified for now
+                using var mealPlanInsertCommand = new SqliteCommand(insertQuery, connection, transaction);
+                mealPlanInsertCommand.Parameters.AddWithValue("@uid", userId);
+                mealPlanInsertCommand.Parameters.AddWithValue("@created", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+                mealPlanInsertCommand.Parameters.AddWithValue("@goal", "general"); // Simplified for now
 
-                int mealPlanId = Convert.ToInt32(await planCmd.ExecuteScalarAsync());
+                int mealPlanId = Convert.ToInt32(await mealPlanInsertCommand.ExecuteScalarAsync());
 
                 
-                const string getMealWithNutritionSql = @"
+                const string mealNutritionistQuery = @"
             SELECT m.meal_id, 
                    CAST(SUM(i.calories_per_100g * mi.quantity / 100) AS INT) as total_calories
             FROM Meals m
@@ -149,7 +149,7 @@ namespace TeamNut.Repositories
             ORDER BY RANDOM() LIMIT 3";
 
                 var mealIds = new List<int>();
-                using (var mealsCmd = new SqliteCommand(getMealWithNutritionSql, conn, transaction))
+                using (var mealsCmd = new SqliteCommand(mealNutritionistQuery, connection, transaction))
                 {
                     using var mealReader = await mealsCmd.ExecuteReaderAsync();
                     while (await mealReader.ReadAsync())
@@ -159,13 +159,13 @@ namespace TeamNut.Repositories
                 }
 
                
-                const string insertMealPlanMealSql = @"INSERT INTO MealPlanMeal (mealPlanId, mealId, mealType, assigned_at, isConsumed) 
+                const string insertMealPlanMealQuery = @"INSERT INTO MealPlanMeal (mealPlanId, mealId, mealType, assigned_at, isConsumed) 
                                                VALUES (@planId, @mealId, @mealType, @assignedAt, 0)";
                 var mealTypes = new[] { "breakfast", "lunch", "dinner" };
 
                 for (int i = 0; i < mealIds.Count; i++)
                 {
-                    using var mpmCmd = new SqliteCommand(insertMealPlanMealSql, conn, transaction);
+                    using var mpmCmd = new SqliteCommand(insertMealPlanMealQuery, connection, transaction);
                     mpmCmd.Parameters.AddWithValue("@planId", mealPlanId);
                     mpmCmd.Parameters.AddWithValue("@mealId", mealIds[i]);
                     mpmCmd.Parameters.AddWithValue("@mealType", mealTypes[i]);
@@ -511,7 +511,7 @@ namespace TeamNut.Repositories
                     Description = reader["description"]?.ToString(),
                     Calories = Convert.ToInt32(reader["total_calories"]),
                     Protein = Convert.ToInt32(reader["total_protein"]),
-                    Carbs = Convert.ToInt32(reader["total_carbs"]),
+                    Carbohydrates = Convert.ToInt32(reader["total_carbs"]),
                     Fat = Convert.ToInt32(reader["total_fat"])
                 });
             }

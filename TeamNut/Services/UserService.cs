@@ -46,11 +46,11 @@ namespace TeamNut.Services
             return user;
         }
 
-        public async Task<UserData> AddUserDataAsync(UserData data)
+        public async Task<UserData> AddUserDataAsync(UserData userData)
         {
-            ApplyCalculatedNutrition(data);
-            await _userRepository.AddUserData(data);
-            return data;
+            ApplyCalculatedNutrition(userData);
+            await _userRepository.AddUserData(userData);
+            return userData;
         }
 
         public async Task<UserData> GetUserDataAsync(int userId)
@@ -58,21 +58,21 @@ namespace TeamNut.Services
             return await _userRepository.GetUserDataByUserId(userId);
         }
 
-        public async Task UpdateUserDataAsync(UserData data)
+        public async Task UpdateUserDataAsync(UserData userData)
         {
-            ApplyCalculatedNutrition(data);
-            await _userRepository.UpdateUserData(data);
+            ApplyCalculatedNutrition(userData);
+            await _userRepository.UpdateUserData(userData);
         }
 
-        private static void ApplyCalculatedNutrition(UserData data)
+        private static void ApplyCalculatedNutrition(UserData userData)
         {
-            if (data == null) return;
+            if (userData == null) return;
 
-            data.Bmi = data.CalculateBmi();
-            data.CalorieNeeds = data.CalculateCalorieNeeds();
-            data.ProteinNeeds = data.CalculateProteinNeeds();
-            data.FatNeeds = data.CalculateFatNeeds();
-            data.CarbNeeds = data.CalculateCarbNeeds();
+            userData.BodyMassIndex = userData.CalculateBmi();
+            userData.CalorieNeeds = userData.CalculateCalorieNeeds();
+            userData.ProteinNeeds = userData.CalculateProteinNeeds();
+            userData.FatNeeds = userData.CalculateFatNeeds();
+            userData.CarbohydrateNeeds = userData.CalculateCarbNeeds();
         }
     }
 }

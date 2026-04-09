@@ -16,25 +16,25 @@ namespace TeamNut.Services
         }
 
         
-        public async Task<List<Meal>> GetMealsAsync(MealFilter? filter = null)
+        public async Task<List<Meal>> GetMealsAsync(MealFilter? mealFilter = null)
         {
             
-            if (filter == null)
+            if (mealFilter == null)
             {
                 var allMeals = await _mealRepository.GetAll();
                 return allMeals.ToList();
             }
 
             
-            var results = await _mealRepository.GetFilteredMeals(filter);
-            return results.ToList();
+            var filteredMeals = await _mealRepository.GetFilteredMeals(mealFilter);
+            return filteredMeals.ToList();
         }
 
       
         public async Task<List<Meal>> GetFilteredMealsAsync(MealFilter filter)
         {
-            var results = await _mealRepository.GetFilteredMeals(filter);
-            return results.ToList();
+            var filteredMeals = await _mealRepository.GetFilteredMeals(filter);
+            return filteredMeals.ToList();
         }
 
         public async Task<Meal?> GetByIdAsync(int id)
@@ -44,8 +44,8 @@ namespace TeamNut.Services
 
         public async Task<List<Meal>> GetAllAsync()
         {
-            var list = await _mealRepository.GetAll();
-            return list.ToList();
+            var mealList = await _mealRepository.GetAll();
+            return mealList.ToList();
         }
 
         public async Task ToggleFavoriteAsync(Meal meal)

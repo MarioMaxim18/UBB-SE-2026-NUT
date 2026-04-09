@@ -31,15 +31,15 @@ namespace TeamNut.Services
                 try
                 {
                     var reminderService = new ReminderService();
-                    var todays = DateTime.Today.ToString("yyyy-MM-dd");
-                    var existing = (await reminderService.GetUserReminders(userId));
-                    bool anyToday = false;
-                    foreach (var r in existing)
+                    var today = DateTime.Today.ToString("yyyy-MM-dd");
+                    var reminders = (await reminderService.GetUserReminders(userId));
+                    bool hasReminderForToday = false;
+                    foreach (var reminder in reminders)
                     {
-                        if (r.ReminderDate == todays) { anyToday = true; break; }
+                        if (reminder.ReminderDate == today) { hasReminderForToday = true; break; }
                     }
 
-                    if (!anyToday)
+                    if (!hasReminderForToday)
                     {
                         var meals = await GetMealsForMealPlanAsync(mealPlanId);
 
@@ -60,9 +60,9 @@ namespace TeamNut.Services
                             if (!string.IsNullOrWhiteSpace(meals[2].Name)) dinnerName = meals[2].Name.Trim();
                         }
 
-                        var breakfast = new Reminder { UserId = userId, Name = breakfastName, ReminderDate = todays, Time = new TimeSpan(8,0,0), HasSound = false, Frequency = "Once" };
-                        var lunch = new Reminder { UserId = userId, Name = lunchName, ReminderDate = todays, Time = new TimeSpan(13,0,0), HasSound = false, Frequency = "Once" };
-                        var dinner = new Reminder { UserId = userId, Name = dinnerName, ReminderDate = todays, Time = new TimeSpan(17,0,0), HasSound = false, Frequency = "Once" };
+                        var breakfast = new Reminder { UserId = userId, Name = breakfastName, ReminderDate = today, Time = new TimeSpan(8,0,0), HasSound = false, Frequency = "Once" };
+                        var lunch = new Reminder { UserId = userId, Name = lunchName, ReminderDate = today, Time = new TimeSpan(13,0,0), HasSound = false, Frequency = "Once" };
+                        var dinner = new Reminder { UserId = userId, Name = dinnerName, ReminderDate = today, Time = new TimeSpan(17,0,0), HasSound = false, Frequency = "Once" };
 
                         await reminderService.SaveReminder(breakfast);
                         await reminderService.SaveReminder(lunch);
@@ -135,11 +135,11 @@ namespace TeamNut.Services
 
             try
             {
-                var latestPlan = await _mealPlanRepository.GetLatestMealPlan(userId);
+                var latestMealPlan = await _mealPlanRepository.GetLatestMealPlan(userId);
 
-                if (latestPlan != null && latestPlan.CreatedAt.Date == DateTime.Today)
+                if (latestMealPlan != null && latestMealPlan.CreatedAt.Date == DateTime.Today)
                 {
-                    return latestPlan;
+                    return latestMealPlan;
                 }
 
                 int newPlanId = await GeneratePersonalizedMealPlanAsync(userId);
@@ -157,9 +157,9 @@ namespace TeamNut.Services
             {
                 return await _mealPlanRepository.GetAll();
             }
-            catch (Exception ex)
+            catch (Exception exception)
             {
-                throw new InvalidOperationException($"Error retrieving meal plans: {ex.Message}", ex);
+                throw new InvalidOperationException($"Error retrieving meal plans: {exception.Message}", exception);
             }
         }
 
@@ -172,30 +172,30 @@ namespace TeamNut.Services
 
             int totalCalories = 0;
             int totalProtein = 0;
-            int totalCarbs = 0;
+            int totalCarbohydrates = 0;
             int totalFat = 0;
 
             foreach (var meal in meals)
             {
                 totalCalories += meal.Calories;
                 totalProtein += meal.Protein;
-                totalCarbs += meal.Carbs;
+                totalCarbohydrates += meal.Carbohydrates;
                 totalFat += meal.Fat;
             }
 
-            return (totalCalories, totalProtein, totalCarbs, totalFat);
+            return (totalCalories, totalProtein, totalCarbohydrates, totalFat);
         }
 
         public bool ValidateMealPlan(List<Meal> meals, int targetCalories, int targetProtein, int targetCarbs, int targetFat, double tolerance = 0.10)
         {
             var (totalCalories, totalProtein, totalCarbs, totalFat) = CalculateTotalNutrition(meals);
 
-            bool caloriesValid = Math.Abs(totalCalories - targetCalories) <= (targetCalories * tolerance);
-            bool proteinValid = Math.Abs(totalProtein - targetProtein) <= (targetProtein * tolerance);
-            bool carbsValid = Math.Abs(totalCarbs - targetCarbs) <= (targetCarbs * tolerance);
-            bool fatValid = Math.Abs(totalFat - targetFat) <= (targetFat * tolerance);
+            bool isCaloriesValid = Math.Abs(totalCalories - targetCalories) <= (targetCalories * tolerance);
+            bool isProteinValid = Math.Abs(totalProtein - targetProtein) <= (targetProtein * tolerance);
+            bool isCarbohydratesValid = Math.Abs(totalCarbs - targetCarbs) <= (targetCarbs * tolerance);
+            bool isFatValid = Math.Abs(totalFat - targetFat) <= (targetFat * tolerance);
 
-            return caloriesValid && proteinValid && carbsValid && fatValid;
+            return isCaloriesValid && isProteinValid && isCarbohydratesValid && isFatValid;
         }
 
         public string GetCalorieAdjustmentDescription(string goal, int baseTDEE)

@@ -43,8 +43,8 @@ namespace TeamNut.Services
             var userId = GetUserId();
             var today = DateTime.Today;
 
-            int diff = (7 + (today.DayOfWeek - DayOfWeek.Monday)) % 7;
-            var startOfWeek = today.AddDays(-diff);
+            int differenceBetweenDays = (7 + (today.DayOfWeek - DayOfWeek.Monday)) % 7;
+            var startOfWeek = today.AddDays(-differenceBetweenDays);
             var endOfWeek = startOfWeek.AddDays(7);
 
             return await _repository.GetNutritionTotalsForRange(userId, startOfWeek, endOfWeek);
