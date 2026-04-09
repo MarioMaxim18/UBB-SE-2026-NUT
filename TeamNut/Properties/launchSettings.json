@@ -1,7 +1,7 @@
 {
   "profiles": {
     "TeamNut (Package)": {
-      "commandName": "Project"
+      "commandName": "MsixPackage"
     },
     "TeamNut (Unpackaged)": {
       "commandName": "Project"
