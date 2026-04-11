@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
@@ -18,12 +19,12 @@ namespace TeamNut.Views.ShoppingListView
             this.Name = "RootPage";
         }
 
-        private void AddButton_Click(object sender, RoutedEventArgs e)
+        private async void AddButton_Click(object sender, RoutedEventArgs e)
         {
             var text = IngredientSearchBox.Text;
             if (!string.IsNullOrWhiteSpace(text) && text != "no matching ingredients found")
             {
-                ViewModel.AddItem(text);
+                await ViewModel.AddItem(text).ConfigureAwait(true);
                 IngredientSearchBox.Text = string.Empty;
                 IngredientSearchBox.ItemsSource = null;
             }
@@ -54,7 +55,8 @@ namespace TeamNut.Views.ShoppingListView
 
         private void IngredientSearchBox_SuggestionChosen(AutoSuggestBox sender, AutoSuggestBoxSuggestionChosenEventArgs args)
         {
-            var selectedName = args.SelectedItem.ToString();
+            var selectedName = args.SelectedItem?.ToString();
+            if (selectedName == null) return;
             if (selectedName == "no matching ingredients found")
             {
                 sender.Text = "";

@@ -148,7 +148,7 @@ namespace TeamNut.ViewModels
             }
             catch (Exception ex)
             {
-                StatusMessage = "Database Connection Failed! Start SSMS and check your server. Error: " + ex.Message;
+                StatusMessage = "Could not reach the local database (NutData.db). Check the file is next to the project and you have read/write access. " + ex.Message;
             }
         }
     }

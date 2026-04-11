@@ -22,7 +22,7 @@ namespace TeamNut.Services
             return users.Any(u => u.Username.Equals(username, StringComparison.OrdinalIgnoreCase));
         }
 
-        public async Task<User> LoginAsync(string username, string password)
+        public async Task<User?> LoginAsync(string username, string password)
         {
             var user = await _userRepository.GetByUsernameAndPassword(username, password);
             if (user != null)
@@ -34,7 +34,7 @@ namespace TeamNut.Services
             return null;
         }
 
-        public async Task<User> RegisterUserAsync(User user)
+        public async Task<User?> RegisterUserAsync(User user)
         {
             if (await CheckIfUsernameExistsAsync(user.Username))
             {

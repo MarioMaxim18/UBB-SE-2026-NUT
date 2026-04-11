@@ -62,7 +62,10 @@ namespace TeamNut.Views
                     }
                 }
             }
-            catch { }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"ReminderTimer_Tick: {ex}");
+            }
         }
 
         private async System.Threading.Tasks.Task ShowReminderDialog(TeamNut.Models.Reminder rem)
@@ -112,7 +115,10 @@ namespace TeamNut.Views
                     
                 }
             }
-            catch { }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"ShowReminderDialog: {ex}");
+            }
         }
 
         private void OnRemindersChanged(object? sender, int userId)
