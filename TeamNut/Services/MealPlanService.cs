@@ -204,8 +204,8 @@ namespace TeamNut.Services
             {
                 "bulk" => $"+300 kcal (Bulking phase: {baseTDEE} + 300 = {baseTDEE + 300} kcal)",
                 "cut" => $"-300 kcal (Cutting phase: {baseTDEE} - 300 = {baseTDEE - 300} kcal)",
-                "maintenance" => $"+100 kcal (Maintenance: {baseTDEE} + 100 = {baseTDEE + 100} kcal)",
-                "well-being" => $"+100 kcal (Well-being: {baseTDEE} + 100 = {baseTDEE + 100} kcal)",
+                "maintenance" => $"No adjustment (Maintenance: {baseTDEE} kcal)",
+                "well-being" => $"No adjustment (Well-being: {baseTDEE} kcal)",
                 _ => $"No adjustment (Base TDEE: {baseTDEE} kcal)"
             };
 
