@@ -39,7 +39,7 @@ namespace TeamNut.Views.MealPlanView
         private const string MsgNoMealPlanLoaded = "No meal plan is currently loaded. Please generate a meal plan first.";
         private const string MsgNoMealsGenerated = "No meals to save. Please generate a meal plan first.";
         private const string MsgPreferenceInfo = "Changes will be reflected in your next meal plan generation.";
-        private const string MealBullet = "�";
+        private const string MealBullet = "\u2022";
         private const string KcalUnit = "kcal";
         private const int WeightMin = 1;
         private const int WeightMax = 500;

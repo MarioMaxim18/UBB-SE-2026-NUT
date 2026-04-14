@@ -30,7 +30,7 @@ namespace TeamNut.Repositories
                     Id = reader.GetInt32(0),
                     HasUnanswered = Convert.ToBoolean(reader.GetValue(1)),
                     UserId = reader.GetInt32(2),
-                    Username = reader.GetString(3),
+                    Username = reader.IsDBNull(3) ? string.Empty : reader.GetString(3),
                 });
             }
             return list;
