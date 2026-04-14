@@ -195,7 +195,7 @@ namespace TeamNut.ModelViews
 
                 var (totalCalories, totalProtein, totalCarbs, totalFat) = _mealPlanService.CalculateTotalNutrition(meals);
 
-                string goalName = char.ToUpper(userGoal[0]) + userGoal.Substring(1);
+                string goalName = string.IsNullOrEmpty(userGoal) ? "Maintenance" : char.ToUpper(userGoal[0]) + userGoal.Substring(1);
                 GoalDescription = $"{goalName} Goal";
 
                 TotalNutritionSummary = $"Daily Total: {totalCalories} kcal | {totalProtein}g protein | {totalCarbs}g carbs | {totalFat}g fat";
