@@ -581,6 +581,8 @@ namespace TeamNut.Repositories
 
         public async Task SaveMealsToDailyLog(int userId, List<Meal> meals)
         {
+            if (meals == null || meals.Count == 0) return;
+
             using var conn = new SqliteConnection(_connectionString);
             await conn.OpenAsync();
 
