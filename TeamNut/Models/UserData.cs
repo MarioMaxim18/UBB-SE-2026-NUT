@@ -152,7 +152,7 @@ namespace TeamNut.Models
 
             int proteinCalories = protein * 4;
             int fatCalories = fat * 9;
-            int carbCalories = calories - proteinCalories - fatCalories;
+            int carbCalories = Math.Max(0, calories - proteinCalories - fatCalories);
 
             return (int)Math.Round(carbCalories / 4.0);
         }
