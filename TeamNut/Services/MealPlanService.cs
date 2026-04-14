@@ -319,8 +319,8 @@ namespace TeamNut.Services
                 var userData =
                     await userRepository.GetUserDataByUserId(userId);
 
-                return userData?.Goal?.ToLower()
-                    ?? GoalMaintenance;
+                var goal = userData?.Goal?.Trim().ToLowerInvariant();
+                return string.IsNullOrEmpty(goal) ? GoalMaintenance : goal;
             }
             catch
             {
