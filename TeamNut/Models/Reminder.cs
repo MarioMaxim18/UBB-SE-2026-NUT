@@ -25,11 +25,11 @@ namespace TeamNut.Models
         [Required]
         public partial TimeSpan Time { get; set; }
 
-        public string ReminderDate { get; set; }
+        public string ReminderDate { get; set; } = string.Empty;
 
         [ObservableProperty]
         public partial string Frequency { get; set; } = "Once";
 
-        public string FullDateTimeDisplay => $"{ReminderDate} at {Time}"; 
+        public string FullDateTimeDisplay => $"{ReminderDate ?? "No date"} at {Time}";
     }
 }
