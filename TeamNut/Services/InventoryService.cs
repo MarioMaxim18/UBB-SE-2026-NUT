@@ -24,10 +24,10 @@ namespace TeamNut.Services
         {
             
             var requiredIngredients = await _mealPlanRepository.GetIngredientsForMeal(mealId);
+            var inventoryItems = (await _inventoryRepository.GetAllByUserId(userId)).ToList();
 
             foreach (var req in requiredIngredients)
             {
-                var inventoryItems = await _inventoryRepository.GetAllByUserId(userId);
                 var stock = inventoryItems.FirstOrDefault(i => i.IngredientId == req.IngredientId);
 
                 if (stock != null)
