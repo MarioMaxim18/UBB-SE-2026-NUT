@@ -31,20 +31,22 @@ namespace TeamNut.Services
             foreach (var req in requiredIngredients)
             {
                 var stock = inventoryItems.FirstOrDefault(i => i.IngredientId == req.IngredientId);
+                int qtyToRemove = (int)Math.Round(req.Quantity);
 
-                if (stock != null)
+                if (stock == null || stock.QuantityGrams < qtyToRemove)
                 {
-                    int qtyToRemove = (int)Math.Round(req.Quantity);
-                    stock.QuantityGrams -= qtyToRemove;
+                    return false;
+                }
 
-                    if (stock.QuantityGrams <= 0)
-                    {
-                        await inventoryRepository.Delete(stock.Id);
-                    }
-                    else
-                    {
-                        await inventoryRepository.Update(stock);
-                    }
+                stock.QuantityGrams -= qtyToRemove;
+
+                if (stock.QuantityGrams <= 0)
+                {
+                    await inventoryRepository.Delete(stock.Id);
+                }
+                else
+                {
+                    await inventoryRepository.Update(stock);
                 }
             }
 
