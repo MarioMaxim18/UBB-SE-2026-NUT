@@ -4,6 +4,7 @@ using Microsoft.UI.Xaml;
 
 namespace TeamNut.Models
 {
+    /// <summary>Represents a meal.</summary>
     public partial class Meal : ObservableObject
     {
         [ObservableProperty]
