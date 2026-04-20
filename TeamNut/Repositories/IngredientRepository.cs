@@ -3,12 +3,18 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using TeamNut.Models;
+using TeamNut.Repositories.Interfaces;
 
 namespace TeamNut.Repositories
 {
-    internal class IngredientRepository
+    internal class IngredientRepository : IIngredientRepository
     {
-        private readonly string _connectionString = DbConfig.ConnectionString;
+        private readonly string _connectionString;
+
+        public IngredientRepository(IDbConfig dbConfig)
+        {
+            _connectionString = dbConfig.ConnectionString;
+        }
 
         public async Task<int> GetOrCreateIngredientIdAsync(string name)
         {
@@ -40,7 +46,7 @@ namespace TeamNut.Repositories
             return Convert.ToInt32(id);*/
             const string insertSql = @"INSERT INTO Ingredients (name, calories_per_100g, protein_per_100g, carbs_per_100g, fat_per_100g)
                            VALUES (@name, 0, 0, 0, 0);
-                           SELECT last_insert_rowid();"; 
+                           SELECT last_insert_rowid();";
 
             using var insertCmd = new SqliteCommand(insertSql, conn);
             insertCmd.Parameters.AddWithValue("@name", name);

@@ -2,20 +2,22 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using TeamNut.Models;
+using TeamNut.Repositories.Interfaces;
+using TeamNut.Services.Interfaces;
 
 namespace TeamNut.Services
 {
-    public class ShoppingListService
+    public class ShoppingListService : IShoppingListService
     {
-        private readonly TeamNut.Repositories.ShoppingListRepository _repository;
-        private readonly TeamNut.Repositories.IngredientRepository _ingredientRepository;
-        private readonly TeamNut.Repositories.InventoryRepository _inventoryRepository;
+        private readonly IShoppingListRepository _repository;
+        private readonly IIngredientRepository _ingredientRepository;
+        private readonly IInventoryRepository _inventoryRepository;
 
-        public ShoppingListService()
+        public ShoppingListService(IShoppingListRepository shoppingListRepository, IIngredientRepository ingredientRepository, IInventoryRepository inventoryRepository)
         {
-            _repository = new TeamNut.Repositories.ShoppingListRepository();
-            _ingredientRepository = new TeamNut.Repositories.IngredientRepository();
-            _inventoryRepository = new TeamNut.Repositories.InventoryRepository();
+            _repository = shoppingListRepository;
+            _ingredientRepository = ingredientRepository;
+            _inventoryRepository = inventoryRepository;
         }
 
         public async Task<List<ShoppingItem>> GetShoppingItemsAsync(int userId)

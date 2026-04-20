@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using TeamNut.Models;
 
-namespace TeamNut.Repositories
+namespace TeamNut.Repositories.Interfaces
 {
     public interface IChatRepository
     {

@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using TeamNut.Repositories.Interfaces;
 
 namespace TeamNut.Repositories
 {

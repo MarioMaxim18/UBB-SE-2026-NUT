@@ -5,13 +5,14 @@ using System.Threading.Tasks;
 
 using TeamNut.Models;
 using TeamNut.Services;
+using TeamNut.Services.Interfaces;
 
 namespace TeamNut.ViewModels
 {
 
     public partial class ShoppingListViewModel : ObservableObject
     {
-        private readonly ShoppingListService _shoppingListService;
+        private readonly IShoppingListService _shoppingListService;
 
         [ObservableProperty]
         private ObservableCollection<ShoppingItem> items = new ObservableCollection<ShoppingItem>();
@@ -28,9 +29,9 @@ namespace TeamNut.ViewModels
         [ObservableProperty]
         private double pendingQuantity = 100; // Default to 100g
 
-        public ShoppingListViewModel()
+        public ShoppingListViewModel(IShoppingListService shoppingListService)
         {
-            _shoppingListService = new ShoppingListService();
+            _shoppingListService = shoppingListService;
             _ = LoadItemsAsync();
         }
 

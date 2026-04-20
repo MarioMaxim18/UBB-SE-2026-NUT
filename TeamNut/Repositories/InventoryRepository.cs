@@ -3,10 +3,11 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using TeamNut.Models;
+using TeamNut.Repositories.Interfaces;
 
 namespace TeamNut.Repositories
 {
-    internal class InventoryRepository : IRepository<Inventory>
+    internal class InventoryRepository : IInventoryRepository
     {
         private readonly string _connectionString = DbConfig.ConnectionString;
 
@@ -15,7 +16,7 @@ namespace TeamNut.Repositories
             using var conn = new SqliteConnection(_connectionString);
             await conn.OpenAsync();
 
-            
+
             const string checkSql = @"
         SELECT id, quantity_grams 
         FROM Inventory 
@@ -29,7 +30,7 @@ namespace TeamNut.Repositories
 
             if (await reader.ReadAsync())
             {
-                
+
                 int existingId = Convert.ToInt32(reader["id"]);
                 int existingQty = Convert.ToInt32(reader["quantity_grams"]);
                 int newQty = existingQty + entity.QuantityGrams;
@@ -39,12 +40,12 @@ namespace TeamNut.Repositories
                 updateCmd.Parameters.AddWithValue("@qty", newQty);
                 updateCmd.Parameters.AddWithValue("@id", existingId);
 
-                await reader.CloseAsync(); 
+                await reader.CloseAsync();
                 await updateCmd.ExecuteNonQueryAsync();
             }
             else
             {
-                
+
                 const string insertSql = @"
             INSERT INTO Inventory (user_id, ingredient_id, quantity_grams) 
             VALUES (@uid, @iid, @qty)";
@@ -54,7 +55,7 @@ namespace TeamNut.Repositories
                 insertCmd.Parameters.AddWithValue("@iid", entity.IngredientId);
                 insertCmd.Parameters.AddWithValue("@qty", entity.QuantityGrams);
 
-                await reader.CloseAsync(); 
+                await reader.CloseAsync();
                 await insertCmd.ExecuteNonQueryAsync();
             }
         }
@@ -119,7 +120,7 @@ namespace TeamNut.Repositories
 
         private Inventory MapReaderToInventory(SqliteDataReader reader)
         {
-            
+
             return new Inventory
             {
                 Id = Convert.ToInt32(reader["id"]),

@@ -4,11 +4,12 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using TeamNut;
 using TeamNut.Models;
+using TeamNut.Repositories.Interfaces;
 namespace TeamNut.Repositories;
 
 
 
-public class UserRepository : IRepository<User>
+public class UserRepository : IUserRepository
 {
     private readonly string _connectionString = DbConfig.ConnectionString;
     public async Task<User> GetById(int id)
@@ -53,7 +54,7 @@ public class UserRepository : IRepository<User>
         await conn.OpenAsync();
         await cmd.ExecuteNonQueryAsync();
     }
-   
+
 
     //new add for SQL lite 
     public async Task Add(User entity)

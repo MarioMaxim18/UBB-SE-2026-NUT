@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using TeamNut.Models;
 
-namespace TeamNut.Services
+namespace TeamNut.Services.Interfaces
 {
     public interface IMealService
     {

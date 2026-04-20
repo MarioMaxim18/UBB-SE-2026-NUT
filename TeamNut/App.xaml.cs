@@ -3,7 +3,9 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
 using TeamNut.Repositories;
+using TeamNut.Repositories.Interfaces;
 using TeamNut.Services;
+using TeamNut.Services.Interfaces;
 using TeamNut.ViewModels;
 using TeamNut.Views;
 using TeamNut.Views.UserView;
@@ -46,6 +48,9 @@ namespace TeamNut
             services.AddTransient<IDailyLogService, DailyLogService>();
             services.AddTransient<DailyLogViewModel>();
 
+            services.AddTransient<IShoppingListRepository, ShoppingListRepository>();
+            services.AddTransient<IShoppingListService, ShoppingListService>();
+            services.AddTransient<ShoppingListViewModel>();
 
 
 

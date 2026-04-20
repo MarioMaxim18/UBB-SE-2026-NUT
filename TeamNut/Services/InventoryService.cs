@@ -4,25 +4,27 @@ using System.Threading.Tasks;
 using TeamNut.Models;
 using TeamNut.Repositories;
 using System.Linq;
+using TeamNut.Repositories.Interfaces;
+using TeamNut.Services.Interfaces;
 
 namespace TeamNut.Services
 {
-    public class InventoryService
+    public class InventoryService : IInventoryService
     {
-        private readonly InventoryRepository _inventoryRepository;
-        private readonly MealPlanRepository _mealPlanRepository;
-        private readonly IngredientRepository _ingredientRepository;
+        private readonly IInventoryRepository _inventoryRepository;
+        private readonly IMealPlanRepository _mealPlanRepository;
+        private readonly IIngredientRepository _ingredientRepository;
 
-        public InventoryService()
+        public InventoryService(IIngredientRepository ingredientRepository, IInventoryRepository inventoryRepository, IMealPlanRepository mealPlanRepository)
         {
-            _inventoryRepository = new InventoryRepository();
-            _mealPlanRepository = new MealPlanRepository();
-            _ingredientRepository = new IngredientRepository();
+            _inventoryRepository = inventoryRepository;
+            _mealPlanRepository = mealPlanRepository;
+            _ingredientRepository = ingredientRepository;
         }
 
         public async Task<bool> ConsumeMeal(int userId, int mealId)
         {
-            
+
             var requiredIngredients = await _mealPlanRepository.GetIngredientsForMeal(mealId);
             var inventoryItems = (await _inventoryRepository.GetAllByUserId(userId)).ToList();
 

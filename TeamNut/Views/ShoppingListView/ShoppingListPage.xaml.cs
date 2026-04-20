@@ -5,17 +5,19 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using TeamNut.ViewModels;
 using TeamNut.Models;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace TeamNut.Views.ShoppingListView
 {
     public sealed partial class ShoppingListPage : Page
     {
-        public ShoppingListViewModel ViewModel { get; } = new ShoppingListViewModel();
+        public ShoppingListViewModel ViewModel { get; }
 
         public ShoppingListPage()
         {
             this.InitializeComponent();
-            
+            ViewModel = App.Services.GetService<ShoppingListViewModel>();
+
             this.Name = "RootPage";
         }
 

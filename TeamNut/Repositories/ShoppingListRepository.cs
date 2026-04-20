@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using Microsoft.Data.Sqlite;
 using System.Threading.Tasks;
 using TeamNut.Models;
+using TeamNut.Repositories.Interfaces;
 
 namespace TeamNut.Repositories
 {
-    public class ShoppingListRepository : IRepository<ShoppingItem>
+    public class ShoppingListRepository : IShoppingListRepository
     {
         private readonly string _connectionString = DbConfig.ConnectionString;
 
@@ -162,7 +163,7 @@ namespace TeamNut.Repositories
             using var conn = new SqliteConnection(_connectionString);
             await conn.OpenAsync();
 
-           
+
             string query = @"
         SELECT 
             mi.food_id as ingredient_id, 
@@ -195,14 +196,14 @@ namespace TeamNut.Repositories
                     UserId = userId,
                     IngredientId = Convert.ToInt32(reader["ingredient_id"]),
                     IngredientName = reader["ingredient_name"].ToString(),
-                  
+
                     QuantityGrams = Convert.ToDouble(reader["quantity_needed"]),
                     IsChecked = false
                 });
             }
 
-            
-            
+
+
             return items;
         }
 

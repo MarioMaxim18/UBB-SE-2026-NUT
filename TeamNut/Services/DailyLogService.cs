@@ -2,17 +2,18 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using TeamNut.Models;
-using TeamNut.Repositories;
+using TeamNut.Repositories.Interfaces;
+using TeamNut.Services.Interfaces;
 
 namespace TeamNut.Services
 {
     public class DailyLogService : IDailyLogService
     {
         private readonly IDailyLogRepository _repository;
-        private readonly IRepository<User> _userRepository;
+        private readonly IUserRepository _userRepository;
         private readonly IMealService _mealService;
 
-        public DailyLogService(IDailyLogRepository dailyLogRepo, IRepository<User> userRepo, IMealService mealService)
+        public DailyLogService(IDailyLogRepository dailyLogRepo, IUserRepository userRepo, IMealService mealService)
         {
             _repository = dailyLogRepo;
             _userRepository = userRepo;

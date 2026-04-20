@@ -5,13 +5,14 @@ using System.Linq;
 using System.Threading.Tasks;
 using TeamNut.Models;
 using TeamNut.Services;
+using TeamNut.Services.Interfaces;
 using System;
 
 namespace TeamNut.ViewModels
 {
     public partial class InventoryViewModel : ObservableObject
     {
-        private readonly InventoryService _inventoryService;
+        private readonly IInventoryService _inventoryService;
         private readonly int _currentUserId;
 
         private bool _isBusy;
@@ -68,10 +69,10 @@ namespace TeamNut.ViewModels
         public ObservableCollection<Ingredient> AvailableIngredients { get; } = new();
         public ObservableCollection<Ingredient> FilteredIngredients { get; } = new();
 
-        public InventoryViewModel(int userId)
+        public InventoryViewModel(IInventoryService inventoryService)
         {
-            _inventoryService = new InventoryService();
-            _currentUserId = userId;
+            _inventoryService = inventoryService;
+            _currentUserId = Models.UserSession.UserId ?? 0;
 
             _ = LoadInventoryAsync();
             _ = LoadIngredientsAsync();
