@@ -1,7 +1,8 @@
-using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using TeamNut.Models;
 using TeamNut.Services;
 
@@ -9,7 +10,7 @@ namespace TeamNut.ViewModels
 {
     public partial class MealSearchViewModel : ObservableObject
     {
-        private readonly MealService _mealService;
+        private readonly MealService mealService;
 
         public ObservableCollection<Meal> Meals { get; private set; } = new ObservableCollection<Meal>();
 
@@ -19,21 +20,20 @@ namespace TeamNut.ViewModels
 
         public MealSearchViewModel()
         {
-            _mealService = new MealService();
+            mealService = new MealService();
             _ = LoadMealsAsync();
         }
 
         public async Task LoadMealsAsync(string? filter = null)
         {
-            //var list = await _mealService.GetMealsAsync(filter);
-            var list = await _mealService.GetMealsAsync(new MealFilter { SearchTerm = filter });
+            var list = await mealService.GetMealsAsync(new MealFilter { SearchTerm = filter });
             Meals = new ObservableCollection<Meal>(list);
             OnPropertyChanged(nameof(Meals));
         }
 
-        public async Task<System.Collections.Generic.List<Meal>> SearchMealsAsync(MealFilter filter)
+        public async Task<List<Meal>> SearchMealsAsync(MealFilter filter)
         {
-            var list = await _mealService.GetFilteredMealsAsync(filter);
+            var list = await mealService.GetFilteredMealsAsync(filter);
             Meals = new ObservableCollection<Meal>(list);
             OnPropertyChanged(nameof(Meals));
             return list;
@@ -41,7 +41,7 @@ namespace TeamNut.ViewModels
 
         public async Task<string> GetMealIngredientsTextAsync(int mealId)
         {
-            var lines = await _mealService.GetMealIngredientLinesAsync(mealId);
+            var lines = await mealService.GetMealIngredientLinesAsync(mealId);
             return lines.Count > 0 ? string.Join("\n", lines) : "No ingredients found.";
         }
 
@@ -54,8 +54,11 @@ namespace TeamNut.ViewModels
         [RelayCommand]
         public async Task ToggleFavoriteAsync(Meal meal)
         {
-            if (meal == null) return;
-            await _mealService.ToggleFavoriteAsync(meal);
+            if (meal == null)
+            {
+                return;
+            }
+            await mealService.ToggleFavoriteAsync(meal);
         }
     }
 }

@@ -1,45 +1,47 @@
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using System.Threading.Tasks;
-
 using TeamNut.Models;
 using TeamNut.Services;
 
 namespace TeamNut.ViewModels
 {
-
     public partial class ShoppingListViewModel : ObservableObject
     {
-        private readonly ShoppingListService _shoppingListService;
+        private readonly ShoppingListService shoppingListService;
 
         [ObservableProperty]
-        private ObservableCollection<ShoppingItem> items = new ObservableCollection<ShoppingItem>();
+        public partial ObservableCollection<ShoppingItem> Items { get; set; } = new ObservableCollection<ShoppingItem>();
 
         [ObservableProperty]
-        private string statusMessage;
+        public partial string StatusMessage { get; set; }
 
         [ObservableProperty]
-        private bool isStatusVisible;
+        public partial bool IsStatusVisible { get; set; }
 
         [ObservableProperty]
-        private bool isError;
+        public partial bool IsError { get; set; }
 
         [ObservableProperty]
-        private double pendingQuantity = 100; // Default to 100g
+        public partial double PendingQuantity { get; set; } = 100;
 
         public ShoppingListViewModel()
         {
-            _shoppingListService = new ShoppingListService();
+            shoppingListService = new ShoppingListService();
             _ = LoadItemsAsync();
         }
 
         public async Task LoadItemsAsync()
         {
-            if (UserSession.UserId == null) return;
+            if (UserSession.UserId == null)
+            {
+                return;
+            }
 
-            var loadedItems = await _shoppingListService.GetShoppingItemsAsync(UserSession.UserId.Value);
-            
+            var loadedItems = await shoppingListService.GetShoppingItemsAsync(UserSession.UserId.Value);
+
             Items.Clear();
             foreach (var item in loadedItems)
             {
@@ -47,7 +49,7 @@ namespace TeamNut.ViewModels
                 {
                     if (e.PropertyName == nameof(ShoppingItem.IsChecked))
                     {
-                        await _shoppingListService.UpdateItemAsync((ShoppingItem)s);
+                        await shoppingListService.UpdateItemAsync((ShoppingItem)s);
                     }
                 };
                 Items.Add(item);
@@ -59,19 +61,22 @@ namespace TeamNut.ViewModels
         {
             if (!string.IsNullOrWhiteSpace(itemName) && UserSession.UserId != null)
             {
-                var addedItem = await _shoppingListService.AddItemAsync(itemName.Trim(), UserSession.UserId.Value, PendingQuantity);
+                var addedItem = await shoppingListService.AddItemAsync(itemName.Trim(), UserSession.UserId.Value, PendingQuantity);
                 if (addedItem != null)
                 {
                     var existing = System.Linq.Enumerable.FirstOrDefault(Items, i => i.Id == addedItem.Id);
-                    
+
                     if (existing == null)
                     {
                         addedItem.PropertyChanged += async (s, e) =>
                         {
                             if (e.PropertyName == nameof(ShoppingItem.IsChecked))
                             {
-                                bool updated = await _shoppingListService.UpdateItemAsync((ShoppingItem)s);
-                                if (!updated) ShowStatus("Failed to save checkmark state.", true);
+                                bool updated = await shoppingListService.UpdateItemAsync((ShoppingItem)s);
+                                if (!updated)
+                                {
+                                    ShowStatus("Failed to save checkmark state.", true);
+                                }
                             }
                         };
                         Items.Add(addedItem);
@@ -82,7 +87,7 @@ namespace TeamNut.ViewModels
                     }
 
                     ShowStatus($"Updated '{itemName}' successfully!", false);
-                    PendingQuantity = 100; // Reset to default
+                    PendingQuantity = 100;
                 }
                 else
                 {
@@ -96,7 +101,7 @@ namespace TeamNut.ViewModels
         {
             if (item != null && Items.Contains(item))
             {
-                bool success = await _shoppingListService.MoveToPantryAsync(item);
+                bool success = await shoppingListService.MoveToPantryAsync(item);
                 if (success)
                 {
                     Items.Remove(item);
@@ -114,7 +119,7 @@ namespace TeamNut.ViewModels
         {
             if (item != null && Items.Contains(item))
             {
-                bool success = await _shoppingListService.RemoveItemAsync(item);
+                bool success = await shoppingListService.RemoveItemAsync(item);
                 if (success)
                 {
                     Items.Remove(item);
@@ -132,7 +137,7 @@ namespace TeamNut.ViewModels
         {
             if (UserSession.UserId != null)
             {
-                int itemsAdded = await _shoppingListService.GenerateListAsync(UserSession.UserId.Value);
+                int itemsAdded = await shoppingListService.GenerateListAsync(UserSession.UserId.Value);
                 if (itemsAdded > 0)
                 {
                     await LoadItemsAsync();
@@ -149,9 +154,9 @@ namespace TeamNut.ViewModels
             }
         }
 
-        public async Task<System.Collections.Generic.List<System.Collections.Generic.KeyValuePair<int, string>>> SearchIngredientsAsync(string query)
+        public async Task<List<KeyValuePair<int, string>>> SearchIngredientsAsync(string query)
         {
-            return await _shoppingListService.SearchIngredientsAsync(query);
+            return await shoppingListService.SearchIngredientsAsync(query);
         }
 
         private void ShowStatus(string message, bool error)
@@ -159,7 +164,7 @@ namespace TeamNut.ViewModels
             StatusMessage = message;
             IsError = error;
             IsStatusVisible = true;
-            
+
             Task.Delay(3000).ContinueWith(_ =>
             {
                 IsStatusVisible = false;

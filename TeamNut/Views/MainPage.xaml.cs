@@ -1,11 +1,11 @@
 using System;
-using Windows.Media.Playback;
-using Windows.Media.Core;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using TeamNut.Models;
-using TeamNut.Services; 
-using TeamNut.Views;
+using TeamNut.Services;
+using TeamNut.ViewModels;
 
 namespace TeamNut.Views
 {
@@ -14,26 +14,28 @@ namespace TeamNut.Views
         private bool mealsLoaded = false;
         private bool chatLoaded = false;
         private bool shoppingListLoaded = false;
-        private bool remindersLoaded = false; 
-        private readonly Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
-        private readonly Microsoft.UI.Xaml.DispatcherTimer _reminderTimer;
-        private readonly System.Collections.Generic.HashSet<int> _shownReminders = new();
+        private bool remindersLoaded = false;
+        private readonly Microsoft.UI.Dispatching.DispatcherQueue dispatcher;
+        private readonly Microsoft.UI.Xaml.DispatcherTimer reminderTimer;
+        private readonly HashSet<int> shownReminders = new();
+        private readonly ReminderService reminderService = new();
 
-        private readonly ReminderService _reminderService = new();
         public MainViewModel ViewModel { get; } = new();
-        public TeamNut.ViewModels.RemindersViewModel RemindersViewModel { get; } = new();
+
+        public RemindersViewModel RemindersViewModel { get; } = new();
+
         public MainPage()
         {
             this.InitializeComponent();
-            _dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
+            dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
             _ = ViewModel.LoadHeaderData();
             LoadTopReminder();
             ReminderService.RemindersChanged += OnRemindersChanged;
 
-            _reminderTimer = new Microsoft.UI.Xaml.DispatcherTimer();
-            _reminderTimer.Interval = TimeSpan.FromSeconds(30);
-            _reminderTimer.Tick += ReminderTimer_Tick;
-            _reminderTimer.Start();
+            reminderTimer = new Microsoft.UI.Xaml.DispatcherTimer();
+            reminderTimer.Interval = TimeSpan.FromSeconds(30);
+            reminderTimer.Tick += ReminderTimer_Tick;
+            reminderTimer.Start();
         }
 
         private async void ReminderTimer_Tick(object? sender, object? e)
@@ -41,23 +43,34 @@ namespace TeamNut.Views
             try
             {
                 int userId = UserSession.UserId ?? 0;
-                if (userId == 0) return;
+                if (userId == 0)
+                {
+                    return;
+                }
 
-                var reminders = await _reminderService.GetUserReminders(userId);
+                var reminders = await reminderService.GetUserReminders(userId);
                 var today = DateTime.Today.ToString("yyyy-MM-dd");
                 var now = DateTime.Now.TimeOfDay;
 
                 foreach (var rem in reminders)
                 {
-                    if (rem == null) continue;
-                    if (rem.ReminderDate != today) continue;
-                    if (_shownReminders.Contains(rem.Id)) continue;
+                    if (rem == null)
+                    {
+                        continue;
+                    }
+                    if (rem.ReminderDate != today)
+                    {
+                        continue;
+                    }
+                    if (shownReminders.Contains(rem.Id))
+                    {
+                        continue;
+                    }
 
-                    
                     var diff = (rem.Time - now).Duration();
                     if (diff <= TimeSpan.FromSeconds(30))
                     {
-                        _shownReminders.Add(rem.Id);
+                        shownReminders.Add(rem.Id);
                         await ShowReminderDialog(rem);
                     }
                 }
@@ -68,7 +81,7 @@ namespace TeamNut.Views
             }
         }
 
-        private async System.Threading.Tasks.Task ShowReminderDialog(TeamNut.Models.Reminder rem)
+        private async Task ShowReminderDialog(Reminder rem)
         {
             try
             {
@@ -78,7 +91,7 @@ namespace TeamNut.Views
                     Content = "Did you consume this meal?",
                     PrimaryButtonText = "Confirm",
                     CloseButtonText = "Decline",
-                    XamlRoot = this.XamlRoot
+                    XamlRoot = this.XamlRoot,
                 };
 
                 var res = await dialog.ShowAsync();
@@ -86,7 +99,7 @@ namespace TeamNut.Views
                 {
                     try
                     {
-                        var mealService = new TeamNut.Services.MealService();
+                        var mealService = new MealService();
                         var meals = await mealService.GetMealsAsync();
                         var matched = meals.Find(m => string.Equals(m.Name?.Trim(), rem.Name?.Trim(), StringComparison.OrdinalIgnoreCase));
                         int userId = UserSession.UserId ?? 0;
@@ -96,23 +109,17 @@ namespace TeamNut.Views
                             var repo = new TeamNut.Repositories.MealPlanRepository();
                             await repo.SaveMealToDailyLog(userId, matched.Id, matched.Calories);
 
-                            var inventory = new TeamNut.Services.InventoryService();
+                            var inventory = new InventoryService();
                             await inventory.ConsumeMeal(userId, matched.Id);
                         }
 
-                        
-                        await _reminderService.DeleteReminder(rem.Id);
-                        
+                        await reminderService.DeleteReminder(rem.Id);
                         ReminderService.NotifyRemindersChangedForUser(userId);
                     }
                     catch (Exception ex)
                     {
                         System.Diagnostics.Debug.WriteLine($"Error confirming reminder: {ex.Message}");
                     }
-                }
-                else
-                {
-                    
                 }
             }
             catch (Exception ex)
@@ -126,11 +133,14 @@ namespace TeamNut.Views
             try
             {
                 var current = UserSession.UserId ?? 0;
-                if (current != userId) return;
-
-                if (_dispatcher != null)
+                if (current != userId)
                 {
-                    _dispatcher.TryEnqueue(() => LoadTopReminder());
+                    return;
+                }
+
+                if (dispatcher != null)
+                {
+                    dispatcher.TryEnqueue(() => LoadTopReminder());
                 }
                 else
                 {
@@ -140,13 +150,15 @@ namespace TeamNut.Views
             catch { }
         }
 
-        
         private void MainTabView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             try
             {
                 var selectedItem = MainTabView.SelectedItem as TabViewItem;
-                if (selectedItem == null) return;
+                if (selectedItem == null)
+                {
+                    return;
+                }
 
                 if (selectedItem == MealsTab && !mealsLoaded)
                 {
@@ -175,10 +187,8 @@ namespace TeamNut.Views
                     ShoppingListFrame.Navigate(typeof(TeamNut.Views.ShoppingListView.ShoppingListPage));
                     shoppingListLoaded = true;
                 }
-                
-                
-                 else if (selectedItem == RemindersTab && !remindersLoaded)
-                 {
+                else if (selectedItem == RemindersTab && !remindersLoaded)
+                {
                     try
                     {
                         RemindersFrame.Navigate(typeof(TeamNut.Views.RemindersView.RemindersPage));
@@ -186,28 +196,29 @@ namespace TeamNut.Views
                     }
                     catch (Exception ex)
                     {
-                          
                         System.Diagnostics.Debug.WriteLine($"NAVIGATION ERROR: {ex.Message}");
                     }
                 }
-                
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"Error in tab selection: {ex.Message}");
             }
         }
+
         private async void LoadTopReminder()
         {
             try
             {
                 int userId = UserSession.UserId ?? 0;
-                if (userId == 0) return;
+                if (userId == 0)
+                {
+                    return;
+                }
 
-                var next = await _reminderService.GetNextReminder(userId);
+                var next = await reminderService.GetNextReminder(userId);
                 var text = next != null ? $"{next.Name} at {next.Time:hh\\:mm}" : "No upcoming meals";
 
-                
                 if (MainNextReminderText != null)
                 {
                     MainNextReminderText.Text = text;
@@ -218,13 +229,14 @@ namespace TeamNut.Views
                 System.Diagnostics.Debug.WriteLine($"Error loading top reminder: {ex.Message}");
             }
         }
+
         private void LogoutButton_Click(object sender, RoutedEventArgs e)
         {
             UserSession.Logout();
 
-            if (Application.Current is App app && app._window != null)
+            if (Application.Current is App app && app.window != null)
             {
-                app._window.Content = new TeamNut.Views.UserView.UserView();
+                app.window.Content = new TeamNut.Views.UserView.UserView();
             }
         }
 
@@ -233,9 +245,12 @@ namespace TeamNut.Views
             try
             {
                 int userId = UserSession.UserId ?? 0;
-                if (userId == 0) return;
+                if (userId == 0)
+                {
+                    return;
+                }
 
-                var reminder = await _reminderService.GetNextReminder(userId);
+                var reminder = await reminderService.GetNextReminder(userId);
                 if (reminder == null)
                 {
                     var noDialog = new ContentDialog
@@ -243,7 +258,7 @@ namespace TeamNut.Views
                         Title = "Reminder Details",
                         Content = "No upcoming reminders.",
                         CloseButtonText = "Close",
-                        XamlRoot = this.XamlRoot
+                        XamlRoot = this.XamlRoot,
                     };
                     await noDialog.ShowAsync();
                     return;
@@ -272,10 +287,10 @@ namespace TeamNut.Views
                     {
                         Content = panel,
                         VerticalScrollMode = Microsoft.UI.Xaml.Controls.ScrollMode.Auto,
-                        VerticalScrollBarVisibility = Microsoft.UI.Xaml.Controls.ScrollBarVisibility.Auto
+                        VerticalScrollBarVisibility = Microsoft.UI.Xaml.Controls.ScrollBarVisibility.Auto,
                     },
                     CloseButtonText = "Close",
-                    XamlRoot = this.XamlRoot
+                    XamlRoot = this.XamlRoot,
                 };
 
                 await dialog.ShowAsync();
@@ -287,8 +302,3 @@ namespace TeamNut.Views
         }
     }
 }
-
-
-
-
-

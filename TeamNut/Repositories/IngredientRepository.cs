@@ -1,14 +1,14 @@
-using Microsoft.Data.Sqlite;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.Data.Sqlite;
 using TeamNut.Models;
 
 namespace TeamNut.Repositories
 {
     internal class IngredientRepository
     {
-        private readonly string _connectionString = DbConfig.ConnectionString;
+        private readonly string connectionString = DbConfig.ConnectionString;
 
         public async Task<int> GetOrCreateIngredientIdAsync(string name)
         {
@@ -17,7 +17,7 @@ namespace TeamNut.Repositories
 
         public async Task<int> GetOrCreateIngredientIdByNameAsync(string name)
         {
-            using var conn = new SqliteConnection(_connectionString);
+            using var conn = new SqliteConnection(connectionString);
             await conn.OpenAsync();
 
             const string findSql = "SELECT food_id FROM Ingredients WHERE LOWER(name) = LOWER(@name)";
@@ -31,16 +31,9 @@ namespace TeamNut.Repositories
                 }
             }
 
-            /*const string insertSql = @"INSERT INTO Ingredients (name, calories_per_100g, protein_per_100g, carbs_per_100g, fat_per_100g)
-                                       OUTPUT INSERTED.food_id
-                                       VALUES (@name, 0, 0, 0, 0)";
-            using var insertCmd = new SqliteCommand(insertSql, conn);
-            insertCmd.Parameters.AddWithValue("@name", name);
-            var id = await insertCmd.ExecuteScalarAsync();
-            return Convert.ToInt32(id);*/
             const string insertSql = @"INSERT INTO Ingredients (name, calories_per_100g, protein_per_100g, carbs_per_100g, fat_per_100g)
                            VALUES (@name, 0, 0, 0, 0);
-                           SELECT last_insert_rowid();"; 
+                           SELECT last_insert_rowid();";
 
             using var insertCmd = new SqliteCommand(insertSql, conn);
             insertCmd.Parameters.AddWithValue("@name", name);
@@ -58,7 +51,7 @@ namespace TeamNut.Repositories
                                  ORDER BY name
                                  LIMIT 20";
 
-            using var conn = new SqliteConnection(_connectionString);
+            using var conn = new SqliteConnection(connectionString);
             using var cmd = new SqliteCommand(sql, conn);
             cmd.Parameters.AddWithValue("@search", $"%{search}%");
 
@@ -82,7 +75,7 @@ namespace TeamNut.Repositories
                                  FROM Ingredients
                                  ORDER BY name";
 
-            using var conn = new SqliteConnection(_connectionString);
+            using var conn = new SqliteConnection(connectionString);
             using var cmd = new SqliteCommand(sql, conn);
 
             await conn.OpenAsync();
@@ -97,7 +90,7 @@ namespace TeamNut.Repositories
                     CaloriesPer100g = GetDoubleOrZero(reader, "calories_per_100g"),
                     ProteinPer100g = GetDoubleOrZero(reader, "protein_per_100g"),
                     CarbsPer100g = GetDoubleOrZero(reader, "carbs_per_100g"),
-                    FatPer100g = GetDoubleOrZero(reader, "fat_per_100g")
+                    FatPer100g = GetDoubleOrZero(reader, "fat_per_100g"),
                 });
             }
 

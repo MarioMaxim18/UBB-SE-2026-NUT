@@ -1,7 +1,7 @@
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
-using TeamNut.ViewModels;
 using TeamNut.Models;
+using TeamNut.ViewModels;
 
 namespace TeamNut.Views.InventoryView
 {

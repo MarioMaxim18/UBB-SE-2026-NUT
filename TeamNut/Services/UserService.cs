@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using TeamNut.Models;
 using TeamNut.Repositories;
@@ -10,21 +9,22 @@ namespace TeamNut.Services
 {
     public class UserService
     {
-        private readonly UserRepository _userRepository;
+        private readonly UserRepository userRepository;
+
         public UserService()
         {
-            _userRepository = new UserRepository();
+            userRepository = new UserRepository();
         }
 
         public async Task<bool> CheckIfUsernameExistsAsync(string username)
         {
-            var users = await _userRepository.GetAll();
+            var users = await userRepository.GetAll();
             return users.Any(u => u.Username.Equals(username, StringComparison.OrdinalIgnoreCase));
         }
 
         public async Task<User?> LoginAsync(string username, string password)
         {
-            var user = await _userRepository.GetByUsernameAndPassword(username, password);
+            var user = await userRepository.GetByUsernameAndPassword(username, password);
             if (user != null)
             {
                 UserSession.Login(user.Id, user.Username, user.Role);
@@ -41,7 +41,7 @@ namespace TeamNut.Services
                 return null;
             }
 
-            await _userRepository.Add(user);
+            await userRepository.Add(user);
             UserSession.Login(user.Id, user.Username, user.Role);
             return user;
         }
@@ -49,24 +49,27 @@ namespace TeamNut.Services
         public async Task<UserData> AddUserDataAsync(UserData data)
         {
             ApplyCalculatedNutrition(data);
-            await _userRepository.AddUserData(data);
+            await userRepository.AddUserData(data);
             return data;
         }
 
         public async Task<UserData> GetUserDataAsync(int userId)
         {
-            return await _userRepository.GetUserDataByUserId(userId);
+            return await userRepository.GetUserDataByUserId(userId);
         }
 
         public async Task UpdateUserDataAsync(UserData data)
         {
             ApplyCalculatedNutrition(data);
-            await _userRepository.UpdateUserData(data);
+            await userRepository.UpdateUserData(data);
         }
 
         private static void ApplyCalculatedNutrition(UserData data)
         {
-            if (data == null) return;
+            if (data == null)
+            {
+                return;
+            }
 
             data.Bmi = data.CalculateBmi();
             data.CalorieNeeds = data.CalculateCalorieNeeds();

@@ -1,8 +1,8 @@
-using Microsoft.UI.Xaml.Controls;
-using TeamNut.ViewModels;
-using TeamNut.Models;
-using Microsoft.UI.Xaml;
 using System;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
+using TeamNut.Models;
+using TeamNut.ViewModels;
 
 namespace TeamNut.Views.NutritionistChat
 {
@@ -28,13 +28,11 @@ namespace TeamNut.Views.NutritionistChat
         private async void SendButton_Click(object sender, RoutedEventArgs e)
         {
             await ViewModel.SendMessageAsync();
-            // after sending, attempt to scroll to bottom
             try
             {
                 MessagesItems.UpdateLayout();
                 if (MessagesItems.Items?.Count > 0)
                 {
-                    // get last container and bring into view by scrolling
                     MessagesScrollViewer.ChangeView(null, MessagesScrollViewer.ScrollableHeight, null, true);
                 }
             }

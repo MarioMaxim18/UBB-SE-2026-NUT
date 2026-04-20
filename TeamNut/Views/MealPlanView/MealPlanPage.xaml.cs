@@ -1,6 +1,6 @@
+using System;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using System;
 using TeamNut.ModelViews;
 using TeamNut.Models;
 using TeamNut.Services;
@@ -11,13 +11,13 @@ namespace TeamNut.Views.MealPlanView
     public sealed partial class MealPlanPage : Page
     {
         public MealPlanViewModel ViewModel { get; } = new MealPlanViewModel();
-        private UserService _userService;
+        private UserService userService;
 
         public MealPlanPage()
         {
             this.InitializeComponent();
             this.DataContext = ViewModel;
-            _userService = new UserService();
+            userService = new UserService();
 
             ViewModel.PropertyChanged += (s, e) =>
             {
@@ -68,7 +68,7 @@ namespace TeamNut.Views.MealPlanView
                 return;
             }
 
-            var userData = await _userService.GetUserDataAsync(userId.Value);
+            var userData = await userService.GetUserDataAsync(userId.Value);
 
             if (userData == null)
             {
@@ -205,7 +205,7 @@ namespace TeamNut.Views.MealPlanView
 
                 try
                 {
-                    await _userService.UpdateUserDataAsync(userData);
+                    await userService.UpdateUserDataAsync(userData);
 
                     var successDialog = new ContentDialog
                     {
@@ -286,7 +286,7 @@ namespace TeamNut.Views.MealPlanView
                 var messageText = $"Successfully saved {ViewModel.GeneratedMeals.Count} meals to daily log:\n\n";
                 foreach (var meal in ViewModel.GeneratedMeals)
                 {
-                    messageText += $"ï {meal.Name}: {meal.Calories} kcal\n";
+                    messageText += $"ù {meal.Name}: {meal.Calories} kcal\n";
                 }
 
                 var successDialog = new ContentDialog

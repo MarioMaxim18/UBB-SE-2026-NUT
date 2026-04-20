@@ -1,10 +1,10 @@
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using System;
-using System.Collections.ObjectModel;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using System.Linq;
 using TeamNut.Models;
 using TeamNut.Services;
 using TeamNut.Views.MealPlanView;
@@ -13,7 +13,7 @@ namespace TeamNut.ModelViews
 {
     public partial class MealPlanViewModel : ObservableObject
     {
-        private readonly MealPlanService _mealPlanService;
+        private readonly MealPlanService mealPlanService;
 
         [ObservableProperty]
         public partial string StatusMessage { get; set; }
@@ -22,68 +22,74 @@ namespace TeamNut.ModelViews
         public partial bool IsBusy { get; set; }
 
         [ObservableProperty]
-        private ObservableCollection<MealViewModel> generatedMeals = new();
+        public partial ObservableCollection<MealViewModel> GeneratedMeals { get; set; } = new();
 
-        private int _currentMealPlanId;
+        private int currentMealPlanId;
+
         public int CurrentMealPlanId
         {
-            get => _currentMealPlanId;
-            set => SetProperty(ref _currentMealPlanId, value);
+            get => currentMealPlanId;
+            set => SetProperty(ref currentMealPlanId, value);
         }
 
-        private int _totalCalories;
+        private int totalCalories;
+
         public int TotalCalories
         {
-            get => _totalCalories;
-            set => SetProperty(ref _totalCalories, value);
+            get => totalCalories;
+            set => SetProperty(ref totalCalories, value);
         }
 
-        private int _totalProtein;
+        private int totalProtein;
+
         public int TotalProtein
         {
-            get => _totalProtein;
-            set => SetProperty(ref _totalProtein, value);
+            get => totalProtein;
+            set => SetProperty(ref totalProtein, value);
         }
 
-        private int _totalCarbs;
+        private int totalCarbs;
+
         public int TotalCarbs
         {
-            get => _totalCarbs;
-            set => SetProperty(ref _totalCarbs, value);
+            get => totalCarbs;
+            set => SetProperty(ref totalCarbs, value);
         }
 
-        private int _totalFat;
+        private int totalFat;
+
         public int TotalFat
         {
-            get => _totalFat;
-            set => SetProperty(ref _totalFat, value);
+            get => totalFat;
+            set => SetProperty(ref totalFat, value);
         }
 
-        private bool _hasMeals;
+        private bool hasMeals;
+
         public bool HasMeals
         {
-            get => _hasMeals;
-            set => SetProperty(ref _hasMeals, value);
+            get => hasMeals;
+            set => SetProperty(ref hasMeals, value);
         }
 
         [ObservableProperty]
         public partial string TotalNutritionSummary { get; set; }
 
         [ObservableProperty]
-        private string goalDescription;
+        public partial string GoalDescription { get; set; }
 
         [ObservableProperty]
-        private bool showErrorDialog;
+        public partial bool ShowErrorDialog { get; set; }
 
         [ObservableProperty]
-        private string errorDialogTitle;
+        public partial string ErrorDialogTitle { get; set; }
 
         [ObservableProperty]
-        private string errorDialogMessage;
+        public partial string ErrorDialogMessage { get; set; }
 
         public MealPlanViewModel()
         {
-            _mealPlanService = new MealPlanService();
+            mealPlanService = new MealPlanService();
         }
 
         [RelayCommand]
@@ -100,7 +106,7 @@ namespace TeamNut.ModelViews
                 return;
             }
 
-            var todaysPlan = await _mealPlanService.GetTodaysMealPlanAsync(userId.Value);
+            var todaysPlan = await mealPlanService.GetTodaysMealPlanAsync(userId.Value);
 
             if (todaysPlan != null)
             {
@@ -134,7 +140,7 @@ namespace TeamNut.ModelViews
                     return;
                 }
 
-                var todaysPlan = await _mealPlanService.GetTodaysMealPlanAsync(userId.Value);
+                var todaysPlan = await mealPlanService.GetTodaysMealPlanAsync(userId.Value);
 
                 if (todaysPlan != null)
                 {
@@ -164,9 +170,9 @@ namespace TeamNut.ModelViews
             {
                 CurrentMealPlanId = mealPlanId;
 
-                string userGoal = await _mealPlanService.GetUserGoalAsync(userId);
+                string userGoal = await mealPlanService.GetUserGoalAsync(userId);
 
-                var meals = await _mealPlanService.GetMealsForMealPlanAsync(mealPlanId);
+                var meals = await mealPlanService.GetMealsForMealPlanAsync(mealPlanId);
 
                 if (meals == null || meals.Count == 0)
                 {
@@ -180,7 +186,7 @@ namespace TeamNut.ModelViews
                 {
                     { 0, "BREAKFAST" },
                     { 1, "LUNCH" },
-                    { 2, "DINNER" }
+                    { 2, "DINNER" },
                 };
 
                 foreach (var meal in meals)
@@ -193,12 +199,12 @@ namespace TeamNut.ModelViews
 
                 CalculateTotals();
 
-                var (totalCalories, totalProtein, totalCarbs, totalFat) = _mealPlanService.CalculateTotalNutrition(meals);
+                var (totalCal, totalPro, totalCar, totalFt) = mealPlanService.CalculateTotalNutrition(meals);
 
                 string goalName = string.IsNullOrEmpty(userGoal) ? "Maintenance" : char.ToUpper(userGoal[0]) + userGoal.Substring(1);
                 GoalDescription = $"{goalName} Goal";
 
-                TotalNutritionSummary = $"Daily Total: {totalCalories} kcal | {totalProtein}g protein | {totalCarbs}g carbs | {totalFat}g fat";
+                TotalNutritionSummary = $"Daily Total: {totalCal} kcal | {totalPro}g protein | {totalCar}g carbs | {totalFt}g fat";
 
                 StatusMessage = $"Your meal plan for today ({goalName} goal)";
                 HasMeals = true;
@@ -214,9 +220,9 @@ namespace TeamNut.ModelViews
         {
             try
             {
-                string userGoal = await _mealPlanService.GetUserGoalAsync(userId);
+                string userGoal = await mealPlanService.GetUserGoalAsync(userId);
 
-                int mealPlanId = await _mealPlanService.GeneratePersonalizedMealPlanAsync(userId);
+                int mealPlanId = await mealPlanService.GeneratePersonalizedMealPlanAsync(userId);
 
                 await LoadMealPlanByIdAsync(mealPlanId, userId);
 
@@ -266,7 +272,7 @@ namespace TeamNut.ModelViews
                     return;
                 }
 
-                await _mealPlanService.SaveMealsToDailyLogAsync(CurrentMealPlanId);
+                await mealPlanService.SaveMealsToDailyLogAsync(CurrentMealPlanId);
 
                 StatusMessage = $"All {GeneratedMeals.Count} meals saved to daily log!";
             }
@@ -285,7 +291,7 @@ namespace TeamNut.ModelViews
                 throw new InvalidOperationException("No meal plan is currently loaded. Please generate a meal plan first.");
             }
 
-            await _mealPlanService.SaveMealsToDailyLogAsync(CurrentMealPlanId);
+            await mealPlanService.SaveMealsToDailyLogAsync(CurrentMealPlanId);
         }
 
         public async Task RegenerateMealPlanForTestingAsync()
@@ -319,8 +325,7 @@ namespace TeamNut.ModelViews
                 throw new InvalidOperationException("Meal not found in current meal plan.");
             }
 
-            await _mealPlanService.SaveMealToDailyLogAsync(mealId, meal.Calories);
+            await mealPlanService.SaveMealToDailyLogAsync(mealId, meal.Calories);
         }
     }
 }
-

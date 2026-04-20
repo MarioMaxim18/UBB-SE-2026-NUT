@@ -1,30 +1,29 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using TeamNut.Models;
 using TeamNut.Repositories;
-using System.Linq;
 
 namespace TeamNut.Services
 {
     public class InventoryService
     {
-        private readonly InventoryRepository _inventoryRepository;
-        private readonly MealPlanRepository _mealPlanRepository;
-        private readonly IngredientRepository _ingredientRepository;
+        private readonly InventoryRepository inventoryRepository;
+        private readonly MealPlanRepository mealPlanRepository;
+        private readonly IngredientRepository ingredientRepository;
 
         public InventoryService()
         {
-            _inventoryRepository = new InventoryRepository();
-            _mealPlanRepository = new MealPlanRepository();
-            _ingredientRepository = new IngredientRepository();
+            inventoryRepository = new InventoryRepository();
+            mealPlanRepository = new MealPlanRepository();
+            ingredientRepository = new IngredientRepository();
         }
 
         public async Task<bool> ConsumeMeal(int userId, int mealId)
         {
-            
-            var requiredIngredients = await _mealPlanRepository.GetIngredientsForMeal(mealId);
-            var inventoryItems = (await _inventoryRepository.GetAllByUserId(userId)).ToList();
+            var requiredIngredients = await mealPlanRepository.GetIngredientsForMeal(mealId);
+            var inventoryItems = (await inventoryRepository.GetAllByUserId(userId)).ToList();
 
             foreach (var req in requiredIngredients)
             {
@@ -37,11 +36,11 @@ namespace TeamNut.Services
 
                     if (stock.QuantityGrams <= 0)
                     {
-                        await _inventoryRepository.Delete(stock.Id);
+                        await inventoryRepository.Delete(stock.Id);
                     }
                     else
                     {
-                        await _inventoryRepository.Update(stock);
+                        await inventoryRepository.Update(stock);
                     }
                 }
             }
@@ -54,31 +53,31 @@ namespace TeamNut.Services
             {
                 UserId = userId,
                 IngredientId = ingredientId,
-                QuantityGrams = quantity
+                QuantityGrams = quantity,
             };
 
-            await _inventoryRepository.Add(newItem);
+            await inventoryRepository.Add(newItem);
         }
 
         public async Task AddIngredientByNameToPantry(int userId, string ingredientName)
         {
-            int ingredientId = await _ingredientRepository.GetOrCreateIngredientIdByNameAsync(ingredientName);
+            int ingredientId = await ingredientRepository.GetOrCreateIngredientIdByNameAsync(ingredientName);
             await AddToPantry(userId, ingredientId, 100);
         }
 
         public async Task<IEnumerable<Inventory>> GetUserInventory(int userId)
         {
-            return await _inventoryRepository.GetAllByUserId(userId);
+            return await inventoryRepository.GetAllByUserId(userId);
         }
 
         public async Task RemoveItem(int inventoryId)
         {
-            await _inventoryRepository.Delete(inventoryId);
+            await inventoryRepository.Delete(inventoryId);
         }
 
         public async Task<IEnumerable<Ingredient>> GetAllIngredients()
         {
-            return await _ingredientRepository.GetAllAsync();
+            return await ingredientRepository.GetAllAsync();
         }
     }
 }

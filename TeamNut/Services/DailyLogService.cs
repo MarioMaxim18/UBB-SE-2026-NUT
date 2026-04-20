@@ -8,15 +8,15 @@ namespace TeamNut.Services
 {
     public class DailyLogService
     {
-        private readonly DailyLogRepository _repository;
-        private readonly UserRepository _userRepository;
-        private readonly MealService _mealService;
+        private readonly DailyLogRepository repository;
+        private readonly UserRepository userRepository;
+        private readonly MealService mealService;
 
         public DailyLogService()
         {
-            _repository = new DailyLogRepository();
-            _userRepository = new UserRepository();
-            _mealService = new MealService();
+            repository = new DailyLogRepository();
+            userRepository = new UserRepository();
+            mealService = new MealService();
         }
 
         private int GetUserId()
@@ -27,7 +27,7 @@ namespace TeamNut.Services
 
         public async Task<bool> HasAnyLogsAsync()
         {
-            return await _repository.HasAnyLogs(GetUserId());
+            return await repository.HasAnyLogs(GetUserId());
         }
 
         public async Task<DailyLog> GetTodayTotalsAsync()
@@ -35,7 +35,7 @@ namespace TeamNut.Services
             var userId = GetUserId();
             var start = DateTime.Today;
             var end = start.AddDays(1);
-            return await _repository.GetNutritionTotalsForRange(userId, start, end);
+            return await repository.GetNutritionTotalsForRange(userId, start, end);
         }
 
         public async Task<DailyLog> GetCurrentWeekTotalsAsync()
@@ -47,12 +47,12 @@ namespace TeamNut.Services
             var startOfWeek = today.AddDays(-diff);
             var endOfWeek = startOfWeek.AddDays(7);
 
-            return await _repository.GetNutritionTotalsForRange(userId, startOfWeek, endOfWeek);
+            return await repository.GetNutritionTotalsForRange(userId, startOfWeek, endOfWeek);
         }
 
         public async Task<UserData> GetCurrentUserNutritionTargetsAsync()
         {
-            return await _userRepository.GetUserDataByUserId(GetUserId());
+            return await userRepository.GetUserDataByUserId(GetUserId());
         }
 
         public Task<double> GetTodayBurnedCaloriesAsync()
@@ -64,15 +64,15 @@ namespace TeamNut.Services
         {
             var filter = new MealFilter
             {
-                SearchTerm = searchTerm ?? string.Empty
+                SearchTerm = searchTerm ?? string.Empty,
             };
 
-            return await _mealService.GetFilteredMealsAsync(filter);
+            return await mealService.GetFilteredMealsAsync(filter);
         }
 
         public async Task<List<Meal>> GetMealsForAutocompleteAsync()
         {
-            return await _mealService.GetFilteredMealsAsync(new MealFilter());
+            return await mealService.GetFilteredMealsAsync(new MealFilter());
         }
 
         public async Task LogMealAsync(Meal meal)
@@ -82,12 +82,12 @@ namespace TeamNut.Services
                 throw new ArgumentNullException(nameof(meal));
             }
 
-            await _repository.Add(new DailyLog
+            await repository.Add(new DailyLog
             {
                 UserId = GetUserId(),
                 MealId = meal.Id,
                 Calories = meal.Calories,
-                LoggedAt = DateTime.Now
+                LoggedAt = DateTime.Now,
             });
         }
     }

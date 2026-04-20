@@ -1,34 +1,33 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.ComponentModel;
 using TeamNut.Models;
 using TeamNut.Services;
 
-public partial class MainViewModel : ObservableObject
+namespace TeamNut.ViewModels
 {
-    private readonly ReminderService _reminderService = new();
-
-    [ObservableProperty]
-    private string _nextReminderText = "Loading...";
-
-    public async Task UpdateHeaderReminder()
+    public partial class MainViewModel : ObservableObject
     {
-        
-        int userId = UserSession.UserId ?? 0;
+        private readonly ReminderService reminderService = new();
 
-        if (userId != 0)
+        [ObservableProperty]
+        public partial string NextReminderText { get; set; } = "Loading...";
+
+        public async Task UpdateHeaderReminder()
         {
-            var next = await _reminderService.GetNextReminder(userId);
-            NextReminderText = next != null
-                ? $"{next.Name} at {next.Time:hh\\:mm}"
-                : "No upcoming meals";
+            int userId = UserSession.UserId ?? 0;
+
+            if (userId != 0)
+            {
+                var next = await reminderService.GetNextReminder(userId);
+                NextReminderText = next != null
+                    ? $"{next.Name} at {next.Time:hh\\:mm}"
+                    : "No upcoming meals";
+            }
         }
 
+        public async Task LoadHeaderData()
+        {
+            await UpdateHeaderReminder();
+        }
     }
-
-   
-    public async Task LoadHeaderData()
-    {
-        await UpdateHeaderReminder();
-    }
-
 }

@@ -1,8 +1,8 @@
-using CommunityToolkit.Mvvm.ComponentModel;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace TeamNut.Models
 {
@@ -58,18 +58,27 @@ namespace TeamNut.Models
 
         public int CalculateAge(DateTimeOffset? birthDate)
         {
-            if (birthDate == null) return 0;
+            if (birthDate == null)
+            {
+                return 0;
+            }
 
             var today = DateTime.Today;
             var birth = birthDate.Value.DateTime;
             var age = today.Year - birth.Year;
-            if (birth.Date > today.AddYears(-age)) age--;
+            if (birth.Date > today.AddYears(-age))
+            {
+                age--;
+            }
             return age;
         }
 
         public double CalculateBmi()
         {
-            if (Height <= 0 || Weight <= 0) return 0.0;
+            if (Height <= 0 || Weight <= 0)
+            {
+                return 0.0;
+            }
 
             double heightInMeters = Height / 100.0;
             return Math.Round(Weight / (heightInMeters * heightInMeters), 1);
@@ -77,7 +86,10 @@ namespace TeamNut.Models
 
         public int CalculateCalorieNeeds()
         {
-            if (Weight <= 0 || Height <= 0 || Age <= 0) return 0;
+            if (Weight <= 0 || Height <= 0 || Age <= 0)
+            {
+                return 0;
+            }
 
             double bmr;
             if (Gender.Equals("male", StringComparison.OrdinalIgnoreCase))
@@ -109,7 +121,10 @@ namespace TeamNut.Models
 
         public int CalculateProteinNeeds()
         {
-            if (Weight <= 0) return 0;
+            if (Weight <= 0)
+            {
+                return 0;
+            }
 
             double proteinPerKg = Goal.ToLower() switch
             {
@@ -126,7 +141,10 @@ namespace TeamNut.Models
         public int CalculateFatNeeds()
         {
             int calories = CalculateCalorieNeeds();
-            if (calories <= 0) return 0;
+            if (calories <= 0)
+            {
+                return 0;
+            }
 
             double fatPercentage = Goal.ToLower() switch
             {
@@ -147,7 +165,10 @@ namespace TeamNut.Models
             int protein = CalculateProteinNeeds();
             int fat = CalculateFatNeeds();
 
-            if (calories <= 0) return 0;
+            if (calories <= 0)
+            {
+                return 0;
+            }
 
             int proteinCalories = protein * 4;
             int fatCalories = fat * 9;

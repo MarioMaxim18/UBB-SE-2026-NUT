@@ -1,9 +1,9 @@
-using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using TeamNut.Models;
 using TeamNut.Services;
 
@@ -30,11 +30,11 @@ namespace TeamNut.ViewModels
         public event EventHandler LoginSuccess;
         public event EventHandler SaveDataSuccess;
 
-        private readonly UserService _userService;
+        private readonly UserService userService;
 
         public UserViewModel()
         {
-            _userService = new UserService();
+            userService = new UserService();
         }
 
         [RelayCommand]
@@ -43,9 +43,13 @@ namespace TeamNut.ViewModels
             StatusMessage = string.Empty;
 
             if (IsNutritionistChecked)
+            {
                 CurrentUser.Role = "Nutritionist";
+            }
             else
+            {
                 CurrentUser.Role = "User";
+            }
 
             List<string> errors = CurrentUser.ValidateAndReturnErrors();
             if (errors.Any())
@@ -54,7 +58,7 @@ namespace TeamNut.ViewModels
                 return;
             }
 
-            if (await _userService.CheckIfUsernameExistsAsync(CurrentUser.Username))
+            if (await userService.CheckIfUsernameExistsAsync(CurrentUser.Username))
             {
                 StatusMessage = "Username already exists. Please choose another one.";
                 return;
@@ -66,7 +70,7 @@ namespace TeamNut.ViewModels
             }
             else
             {
-                var registeredUser = await _userService.RegisterUserAsync(CurrentUser);
+                var registeredUser = await userService.RegisterUserAsync(CurrentUser);
                 if (registeredUser != null)
                 {
                     UserSession.Login(registeredUser.Id, registeredUser.Username, registeredUser.Role);
@@ -101,7 +105,7 @@ namespace TeamNut.ViewModels
                 CurrentUserData.FatNeeds = CurrentUserData.CalculateFatNeeds();
                 CurrentUserData.CarbNeeds = CurrentUserData.CalculateCarbNeeds();
 
-                var registeredUser = await _userService.RegisterUserAsync(CurrentUser);
+                var registeredUser = await userService.RegisterUserAsync(CurrentUser);
                 if (registeredUser == null)
                 {
                     StatusMessage = "Registration failed. Username might already exist.";
@@ -109,7 +113,7 @@ namespace TeamNut.ViewModels
                 }
 
                 CurrentUserData.UserId = registeredUser.Id;
-                await _userService.AddUserDataAsync(CurrentUserData);
+                await userService.AddUserDataAsync(CurrentUserData);
 
                 UserSession.Login(registeredUser.Id, registeredUser.Username, registeredUser.Role);
                 SaveDataSuccess?.Invoke(this, EventArgs.Empty);
@@ -134,7 +138,7 @@ namespace TeamNut.ViewModels
 
             try
             {
-                var user = await _userService.LoginAsync(CurrentUser.Username, CurrentUser.Password);
+                var user = await userService.LoginAsync(CurrentUser.Username, CurrentUser.Password);
 
                 if (user != null)
                 {

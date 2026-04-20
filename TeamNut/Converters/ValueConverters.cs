@@ -1,7 +1,7 @@
+using System;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Media;
-using System;
 using Windows.UI;
 
 namespace TeamNut
@@ -10,15 +10,18 @@ namespace TeamNut
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {
-            // if parameter is provided, treat value as string role comparison
             if (parameter != null && value != null)
             {
                 var param = parameter.ToString();
                 var strVal = value.ToString();
                 if (param == "Nutritionist")
+                {
                     return string.Equals(strVal, "Nutritionist", StringComparison.OrdinalIgnoreCase) ? Visibility.Visible : Visibility.Collapsed;
+                }
                 if (param == "User")
+                {
                     return !string.Equals(strVal, "Nutritionist", StringComparison.OrdinalIgnoreCase) ? Visibility.Visible : Visibility.Collapsed;
+                }
             }
 
             if (value is bool boolValue)
@@ -114,11 +117,17 @@ namespace TeamNut
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {
-            if (value == null) return Visibility.Visible;
+            if (value == null)
+            {
+                return Visibility.Visible;
+            }
             if (int.TryParse(value.ToString(), out int intVal))
             {
                 bool isZero = intVal == 0;
-                if (parameter?.ToString() == "Inverse") return isZero ? Visibility.Collapsed : Visibility.Visible;
+                if (parameter?.ToString() == "Inverse")
+                {
+                    return isZero ? Visibility.Collapsed : Visibility.Visible;
+                }
                 return isZero ? Visibility.Visible : Visibility.Collapsed;
             }
             return Visibility.Visible;
@@ -148,7 +157,6 @@ namespace TeamNut
         }
     }
 
-    // Highlights conversations that have unanswered messages, but only for nutritionist users
     public class UnansweredToHighlightConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string language)
@@ -156,18 +164,19 @@ namespace TeamNut
             try
             {
                 bool hasUnanswered = false;
-                if (value is bool b) hasUnanswered = b;
+                if (value is bool b)
+                {
+                    hasUnanswered = b;
+                }
 
-                // Only highlight for nutritionists
                 var role = TeamNut.Models.UserSession.Role ?? string.Empty;
                 if (!string.Equals(role, "Nutritionist", StringComparison.OrdinalIgnoreCase))
                 {
-                    return new SolidColorBrush(Color.FromArgb(0, 0, 0, 0)); // transparent
+                    return new SolidColorBrush(Color.FromArgb(0, 0, 0, 0));
                 }
 
                 if (hasUnanswered)
                 {
-                    // light yellow highlight
                     return new SolidColorBrush(Color.FromArgb(255, 255, 250, 200));
                 }
 
@@ -192,13 +201,19 @@ namespace TeamNut
             if (value is int intValue)
             {
                 var visible = intValue > 0;
-                if (parameter?.ToString() == "Inverse") return visible ? Visibility.Collapsed : Visibility.Visible;
+                if (parameter?.ToString() == "Inverse")
+                {
+                    return visible ? Visibility.Collapsed : Visibility.Visible;
+                }
                 return visible ? Visibility.Visible : Visibility.Collapsed;
             }
             if (value is long longValue)
             {
                 var visible = longValue > 0;
-                if (parameter?.ToString() == "Inverse") return visible ? Visibility.Collapsed : Visibility.Visible;
+                if (parameter?.ToString() == "Inverse")
+                {
+                    return visible ? Visibility.Collapsed : Visibility.Visible;
+                }
                 return visible ? Visibility.Visible : Visibility.Collapsed;
             }
             return Visibility.Collapsed;

@@ -1,7 +1,7 @@
-using CommunityToolkit.Mvvm.ComponentModel;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace TeamNut.Models
 {
@@ -28,7 +28,7 @@ namespace TeamNut.Models
         public partial string Role { get; set; } = "User";
 
         public List<string> ValidateAndReturnErrors()
-        { 
+        {
             ValidateAllProperties();
 
             return GetErrors()

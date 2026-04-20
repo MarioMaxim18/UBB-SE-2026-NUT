@@ -8,32 +8,30 @@ namespace TeamNut.Services
 {
     public class ReminderService
     {
-        private readonly ReminderRepository _reminderRepository;
+        private readonly ReminderRepository reminderRepository;
+
         public static event EventHandler<int>? RemindersChanged;
 
         public ReminderService()
         {
-            _reminderRepository = new ReminderRepository();
-            
+            reminderRepository = new ReminderRepository();
         }
 
         public async Task<Reminder?> GetNextReminder(int userId)
         {
-            return await _reminderRepository.GetNextReminder(userId);
+            return await reminderRepository.GetNextReminder(userId);
         }
 
         public async Task<Reminder?> GetReminderById(int id)
         {
-            return await _reminderRepository.GetById(id);
+            return await reminderRepository.GetById(id);
         }
 
-        
         public async Task<string> SaveReminder(Reminder reminder)
         {
-            
-            if ((reminder.UserId == 0 || reminder.UserId == default) && TeamNut.Models.UserSession.UserId != null)
+            if ((reminder.UserId == 0 || reminder.UserId == default) && UserSession.UserId != null)
             {
-                reminder.UserId = TeamNut.Models.UserSession.UserId ?? reminder.UserId;
+                reminder.UserId = UserSession.UserId ?? reminder.UserId;
             }
 
             if (string.IsNullOrWhiteSpace(reminder.Name) || reminder.Name.Length > 50)
@@ -42,41 +40,34 @@ namespace TeamNut.Services
             }
 
             if (reminder.Id == 0)
-                await _reminderRepository.Add(reminder);
+            {
+                await reminderRepository.Add(reminder);
+            }
             else
-                await _reminderRepository.Update(reminder);
-                try
-                {
-                    RemindersChanged?.Invoke(this, reminder.UserId);
-                }
-                catch { }
+            {
+                await reminderRepository.Update(reminder);
+            }
+
+            try
+            {
+                RemindersChanged?.Invoke(this, reminder.UserId);
+            }
+            catch { }
 
             return "Success";
-
-            
-          
-        }
-
-        
-        public async Task ConfirmConsumption(int userId, int mealId)
-        {
-
-            Console.WriteLine($"User {userId} confirmed meal {mealId}. Updating logs...");
         }
 
         public async Task<IEnumerable<Reminder>> GetUserReminders(int userId)
         {
-            
-            return await _reminderRepository.GetAllByUserId(userId);
+            return await reminderRepository.GetAllByUserId(userId);
         }
-        
 
         public async Task DeleteReminder(int id)
         {
             try
             {
-                var existing = await _reminderRepository.GetById(id);
-                await _reminderRepository.Delete(id);
+                var existing = await reminderRepository.GetById(id);
+                await reminderRepository.Delete(id);
                 if (existing != null)
                 {
                     RemindersChanged?.Invoke(this, existing.UserId);

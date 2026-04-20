@@ -1,6 +1,6 @@
-using CommunityToolkit.Mvvm.ComponentModel;
 using System;
 using System.ComponentModel.DataAnnotations;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace TeamNut.Models
 {
@@ -19,7 +19,7 @@ namespace TeamNut.Models
         public partial string Name { get; set; } = string.Empty;
 
         [ObservableProperty]
-        public partial bool HasSound { get; set; } = false;
+        public partial bool HasSound { get; set; }
 
         [ObservableProperty]
         [Required]

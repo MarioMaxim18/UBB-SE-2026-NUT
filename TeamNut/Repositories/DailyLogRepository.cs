@@ -1,17 +1,17 @@
-using Microsoft.Data.Sqlite;
 using System;
 using System.Threading.Tasks;
+using Microsoft.Data.Sqlite;
 using TeamNut.Models;
 
 namespace TeamNut.Repositories
 {
     public class DailyLogRepository
     {
-        private readonly string _connectionString = DbConfig.ConnectionString;
+        private readonly string connectionString = DbConfig.ConnectionString;
 
         public async Task Add(DailyLog log)
         {
-            using var conn = new SqliteConnection(_connectionString);
+            using var conn = new SqliteConnection(connectionString);
             await conn.OpenAsync();
 
             const string query = @"INSERT INTO DailyLogs (user_id, mealId, calories, created_at)
@@ -28,7 +28,7 @@ namespace TeamNut.Repositories
 
         public async Task<bool> HasAnyLogs(int userId)
         {
-            using var conn = new SqliteConnection(_connectionString);
+            using var conn = new SqliteConnection(connectionString);
             await conn.OpenAsync();
 
             const string query = "SELECT COUNT(1) FROM DailyLogs WHERE user_id = @userId";
@@ -41,7 +41,7 @@ namespace TeamNut.Repositories
 
         public async Task<DailyLog> GetNutritionTotalsForRange(int userId, DateTime startInclusive, DateTime endExclusive)
         {
-            using var conn = new SqliteConnection(_connectionString);
+            using var conn = new SqliteConnection(connectionString);
             await conn.OpenAsync();
 
             const string query = @"
@@ -73,14 +73,14 @@ namespace TeamNut.Repositories
                     Calories = Convert.ToDouble(reader["total_calories"]),
                     Protein = Convert.ToDouble(reader["total_protein"]),
                     Carbs = Convert.ToDouble(reader["total_carbs"]),
-                    Fats = Convert.ToDouble(reader["total_fats"])
+                    Fats = Convert.ToDouble(reader["total_fats"]),
                 };
             }
 
             return new DailyLog
             {
                 UserId = userId,
-                LoggedAt = startInclusive
+                LoggedAt = startInclusive,
             };
         }
     }

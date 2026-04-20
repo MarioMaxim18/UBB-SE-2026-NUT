@@ -1,10 +1,11 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Input;
-using TeamNut.ViewModels;
 using TeamNut.Models;
+using TeamNut.ViewModels;
 
 namespace TeamNut.Views.ShoppingListView
 {
@@ -15,7 +16,6 @@ namespace TeamNut.Views.ShoppingListView
         public ShoppingListPage()
         {
             this.InitializeComponent();
-            
             this.Name = "RootPage";
         }
 
@@ -39,16 +39,16 @@ namespace TeamNut.Views.ShoppingListView
                     var results = await ViewModel.SearchIngredientsAsync(sender.Text);
                     if (results.Count == 0)
                     {
-                        sender.ItemsSource = new System.Collections.Generic.List<string> { "no matching ingredients found" };
+                        sender.ItemsSource = new List<string> { "no matching ingredients found" };
                     }
                     else
                     {
-                        sender.ItemsSource = System.Linq.Enumerable.ToList(System.Linq.Enumerable.Select(results, r => r.Value));
+                        sender.ItemsSource = results.Select(r => r.Value).ToList();
                     }
                 }
                 else
                 {
-                     sender.ItemsSource = null;
+                    sender.ItemsSource = null;
                 }
             }
         }
@@ -56,10 +56,13 @@ namespace TeamNut.Views.ShoppingListView
         private void IngredientSearchBox_SuggestionChosen(AutoSuggestBox sender, AutoSuggestBoxSuggestionChosenEventArgs args)
         {
             var selectedName = args.SelectedItem?.ToString();
-            if (selectedName == null) return;
+            if (selectedName == null)
+            {
+                return;
+            }
             if (selectedName == "no matching ingredients found")
             {
-                sender.Text = "";
+                sender.Text = string.Empty;
                 return;
             }
             sender.Text = selectedName;
@@ -75,7 +78,7 @@ namespace TeamNut.Views.ShoppingListView
                     Content = "Are you sure you want to remove this item and add it to your pantry?",
                     PrimaryButtonText = "Yes",
                     CloseButtonText = "Cancel",
-                    XamlRoot = this.XamlRoot
+                    XamlRoot = this.XamlRoot,
                 };
                 if (await dialog.ShowAsync() == ContentDialogResult.Primary)
                 {
@@ -86,7 +89,7 @@ namespace TeamNut.Views.ShoppingListView
 
         private async void CancelButton_Click(object sender, RoutedEventArgs e)
         {
-             if (sender is Button btn && btn.DataContext is ShoppingItem item)
+            if (sender is Button btn && btn.DataContext is ShoppingItem item)
             {
                 var dialog = new ContentDialog
                 {
@@ -94,7 +97,7 @@ namespace TeamNut.Views.ShoppingListView
                     Content = "Are you sure you want to remove this item from the shopping list?",
                     PrimaryButtonText = "Yes",
                     CloseButtonText = "Cancel",
-                    XamlRoot = this.XamlRoot
+                    XamlRoot = this.XamlRoot,
                 };
                 if (await dialog.ShowAsync() == ContentDialogResult.Primary)
                 {

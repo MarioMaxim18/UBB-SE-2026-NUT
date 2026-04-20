@@ -5,16 +5,18 @@ namespace TeamNut.Models
     public partial class ShoppingItem : ObservableObject
     {
         public int Id { get; set; }
+
         public int UserId { get; set; }
+
         public int IngredientId { get; set; }
 
         [ObservableProperty]
-        private string ingredientName;
+        public partial string IngredientName { get; set; } = string.Empty;
 
         [ObservableProperty]
-        private double quantityGrams;
+        public partial double QuantityGrams { get; set; }
 
         [ObservableProperty]
-        private bool isChecked;
+        public partial bool IsChecked { get; set; }
     }
 }

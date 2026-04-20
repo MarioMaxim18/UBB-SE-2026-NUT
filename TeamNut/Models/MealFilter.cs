@@ -2,28 +2,27 @@ using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace TeamNut.Models
 {
-    
     public partial class MealFilter : ObservableObject
     {
         [ObservableProperty]
-        private bool _isKeto;
+        public partial bool IsKeto { get; set; }
 
         [ObservableProperty]
-        private bool _isVegan;
+        public partial bool IsVegan { get; set; }
 
         [ObservableProperty]
-        private bool _isNutFree;
+        public partial bool IsNutFree { get; set; }
 
         [ObservableProperty]
-        private bool _isLactoseFree;
+        public partial bool IsLactoseFree { get; set; }
 
         [ObservableProperty]
-        private bool _isGlutenFree;
+        public partial bool IsGlutenFree { get; set; }
 
         [ObservableProperty]
-        private bool _isFavoriteOnly; 
+        public partial bool IsFavoriteOnly { get; set; }
 
         [ObservableProperty]
-        private string _searchTerm = string.Empty;
+        public partial string SearchTerm { get; set; } = string.Empty;
     }
 }

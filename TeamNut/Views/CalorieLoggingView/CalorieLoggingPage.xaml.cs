@@ -7,34 +7,34 @@ namespace TeamNut.Views.CalorieLoggingView
 {
     public sealed partial class CalorieLoggingPage : Page
     {
-        private readonly DailyLogViewModel _viewModel;
+        private readonly DailyLogViewModel viewModel;
 
         public CalorieLoggingPage()
         {
             this.InitializeComponent();
 
-            _viewModel = new DailyLogViewModel();
-            this.DataContext = _viewModel;
+            viewModel = new DailyLogViewModel();
+            this.DataContext = viewModel;
 
             LoadData();
         }
 
         private async void LoadData()
         {
-            await _viewModel.LoadAsync();
+            await viewModel.LoadAsync();
         }
 
         private void MealSuggestBox_SuggestionChosen(AutoSuggestBox sender, AutoSuggestBoxSuggestionChosenEventArgs args)
         {
             if (args.SelectedItem is Meal meal)
             {
-                _viewModel.SelectedMeal = meal;
+                viewModel.SelectedMeal = meal;
             }
         }
 
         private async void LogMeal_Click(object sender, RoutedEventArgs e)
         {
-            await _viewModel.LogSelectedMealAsync();
+            await viewModel.LogSelectedMealAsync();
         }
     }
 }
