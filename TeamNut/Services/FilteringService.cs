@@ -26,7 +26,7 @@ namespace TeamNut.Services
             }
 
             return meals
-                .Where(m => m.Name.Contains(query, comparison))
+                .Where(m => m.Name?.Contains(query, comparison) == true)
                 .ToList();
         }
 
