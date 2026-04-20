@@ -2,7 +2,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace TeamNut.Models
 {
-
+    
     public partial class MealFilter : ObservableObject
     {
         [ObservableProperty]
@@ -21,7 +21,7 @@ namespace TeamNut.Models
         private bool _isGlutenFree;
 
         [ObservableProperty]
-        private bool _isFavoriteOnly;
+        private bool _isFavoriteOnly; 
 
         [ObservableProperty]
         private string _searchTerm = string.Empty;

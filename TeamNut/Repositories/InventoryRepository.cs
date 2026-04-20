@@ -10,116 +10,116 @@ namespace TeamNut.Repositories
     {
         private readonly string _connectionString = DbConfig.ConnectionString;
 
-        public async Task Add(Inventory inventory)
+        public async Task Add(Inventory entity)
         {
-            using var connection = new SqliteConnection(_connectionString);
-            await connection.OpenAsync();
+            using var conn = new SqliteConnection(_connectionString);
+            await conn.OpenAsync();
 
-
-            const string query = @"
+            
+            const string checkSql = @"
         SELECT id, quantity_grams 
         FROM Inventory 
-        WHERE user_id = @userid AND ingredient_id = @ingredientid LIMIT 1";
+        WHERE user_id = @uid AND ingredient_id = @iid LIMIT 1";
 
-            using var checkCommand = new SqliteCommand(query, connection);
-            checkCommand.Parameters.AddWithValue("@userid", inventory.UserId);
-            checkCommand.Parameters.AddWithValue("@ingredientid", inventory.IngredientId);
+            using var checkCmd = new SqliteCommand(checkSql, conn);
+            checkCmd.Parameters.AddWithValue("@uid", entity.UserId);
+            checkCmd.Parameters.AddWithValue("@iid", entity.IngredientId);
 
-            using var reader = await checkCommand.ExecuteReaderAsync();
+            using var reader = await checkCmd.ExecuteReaderAsync();
 
             if (await reader.ReadAsync())
             {
-
+                
                 int existingId = Convert.ToInt32(reader["id"]);
-                int existingQuantity = Convert.ToInt32(reader["quantity_grams"]);
-                int newQuantity = existingQuantity + inventory.QuantityGrams;
+                int existingQty = Convert.ToInt32(reader["quantity_grams"]);
+                int newQty = existingQty + entity.QuantityGrams;
 
-                const string updateQuery = "UPDATE Inventory SET quantity_grams = @quantity WHERE id = @id";
-                using var updateCmd = new SqliteCommand(updateQuery, connection);
-                updateCmd.Parameters.AddWithValue("@quantity", newQuantity);
+                const string updateSql = "UPDATE Inventory SET quantity_grams = @qty WHERE id = @id";
+                using var updateCmd = new SqliteCommand(updateSql, conn);
+                updateCmd.Parameters.AddWithValue("@qty", newQty);
                 updateCmd.Parameters.AddWithValue("@id", existingId);
 
-                await reader.CloseAsync();
+                await reader.CloseAsync(); 
                 await updateCmd.ExecuteNonQueryAsync();
             }
             else
             {
-
-                const string insertQuery = @"
+                
+                const string insertSql = @"
             INSERT INTO Inventory (user_id, ingredient_id, quantity_grams) 
             VALUES (@uid, @iid, @qty)";
 
-                using var insertCommand = new SqliteCommand(insertQuery, connection);
-                insertCommand.Parameters.AddWithValue("@uid", inventory.UserId);
-                insertCommand.Parameters.AddWithValue("@iid", inventory.IngredientId);
-                insertCommand.Parameters.AddWithValue("@qty", inventory.QuantityGrams);
+                using var insertCmd = new SqliteCommand(insertSql, conn);
+                insertCmd.Parameters.AddWithValue("@uid", entity.UserId);
+                insertCmd.Parameters.AddWithValue("@iid", entity.IngredientId);
+                insertCmd.Parameters.AddWithValue("@qty", entity.QuantityGrams);
 
-                await reader.CloseAsync();
-                await insertCommand.ExecuteNonQueryAsync();
+                await reader.CloseAsync(); 
+                await insertCmd.ExecuteNonQueryAsync();
             }
         }
 
         public async Task<IEnumerable<Inventory>> GetAllByUserId(int userId)
         {
-            var inventoryList = new List<Inventory>();
-            const string query = @"SELECT inv.*, ing.name 
+            var items = new List<Inventory>();
+            const string sql = @"SELECT inv.*, ing.name 
                                  FROM Inventory inv 
                                  JOIN Ingredients ing ON inv.ingredient_id = ing.food_id 
                                  WHERE inv.user_id = @uid";
 
-            using var connection = new SqliteConnection(_connectionString);
-            using var command = new SqliteCommand(query, connection);
-            command.Parameters.AddWithValue("@uid", userId);
+            using var conn = new SqliteConnection(_connectionString);
+            using var cmd = new SqliteCommand(sql, conn);
+            cmd.Parameters.AddWithValue("@uid", userId);
 
-            await connection.OpenAsync();
-            using var reader = await command.ExecuteReaderAsync();
+            await conn.OpenAsync();
+            using var reader = await cmd.ExecuteReaderAsync();
             while (await reader.ReadAsync())
             {
-                var inventoryItem = MapReaderToInventory(reader);
-                inventoryItem.IngredientName = reader["name"].ToString();
-                inventoryList.Add(inventoryItem);
+                var item = MapReaderToInventory(reader);
+                item.IngredientName = reader["name"].ToString();
+                items.Add(item);
             }
-            return inventoryList;
+            return items;
         }
 
         public async Task Delete(int id)
         {
-            using var connection = new SqliteConnection(_connectionString);
-            const string query = "DELETE FROM Inventory WHERE id = @id";
-            using var command = new SqliteCommand(query, connection);
-            command.Parameters.AddWithValue("@id", id);
+            using var conn = new SqliteConnection(_connectionString);
+            const string sql = "DELETE FROM Inventory WHERE id = @id";
+            using var cmd = new SqliteCommand(sql, conn);
+            cmd.Parameters.AddWithValue("@id", id);
 
-            await connection.OpenAsync();
-            await command.ExecuteNonQueryAsync();
+            await conn.OpenAsync();
+            await cmd.ExecuteNonQueryAsync();
         }
 
         public async Task<Inventory> GetById(int id)
         {
-            using var connection = new SqliteConnection(_connectionString);
-            const string query = "SELECT * FROM Inventory WHERE id = @id";
-            using var command = new SqliteCommand(query, connection);
-            command.Parameters.AddWithValue("@id", id);
-            await connection.OpenAsync();
-            using var reader = await command.ExecuteReaderAsync();
+            using var conn = new SqliteConnection(_connectionString);
+            const string sql = "SELECT * FROM Inventory WHERE id = @id";
+            using var cmd = new SqliteCommand(sql, conn);
+            cmd.Parameters.AddWithValue("@id", id);
+            await conn.OpenAsync();
+            using var reader = await cmd.ExecuteReaderAsync();
             return await reader.ReadAsync() ? MapReaderToInventory(reader) : null;
         }
 
         public async Task Update(Inventory entity)
         {
-            using var connection = new SqliteConnection(_connectionString);
-            const string query = "UPDATE Inventory SET quantity_grams = @qty WHERE id = @id";
-            using var command = new SqliteCommand(query, connection);
-            command.Parameters.AddWithValue("@id", entity.Id);
-            command.Parameters.AddWithValue("@qty", entity.QuantityGrams);
-            await connection.OpenAsync();
-            await command.ExecuteNonQueryAsync();
+            using var conn = new SqliteConnection(_connectionString);
+            const string sql = "UPDATE Inventory SET quantity_grams = @qty WHERE id = @id";
+            using var cmd = new SqliteCommand(sql, conn);
+            cmd.Parameters.AddWithValue("@id", entity.Id);
+            cmd.Parameters.AddWithValue("@qty", entity.QuantityGrams);
+            await conn.OpenAsync();
+            await cmd.ExecuteNonQueryAsync();
         }
 
         public async Task<IEnumerable<Inventory>> GetAll() => throw new NotImplementedException("Use GetAllByUserId");
 
         private Inventory MapReaderToInventory(SqliteDataReader reader)
         {
-
+            
             return new Inventory
             {
                 Id = Convert.ToInt32(reader["id"]),

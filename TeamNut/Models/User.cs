@@ -28,7 +28,7 @@ namespace TeamNut.Models
         public partial string Role { get; set; } = "User";
 
         public List<string> ValidateAndReturnErrors()
-        {
+        { 
             ValidateAllProperties();
 
             return GetErrors()

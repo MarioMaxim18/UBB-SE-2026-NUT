@@ -36,7 +36,7 @@ namespace TeamNut.Models
         public partial string Goal { get; set; } = string.Empty;
 
         [ObservableProperty]
-        public partial double BodyMassIndex { get; set; }
+        public partial int Bmi { get; set; }
 
         [ObservableProperty]
         public partial int CalorieNeeds { get; set; }
@@ -45,7 +45,7 @@ namespace TeamNut.Models
         public partial int ProteinNeeds { get; set; }
 
         [ObservableProperty]
-        public partial int CarbohydrateNeeds { get; set; }
+        public partial int CarbNeeds { get; set; }
 
         [ObservableProperty]
         public partial int FatNeeds { get; set; }

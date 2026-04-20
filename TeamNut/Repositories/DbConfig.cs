@@ -10,16 +10,16 @@ namespace TeamNut.Repositories
         {
             get
             {
-
+                
                 string directory = AppDomain.CurrentDomain.BaseDirectory;
 
-
+                
                 while (directory != null && !Directory.GetFiles(directory, "*.csproj").Any())
                 {
                     directory = Directory.GetParent(directory)?.FullName;
                 }
 
-
+                
                 string dbPath = Path.Combine(directory ?? "", "NutData.db");
                 return $"Data Source={dbPath}";
             }

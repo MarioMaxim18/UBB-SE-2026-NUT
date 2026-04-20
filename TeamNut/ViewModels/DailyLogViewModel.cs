@@ -246,7 +246,7 @@ namespace TeamNut.ViewModels
             {
                 DailyCaloriesGoal = userData.CalorieNeeds > 0 ? userData.CalorieNeeds : DailyCaloriesGoal;
                 DailyProteinGoal = userData.ProteinNeeds > 0 ? userData.ProteinNeeds : DailyProteinGoal;
-                DailyCarbsGoal = userData.CarbohydrateNeeds > 0 ? userData.CarbohydrateNeeds : DailyCarbsGoal;
+                DailyCarbsGoal = userData.CarbNeeds > 0 ? userData.CarbNeeds : DailyCarbsGoal;
                 DailyFatsGoal = userData.FatNeeds > 0 ? userData.FatNeeds : DailyFatsGoal;
             }
 
@@ -260,14 +260,14 @@ namespace TeamNut.ViewModels
 
             DailyCaloriesText = BuildMetricText(DailyTotals.Calories, DailyCaloriesGoal, "kcal");
             DailyProteinText = BuildMetricText(DailyTotals.Protein, DailyProteinGoal, "g");
-            DailyCarbsText = BuildMetricText(DailyTotals.Carbohydrates, DailyCarbsGoal, "g");
+            DailyCarbsText = BuildMetricText(DailyTotals.Carbs, DailyCarbsGoal, "g");
             DailyFatsText = BuildMetricText(DailyTotals.Fats, DailyFatsGoal, "g");
             var burnedCalories = await _service.GetTodayBurnedCaloriesAsync();
             DailyBurnedCaloriesText = $"{burnedCalories:F0} kcal";
 
             WeeklyCaloriesText = BuildMetricText(WeeklyTotals.Calories, WeeklyCaloriesGoal, "kcal");
             WeeklyProteinText = BuildMetricText(WeeklyTotals.Protein, WeeklyProteinGoal, "g");
-            WeeklyCarbsText = BuildMetricText(WeeklyTotals.Carbohydrates, WeeklyCarbsGoal, "g");
+            WeeklyCarbsText = BuildMetricText(WeeklyTotals.Carbs, WeeklyCarbsGoal, "g");
             WeeklyFatsText = BuildMetricText(WeeklyTotals.Fats, WeeklyFatsGoal, "g");
         }
 

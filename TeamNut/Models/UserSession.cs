@@ -17,7 +17,7 @@ namespace TeamNut.Models
             Username = username;
             Role = role;
         }
-
+       
         public static void Logout()
         {
             UserId = null;

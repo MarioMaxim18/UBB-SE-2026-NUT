@@ -29,15 +29,15 @@ namespace TeamNut.Services
             {
                 int ingredientId = await _ingredientRepository.GetOrCreateIngredientIdAsync(itemName);
 
-                var existingShoppingItem = await _repository.GetByUserAndIngredient(userId, ingredientId);
-                if (existingShoppingItem != null)
+                var existing = await _repository.GetByUserAndIngredient(userId, ingredientId);
+                if (existing != null)
                 {
-                    existingShoppingItem.QuantityGrams += quantity;
-                    await _repository.Update(existingShoppingItem);
-                    return existingShoppingItem;
+                    existing.QuantityGrams += quantity;
+                    await _repository.Update(existing);
+                    return existing;
                 }
 
-                var newShoppingItem = new ShoppingItem
+                var newItem = new ShoppingItem
                 {
                     UserId = userId,
                     IngredientId = ingredientId,
@@ -46,8 +46,8 @@ namespace TeamNut.Services
                     IsChecked = false
                 };
 
-                await _repository.Add(newShoppingItem);
-                return newShoppingItem;
+                await _repository.Add(newItem);
+                return newItem;
             }
             catch
             {
@@ -55,11 +55,11 @@ namespace TeamNut.Services
             }
         }
 
-        public async Task<bool> RemoveItemAsync(ShoppingItem shoppingItem)
+        public async Task<bool> RemoveItemAsync(ShoppingItem item)
         {
             try
             {
-                await _repository.Delete(shoppingItem.Id);
+                await _repository.Delete(item.Id);
                 return true;
             }
             catch
@@ -68,11 +68,11 @@ namespace TeamNut.Services
             }
         }
 
-        public async Task<bool> UpdateItemAsync(ShoppingItem shoppingItem)
+        public async Task<bool> UpdateItemAsync(ShoppingItem item)
         {
             try
             {
-                await _repository.Update(shoppingItem);
+                await _repository.Update(item);
                 return true;
             }
             catch
