@@ -24,7 +24,7 @@ namespace TeamNut.Services
         public async Task<bool> CheckIfUsernameExistsAsync(string username)
         {
             var users = await userRepository.GetAll();
-            return users.Any(u => u.Username.Equals(username, StringComparison.OrdinalIgnoreCase));
+            return users.Any(u => string.Equals(u.Username, username, StringComparison.OrdinalIgnoreCase));
         }
 
         public async Task<User?> LoginAsync(string username, string password)
