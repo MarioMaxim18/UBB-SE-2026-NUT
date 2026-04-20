@@ -13,6 +13,7 @@ namespace TeamNut.Views
         private readonly DispatcherTimer reminderTimer;
         private readonly System.Collections.Generic.HashSet<int> shownReminders = new System.Collections.Generic.HashSet<int>();
         private readonly ReminderService reminderService = new ReminderService();
+
         /// <summary>Gets the main page view model.</summary>
         public MainViewModel ViewModel { get; } = new MainViewModel();
 
