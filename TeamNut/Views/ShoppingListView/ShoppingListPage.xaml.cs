@@ -1,7 +1,6 @@
 using System;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Input;
 using TeamNut.ViewModels;
 using TeamNut.Models;
 
@@ -10,18 +9,27 @@ namespace TeamNut.Views.ShoppingListView
     public sealed partial class ShoppingListPage : Page
     {
         public ShoppingListViewModel ViewModel { get; } = new ShoppingListViewModel();
+        private const string RootPageName = "RootPage";
+        private const int MinSearchLength = 3;
+        private const string NoMatchingIngredientsText = "no matching ingredients found";
+        private const string ButtonYes = "Yes";
+        private const string ButtonCancel = "Cancel";
+        private const string TitleConfirmPantryTransfer = "Confirm Pantry Transfer";
+        private const string TitleConfirmDeletion = "Confirm Deletion";
+        private const string MsgConfirmPantryTransfer = "Are you sure you want to remove this item and add it to your pantry?";
+        private const string MsgConfirmDeletion = "Are you sure you want to remove this item from the shopping list?";
 
         public ShoppingListPage()
         {
-            this.InitializeComponent();
-            
-            this.Name = "RootPage";
+            InitializeComponent();
+            Name = RootPageName;
         }
 
         private void AddButton_Click(object sender, RoutedEventArgs e)
         {
             var text = IngredientSearchBox.Text;
-            if (!string.IsNullOrWhiteSpace(text) && text != "no matching ingredients found")
+
+            if (!string.IsNullOrWhiteSpace(text) && text != NoMatchingIngredientsText)
             {
                 ViewModel.AddItem(text);
                 IngredientSearchBox.Text = string.Empty;
@@ -29,75 +37,83 @@ namespace TeamNut.Views.ShoppingListView
             }
         }
 
-        private async void IngredientSearchBox_TextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
+        private async void IngredientSearchBox_TextChanged(
+            AutoSuggestBox sender,
+            AutoSuggestBoxTextChangedEventArgs args)
         {
-            if (args.Reason == AutoSuggestionBoxTextChangeReason.UserInput)
+            if (args.Reason != AutoSuggestionBoxTextChangeReason.UserInput)
+                return;
+
+            if (sender.Text.Length >= MinSearchLength)
             {
-                if (sender.Text.Length > 2)
-                {
-                    var results = await ViewModel.SearchIngredientsAsync(sender.Text);
-                    if (results.Count == 0)
+                var results = await ViewModel.SearchIngredientsAsync(sender.Text);
+
+                sender.ItemsSource = results.Count == 0
+                    ? new System.Collections.Generic.List<string>
                     {
-                        sender.ItemsSource = new System.Collections.Generic.List<string> { "no matching ingredients found" };
+                        NoMatchingIngredientsText
                     }
-                    else
-                    {
-                        sender.ItemsSource = System.Linq.Enumerable.ToList(System.Linq.Enumerable.Select(results, r => r.Value));
-                    }
-                }
-                else
-                {
-                     sender.ItemsSource = null;
-                }
+                    : System.Linq.Enumerable.ToList(
+                        System.Linq.Enumerable.Select(results, r => r.Value));
+            }
+            else
+            {
+                sender.ItemsSource = null;
             }
         }
 
-        private void IngredientSearchBox_SuggestionChosen(AutoSuggestBox sender, AutoSuggestBoxSuggestionChosenEventArgs args)
+        private void IngredientSearchBox_SuggestionChosen(
+            AutoSuggestBox sender,
+            AutoSuggestBoxSuggestionChosenEventArgs args)
         {
             var selectedName = args.SelectedItem.ToString();
-            if (selectedName == "no matching ingredients found")
+
+            if (selectedName == NoMatchingIngredientsText)
             {
-                sender.Text = "";
+                sender.Text = string.Empty;
                 return;
             }
+
             sender.Text = selectedName;
         }
 
         private async void AcceptButton_Click(object sender, RoutedEventArgs e)
         {
-            if (sender is Button btn && btn.DataContext is ShoppingItem item)
+            if (sender is not Button { DataContext: ShoppingItem item })
+                return;
+
+            var dialog = new ContentDialog
             {
-                var dialog = new ContentDialog
-                {
-                    Title = "Confirm Pantry Transfer",
-                    Content = "Are you sure you want to remove this item and add it to your pantry?",
-                    PrimaryButtonText = "Yes",
-                    CloseButtonText = "Cancel",
-                    XamlRoot = this.XamlRoot
-                };
-                if (await dialog.ShowAsync() == ContentDialogResult.Primary)
-                {
-                    ViewModel.MoveToPantryCommand.Execute(item);
-                }
+                Title = TitleConfirmPantryTransfer,
+                Content = MsgConfirmPantryTransfer,
+                PrimaryButtonText = ButtonYes,
+                CloseButtonText = ButtonCancel,
+                XamlRoot = XamlRoot
+            };
+
+            if (await dialog.ShowAsync() == ContentDialogResult.Primary)
+            {
+                ViewModel.MoveToPantryCommand.Execute(item);
             }
         }
 
         private async void CancelButton_Click(object sender, RoutedEventArgs e)
         {
-             if (sender is Button btn && btn.DataContext is ShoppingItem item)
+            if (sender is not Button { DataContext: ShoppingItem item })
+                return;
+
+            var dialog = new ContentDialog
             {
-                var dialog = new ContentDialog
-                {
-                    Title = "Confirm Deletion",
-                    Content = "Are you sure you want to remove this item from the shopping list?",
-                    PrimaryButtonText = "Yes",
-                    CloseButtonText = "Cancel",
-                    XamlRoot = this.XamlRoot
-                };
-                if (await dialog.ShowAsync() == ContentDialogResult.Primary)
-                {
-                    ViewModel.RemoveItemCommand.Execute(item);
-                }
+                Title = TitleConfirmDeletion,
+                Content = MsgConfirmDeletion,
+                PrimaryButtonText = ButtonYes,
+                CloseButtonText = ButtonCancel,
+                XamlRoot = XamlRoot
+            };
+
+            if (await dialog.ShowAsync() == ContentDialogResult.Primary)
+            {
+                ViewModel.RemoveItemCommand.Execute(item);
             }
         }
     }

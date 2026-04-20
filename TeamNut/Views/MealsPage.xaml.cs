@@ -11,242 +11,147 @@ namespace TeamNut
     public sealed partial class MealsPage : Page
     {
         private MealSearchViewModel viewModel;
-        private int currentPage = 1;
-        private int pageSize = 5;
+        private int currentPage = DefaultStartPage;
         private List<Meal> allMeals = new List<Meal>();
+        private const int DefaultStartPage = 1;
+        private const int DefaultPageSize = 5;
+        private const string FavoriteOnSymbol = "★";
+        private const string FavoriteOffSymbol = "☆";
+        private const string ButtonClose = "Close";
+        private const string LabelCalories = "Calories";
+        private const string LabelProtein = "Protein";
+        private const string LabelCarbs = "Carbs";
+        private const string LabelFat = "Fat";
+        private const string UnitGrams = "g";
+        private const int DetailsPanelSpacing = 10;
+        private const int MealImageHeight = 150;
+        private const string LineBreak = "\n";
+        private const string DoubleLineBreak = "\n\n";
+        private int pageSize = DefaultPageSize;
 
         public MealsPage()
         {
-            this.InitializeComponent();
+            InitializeComponent();
             viewModel = new MealSearchViewModel();
-            
+
             Loaded += (s, e) => btnSearch_Click(this, new RoutedEventArgs());
         }
 
         private async void btnSearch_Click(object sender, RoutedEventArgs e)
         {
-           
             var filter = new MealFilter
             {
-                SearchTerm = txtSearch.Text ?? "",
+                SearchTerm = txtSearch.Text ?? string.Empty,
                 IsVegan = chkVegan?.IsChecked == true,
                 IsKeto = chkKeto?.IsChecked == true,
                 IsGlutenFree = chkGlutenFree?.IsChecked == true,
                 IsLactoseFree = chkLactoseFree?.IsChecked == true,
                 IsNutFree = chkNutFree?.IsChecked == true,
-                IsFavoriteOnly = chkFavorites?.IsChecked == true 
+                IsFavoriteOnly = chkFavorites?.IsChecked == true
             };
 
-           
             var results = await viewModel.SearchMealsAsync(filter);
 
             allMeals = results.ToList();
-            currentPage = 1;
+            currentPage = DefaultStartPage;
             LoadMeals();
         }
 
         private void LoadMeals()
         {
-            if (allMeals == null) return;
+            if (allMeals == null)
+                return;
 
-            var paged = allMeals
-                .Skip((currentPage - 1) * pageSize)
+            var pagedMeals = allMeals
+                .Skip((currentPage - DefaultStartPage) * pageSize)
                 .Take(pageSize)
                 .ToList();
 
             listMeals.ItemsSource = null;
-            listMeals.ItemsSource = paged;
+            listMeals.ItemsSource = pagedMeals;
 
-            int totalPages = (int)Math.Max(1, Math.Ceiling((double)allMeals.Count / pageSize));
+            int totalPages = Math.Max(
+                DefaultStartPage,
+                (int)Math.Ceiling((double)allMeals.Count / pageSize));
+
             txtPage.Text = $"{currentPage} / {totalPages}";
 
-            btnPrev.IsEnabled = currentPage > 1;
+            btnPrev.IsEnabled = currentPage > DefaultStartPage;
             btnNext.IsEnabled = currentPage < totalPages;
         }
 
         private async void Favorite_Click(object sender, RoutedEventArgs e)
         {
-            if (sender is Button btn && btn.DataContext is Meal meal)
+            if (sender is not Button btn || btn.DataContext is not Meal meal)
+                return;
+
+            meal.IsFavorite = !meal.IsFavorite;
+            btn.Content = meal.IsFavorite ? FavoriteOnSymbol : FavoriteOffSymbol;
+
+            await viewModel.ToggleFavoriteAsync(meal);
+
+            if (chkFavorites?.IsChecked == true && !meal.IsFavorite)
             {
-                
-                meal.IsFavorite = !meal.IsFavorite;
-
-                btn.Content = meal.IsFavorite ? "★" : "☆";
-
-                
-                await viewModel.ToggleFavoriteAsync(meal);
-
-                
-                if (chkFavorites?.IsChecked == true && !meal.IsFavorite)
-                {
-                    allMeals.Remove(meal);
-                    LoadMeals();
-                }
+                allMeals.Remove(meal);
+                LoadMeals();
             }
-        }
-
-        
-
-        private async void listMeals_ItemClick(object sender, ItemClickEventArgs e)
-        {
-            var meal = e.ClickedItem as Meal;
-            if (meal == null) return;
-            var ingredientsText = await viewModel.GetMealIngredientsTextAsync(meal.Id);
-            var panel = new StackPanel { Spacing = 10 };
-            if (!string.IsNullOrEmpty(meal.ImageUrl))
-            {
-                panel.Children.Add(new Image { Source = new Microsoft.UI.Xaml.Media.Imaging.BitmapImage(new Uri(meal.ImageUrl)), Height = 150 });
-            }
-            panel.Children.Add(new TextBlock { Text = $"Calories: {meal.Calories}\nProtein: {meal.Protein}g\nCarbs: {meal.Carbs}g\nFat: {meal.Fat}g\n\nIngredients:\n{ingredientsText}" });
-            ContentDialog dialog = new ContentDialog { Title = meal.Name, Content = panel, CloseButtonText = "Close", XamlRoot = this.XamlRoot };
-            await dialog.ShowAsync();
-        }
-
-        private void Favorite_Loaded(object sender, RoutedEventArgs e)
-        {
-            if (sender is Button btn && btn.DataContext is Meal meal)
-            {
-                btn.Content = meal.IsFavorite ? "★" : "☆";
-            }
-        }
-
-        private void Prev_Click(object sender, RoutedEventArgs e) { if (currentPage > 1) { currentPage--; LoadMeals(); } }
-        private void Next_Click(object sender, RoutedEventArgs e) { int totalPages = (int)Math.Ceiling((double)allMeals.Count / pageSize); if (currentPage < totalPages) { currentPage++; LoadMeals(); } }
-        private void txtSearch_KeyDown(object sender, Microsoft.UI.Xaml.Input.KeyRoutedEventArgs e) { if (e.Key == Windows.System.VirtualKey.Enter) btnSearch_Click(this, new RoutedEventArgs()); }
-    }
-}
-
-
-
-/*using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using TeamNut.Models;
-using TeamNut.ViewModels;
-
-namespace TeamNut
-{
-    public sealed partial class MealsPage : Page
-    {
-        private MealSearchViewModel viewModel;
-
-        private int currentPage = 1;
-        private int pageSize = 5;
-
-        private List<Meal> allMeals = new List<Meal>();
-
-        public MealsPage()
-        {
-            this.InitializeComponent();
-            viewModel = new MealSearchViewModel();
-            btnSearch_Click(this, new RoutedEventArgs());
         }
 
         private async void listMeals_ItemClick(object sender, ItemClickEventArgs e)
         {
-            var meal = e.ClickedItem as Meal;
-            if (meal == null) return;
+            if (e.ClickedItem is not Meal meal)
+                return;
 
-            var ingredientsText = await viewModel.GetMealIngredientsTextAsync(meal.Id);
+            var ingredientsText =
+                await viewModel.GetMealIngredientsTextAsync(meal.Id);
 
-            var panel = new StackPanel { Spacing = 10 };
+            var panel = new StackPanel { Spacing = DetailsPanelSpacing };
 
             if (!string.IsNullOrEmpty(meal.ImageUrl))
             {
                 panel.Children.Add(new Image
                 {
-                    Source = new Microsoft.UI.Xaml.Media.Imaging.BitmapImage(new Uri(meal.ImageUrl)),
-                    Height = 150
+                    Source = new Microsoft.UI.Xaml.Media.Imaging.BitmapImage(
+                        new Uri(meal.ImageUrl)),
+                    Height = MealImageHeight
                 });
             }
 
             panel.Children.Add(new TextBlock
             {
-                Text = $"Calories: {meal.Calories}\n" +
-                       $"Protein: {meal.Protein}g\n" +
-                       $"Carbs: {meal.Carbs}g\n" +
-                       $"Fat: {meal.Fat}g\n\n" +
-                       $"Ingredients:\n{ingredientsText}"
+                Text =
+                    $"{LabelCalories}: {meal.Calories}{LineBreak}" +
+                    $"{LabelProtein}: {meal.Protein}{UnitGrams}{LineBreak}" +
+                    $"{LabelCarbs}: {meal.Carbs}{UnitGrams}{LineBreak}" +
+                    $"{LabelFat}: {meal.Fat}{UnitGrams}" +
+                    $"{DoubleLineBreak}Ingredients:{LineBreak}" +
+                    ingredientsText
             });
 
-            ContentDialog dialog = new ContentDialog
+            var dialog = new ContentDialog
             {
                 Title = meal.Name,
                 Content = panel,
-                CloseButtonText = "Close",
-                XamlRoot = this.XamlRoot
+                CloseButtonText = ButtonClose,
+                XamlRoot = XamlRoot
             };
 
             await dialog.ShowAsync();
         }
 
-        private async void Favorite_Click(object sender, RoutedEventArgs e)
-        {
-            if (sender is Button btn && btn.DataContext is Meal meal)
-            {
-                await viewModel.ToggleFavoriteAsync(meal);
-
-                btn.Content = meal.IsFavorite ? "★" : "☆";
-
-                if (chkFavorites.IsChecked == true && !meal.IsFavorite)
-                {
-                    allMeals.Remove(meal);
-                    LoadMeals();
-                }
-            }
-        }
-       
-        private async void btnSearch_Click(object sender, RoutedEventArgs e)
-        {
-            var filter = new MealFilter
-            {
-                SearchTerm = txtSearch.Text ?? "",
-                IsVegan = chkVegan.IsChecked == true,
-                IsKeto = chkKeto.IsChecked == true,
-                IsGlutenFree = chkGlutenFree.IsChecked == true,
-                IsLactoseFree = chkLactoseFree.IsChecked == true,
-                IsNutFree = chkNutFree.IsChecked == true
-            };
-
-            var results = await viewModel.SearchMealsAsync(filter);
-
-            if (chkFavorites.IsChecked == true)
-                results = results.Where(m => m.IsFavorite).ToList();
-
-            allMeals = results;
-            currentPage = 1;
-            LoadMeals();
-        }
-
-        private void LoadMeals()
-        {
-            var paged = allMeals
-                .Skip((currentPage - 1) * pageSize)
-                .Take(pageSize)
-                .ToList();
-
-            
-            listMeals.ItemsSource = null;
-            listMeals.ItemsSource = paged;
-
-            int totalPages = (int)Math.Ceiling((double)allMeals.Count / pageSize);
-            txtPage.Text = $"{currentPage} / {totalPages}";
-
-            btnPrev.IsEnabled = currentPage > 1;
-            btnNext.IsEnabled = currentPage < totalPages;
-        }
         private void Favorite_Loaded(object sender, RoutedEventArgs e)
         {
             if (sender is Button btn && btn.DataContext is Meal meal)
             {
-                btn.Content = meal.IsFavorite ? "★" : "☆";
+                btn.Content = meal.IsFavorite
+                    ? FavoriteOnSymbol
+                    : FavoriteOffSymbol;
             }
         }
+
         private void Prev_Click(object sender, RoutedEventArgs e)
         {
-            if (currentPage > 1)
+            if (currentPage > DefaultStartPage)
             {
                 currentPage--;
                 LoadMeals();
@@ -255,7 +160,8 @@ namespace TeamNut
 
         private void Next_Click(object sender, RoutedEventArgs e)
         {
-            int totalPages = (int)Math.Ceiling((double)allMeals.Count / pageSize);
+            int totalPages =
+                (int)Math.Ceiling((double)allMeals.Count / pageSize);
 
             if (currentPage < totalPages)
             {
@@ -264,7 +170,9 @@ namespace TeamNut
             }
         }
 
-        private void txtSearch_KeyDown(object sender, Microsoft.UI.Xaml.Input.KeyRoutedEventArgs e)
+        private void txtSearch_KeyDown(
+            object sender,
+            Microsoft.UI.Xaml.Input.KeyRoutedEventArgs e)
         {
             if (e.Key == Windows.System.VirtualKey.Enter)
             {
@@ -273,4 +181,3 @@ namespace TeamNut
         }
     }
 }
-*/
