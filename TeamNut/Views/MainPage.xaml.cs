@@ -183,7 +183,9 @@ namespace TeamNut.Views
                     LoadTopReminder();
                 }
             }
-            catch { }
+            catch
+            {
+            }
         }
 
         private async void LoadTopReminder()
