@@ -43,7 +43,6 @@ namespace TeamNut.Models
         [ObservableProperty]
         public partial bool IsFavorite { get; set; }
 
-        
         public Visibility VeganVisibility => IsVegan ? Visibility.Visible : Visibility.Collapsed;
         public Visibility KetoVisibility => IsKeto ? Visibility.Visible : Visibility.Collapsed;
         public Visibility GlutenFreeVisibility => IsGlutenFree ? Visibility.Visible : Visibility.Collapsed;
@@ -60,7 +59,6 @@ namespace TeamNut.Models
         [ObservableProperty]
         public partial string ImageUrl { get; set; } = string.Empty;
 
-        
         partial void OnIsVeganChanged(bool value) => OnPropertyChanged(nameof(VeganVisibility));
         partial void OnIsKetoChanged(bool value) => OnPropertyChanged(nameof(KetoVisibility));
         partial void OnIsGlutenFreeChanged(bool value) => OnPropertyChanged(nameof(GlutenFreeVisibility));

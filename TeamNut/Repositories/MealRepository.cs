@@ -31,8 +31,8 @@ namespace TeamNut.Repositories
             var meals = new List<Meal>();
 
             string baseSql = @"
-        SELECT 
-            m.meal_id, m.imageUrl, m.name, m.isKeto, m.isLactoseFree, 
+        SELECT
+            m.meal_id, m.imageUrl, m.name, m.isKeto, m.isLactoseFree,
             m.isNutFree, m.isVegan, m.isGlutenFree, m.description,
             MAX(CASE WHEN f.id IS NOT NULL THEN 1 ELSE 0 END) AS isFavorite,
             CAST(IFNULL(SUM(i.calories_per_100g * mi.quantity / 100.0), 0) AS INT) AS calories,
@@ -134,7 +134,7 @@ namespace TeamNut.Repositories
         public async Task Add(Meal entity)
         {
             using var conn = new SqliteConnection(connectionString);
-            const string sql = @"INSERT INTO Meals (name, imageUrl, isKeto, isVegan, isNutFree, isLactoseFree, isGlutenFree, description) 
+            const string sql = @"INSERT INTO Meals (name, imageUrl, isKeto, isVegan, isNutFree, isLactoseFree, isGlutenFree, description)
                                 VALUES (@name, @img, @keto, @vegan, @nut, @lac, @glu, @desc)";
             using var cmd = new SqliteCommand(sql, conn);
             AddMealParameters(cmd, entity);
@@ -145,8 +145,8 @@ namespace TeamNut.Repositories
         public async Task Update(Meal entity)
         {
             using var conn = new SqliteConnection(connectionString);
-            const string sql = @"UPDATE Meals SET name=@name, imageUrl=@img, isKeto=@keto, isVegan=@vegan, 
-                                 isNutFree=@nut, isLactoseFree=@lac, isGlutenFree=@glu, description=@desc 
+            const string sql = @"UPDATE Meals SET name=@name, imageUrl=@img, isKeto=@keto, isVegan=@vegan,
+                                 isNutFree=@nut, isLactoseFree=@lac, isGlutenFree=@glu, description=@desc
                                  WHERE meal_id=@id";
             using var cmd = new SqliteCommand(sql, conn);
             cmd.Parameters.AddWithValue("@id", entity.Id);

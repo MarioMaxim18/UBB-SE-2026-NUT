@@ -12,9 +12,9 @@ namespace TeamNut.Services
         private readonly UserRepository userRepository;
         private const int MinValidId = 1;
         private const string DateFormatIso = "yyyy-MM-dd";
-        private static readonly TimeSpan BreakfastTime = new(8, 0, 0);
-        private static readonly TimeSpan LunchTime = new(13, 0, 0);
-        private static readonly TimeSpan DinnerTime = new(17, 0, 0);
+        private static readonly TimeSpan BreakfastTime = new TimeSpan(8, 0, 0);
+        private static readonly TimeSpan LunchTime = new TimeSpan(13, 0, 0);
+        private static readonly TimeSpan DinnerTime = new TimeSpan(17, 0, 0);
         private const double DefaultTolerance = 0.10;
         private const string ReminderFrequencyOnce = "Once";
         private const string DefaultBreakfastName = "Breakfast";

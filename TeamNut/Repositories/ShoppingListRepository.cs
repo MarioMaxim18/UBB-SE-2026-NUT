@@ -39,8 +39,8 @@ namespace TeamNut.Repositories
             using var conn = new SqliteConnection(connectionString);
             await conn.OpenAsync();
 
-            string query = @"SELECT s.id, s.user_id, s.ingredient_id, s.quantity_grams, s.is_checked, i.name AS ingredient_name 
-                             FROM ShoppingItems s 
+            string query = @"SELECT s.id, s.user_id, s.ingredient_id, s.quantity_grams, s.is_checked, i.name AS ingredient_name
+                             FROM ShoppingItems s
                              JOIN Ingredients i ON s.ingredient_id = i.food_id";
 
             using var cmd = new SqliteCommand(query, conn);
@@ -59,8 +59,8 @@ namespace TeamNut.Repositories
             using var conn = new SqliteConnection(connectionString);
             await conn.OpenAsync();
 
-            string query = @"SELECT s.id, s.user_id, s.ingredient_id, s.quantity_grams, s.is_checked, i.name AS ingredient_name 
-                             FROM ShoppingItems s 
+            string query = @"SELECT s.id, s.user_id, s.ingredient_id, s.quantity_grams, s.is_checked, i.name AS ingredient_name
+                             FROM ShoppingItems s
                              JOIN Ingredients i ON s.ingredient_id = i.food_id
                              WHERE s.id = @id";
 
@@ -82,8 +82,8 @@ namespace TeamNut.Repositories
             using var conn = new SqliteConnection(connectionString);
             await conn.OpenAsync();
 
-            string query = @"SELECT s.id, s.user_id, s.ingredient_id, s.quantity_grams, s.is_checked, i.name AS ingredient_name 
-                             FROM ShoppingItems s 
+            string query = @"SELECT s.id, s.user_id, s.ingredient_id, s.quantity_grams, s.is_checked, i.name AS ingredient_name
+                             FROM ShoppingItems s
                              JOIN Ingredients i ON s.ingredient_id = i.food_id
                              WHERE s.user_id = @userId AND s.ingredient_id = @ingredientId";
 
@@ -108,8 +108,8 @@ namespace TeamNut.Repositories
             using var conn = new SqliteConnection(connectionString);
             await conn.OpenAsync();
 
-            string query = @"SELECT s.id, s.user_id, s.ingredient_id, s.quantity_grams, s.is_checked, i.name AS ingredient_name 
-                             FROM ShoppingItems s 
+            string query = @"SELECT s.id, s.user_id, s.ingredient_id, s.quantity_grams, s.is_checked, i.name AS ingredient_name
+                             FROM ShoppingItems s
                              JOIN Ingredients i ON s.ingredient_id = i.food_id
                              WHERE s.user_id = @userId";
 
@@ -131,7 +131,7 @@ namespace TeamNut.Repositories
             using var conn = new SqliteConnection(connectionString);
             await conn.OpenAsync();
 
-            string query = @"UPDATE ShoppingItems 
+            string query = @"UPDATE ShoppingItems
                              SET ingredient_id = @ingredientId, quantity_grams = @quantityGrams, is_checked = @isChecked
                              WHERE id = @id";
 
@@ -164,9 +164,9 @@ namespace TeamNut.Repositories
             await conn.OpenAsync();
 
             string query = @"
-        SELECT 
-            mi.food_id as ingredient_id, 
-            i.name as ingredient_name, 
+        SELECT
+            mi.food_id as ingredient_id,
+            i.name as ingredient_name,
             (SUM(mi.quantity) - IFNULL(MAX(inv.quantity_grams), 0)) as quantity_needed
         FROM MealPlan mp
         JOIN MealPlanMeal mpm ON mp.mealplan_id = mpm.mealPlanId

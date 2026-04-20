@@ -133,7 +133,9 @@ namespace TeamNut
                 parameter?.ToString() == ConverterConstants.ParamInverse;
 
             if (value == null)
+            {
                 return Visibility.Visible;
+            }
 
             if (int.TryParse(value.ToString(), out int intVal))
             {

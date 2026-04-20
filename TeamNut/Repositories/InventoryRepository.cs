@@ -16,8 +16,8 @@ namespace TeamNut.Repositories
             await conn.OpenAsync();
 
             const string checkSql = @"
-        SELECT id, quantity_grams 
-        FROM Inventory 
+        SELECT id, quantity_grams
+        FROM Inventory
         WHERE user_id = @uid AND ingredient_id = @iid LIMIT 1";
 
             using var checkCmd = new SqliteCommand(checkSql, conn);
@@ -43,7 +43,7 @@ namespace TeamNut.Repositories
             else
             {
                 const string insertSql = @"
-            INSERT INTO Inventory (user_id, ingredient_id, quantity_grams) 
+            INSERT INTO Inventory (user_id, ingredient_id, quantity_grams)
             VALUES (@uid, @iid, @qty)";
 
                 using var insertCmd = new SqliteCommand(insertSql, conn);
@@ -59,9 +59,9 @@ namespace TeamNut.Repositories
         public async Task<IEnumerable<Inventory>> GetAllByUserId(int userId)
         {
             var items = new List<Inventory>();
-            const string sql = @"SELECT inv.*, ing.name 
-                                 FROM Inventory inv 
-                                 JOIN Ingredients ing ON inv.ingredient_id = ing.food_id 
+            const string sql = @"SELECT inv.*, ing.name
+                                 FROM Inventory inv
+                                 JOIN Ingredients ing ON inv.ingredient_id = ing.food_id
                                  WHERE inv.user_id = @uid";
 
             using var conn = new SqliteConnection(connectionString);
@@ -112,7 +112,10 @@ namespace TeamNut.Repositories
             await cmd.ExecuteNonQueryAsync();
         }
 
-        public async Task<IEnumerable<Inventory>> GetAll() => throw new NotImplementedException("Use GetAllByUserId");
+        public Task<IEnumerable<Inventory>> GetAll()
+        {
+            throw new NotImplementedException("Use GetAllByUserId");
+        }
 
         private Inventory MapReaderToInventory(SqliteDataReader reader)
         {

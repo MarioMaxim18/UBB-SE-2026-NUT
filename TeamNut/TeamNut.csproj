@@ -18,9 +18,7 @@
     <Nullable>enable</Nullable>
     <CodeAnalysisRuleSet>SE.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
-    
-  </PropertyGroup>
-
+  
   <ItemGroup>
     <None Remove="NutData.db" />
     <None Remove="Views\RemindersView\RemindersPage.xaml" />

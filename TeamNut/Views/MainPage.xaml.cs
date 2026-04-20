@@ -33,7 +33,7 @@ namespace TeamNut.Views
         private const string SoundOnText = "On";
         private const string SoundOffText = "Off";
         private const int DetailsPanelSpacing = 8;
-        
+
         public MainPage()
         {
             InitializeComponent();
