@@ -8,44 +8,55 @@ namespace TeamNut.Services
 {
     public class ReminderService
     {
-        private readonly ReminderRepository reminderRepository;
+        private readonly ReminderRepository _reminderRepository;
 
         public static event EventHandler<int>? RemindersChanged;
+        private const int MaxReminderNameLength = 50;
+        private const int InvalidUserId = 0;
+        private const string ResultSuccess = "Success";
+        private const string ErrorInvalidName = "Error: Name must be between 1 and 50 characters.";
+        private const string ConfirmConsumptionLogFormat = "User {0} confirmed meal {1}. Updating logs...";
 
         public ReminderService()
         {
-            reminderRepository = new ReminderRepository();
+            _reminderRepository = new ReminderRepository();
         }
 
         public async Task<Reminder?> GetNextReminder(int userId)
         {
-            return await reminderRepository.GetNextReminder(userId);
+            return await _reminderRepository.GetNextReminder(userId);
         }
 
         public async Task<Reminder?> GetReminderById(int id)
         {
-            return await reminderRepository.GetById(id);
+            return await _reminderRepository.GetById(id);
         }
 
         public async Task<string> SaveReminder(Reminder reminder)
         {
-            if ((reminder.UserId == 0 || reminder.UserId == default) && UserSession.UserId != null)
+            // Ensure UserId is set
+            if ((reminder.UserId == InvalidUserId ||
+                 reminder.UserId == default) &&
+                UserSession.UserId != null)
             {
-                reminder.UserId = UserSession.UserId ?? reminder.UserId;
+                reminder.UserId =
+                    UserSession.UserId ?? reminder.UserId;
             }
 
-            if (string.IsNullOrWhiteSpace(reminder.Name) || reminder.Name.Length > 50)
+            // Validate name
+            if (string.IsNullOrWhiteSpace(reminder.Name) ||
+                reminder.Name.Length > MaxReminderNameLength)
             {
-                return "Error: Name must be between 1 and 50 characters.";
+                return ErrorInvalidName;
             }
 
-            if (reminder.Id == 0)
+            if (reminder.Id == InvalidUserId)
             {
-                await reminderRepository.Add(reminder);
+                await _reminderRepository.Add(reminder);
             }
             else
             {
-                await reminderRepository.Update(reminder);
+                await _reminderRepository.Update(reminder);
             }
 
             try
@@ -54,22 +65,35 @@ namespace TeamNut.Services
             }
             catch
             {
+                // swallow event errors
             }
 
-            return "Success";
+            return ResultSuccess;
+        }
+
+        public async Task ConfirmConsumption(int userId, int mealId)
+        {
+            Console.WriteLine(
+                string.Format(
+                    ConfirmConsumptionLogFormat,
+                    userId,
+                    mealId));
         }
 
         public async Task<IEnumerable<Reminder>> GetUserReminders(int userId)
         {
-            return await reminderRepository.GetAllByUserId(userId);
+            return await _reminderRepository.GetAllByUserId(userId);
         }
 
         public async Task DeleteReminder(int id)
         {
             try
             {
-                var existing = await reminderRepository.GetById(id);
-                await reminderRepository.Delete(id);
+                var existing =
+                    await _reminderRepository.GetById(id);
+
+                await _reminderRepository.Delete(id);
+
                 if (existing != null)
                 {
                     RemindersChanged?.Invoke(this, existing.UserId);
@@ -77,6 +101,7 @@ namespace TeamNut.Services
             }
             catch
             {
+                // swallow delete errors
             }
         }
 
@@ -88,6 +113,7 @@ namespace TeamNut.Services
             }
             catch
             {
+                // swallow notify errors
             }
         }
     }

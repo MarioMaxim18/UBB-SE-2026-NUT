@@ -1,15 +1,15 @@
-using System;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
-using TeamNut.ViewModels;
+using System;
+using TeamNut.ViewModels; 
+
 
 namespace TeamNut.Views.UserView
 {
     public sealed partial class LoginPage : Page
     {
         public UserViewModel ViewModel => App.UserViewModel;
-
         public LoginPage()
         {
             InitializeComponent();
@@ -44,7 +44,6 @@ namespace TeamNut.Views.UserView
                 this.Frame.Navigate(typeof(RegisterPage));
             }
         }
-
         private void PasswordInput_PasswordChanged(object sender, RoutedEventArgs e)
         {
             if (sender is PasswordBox pwBox && ViewModel.CurrentUser != null)

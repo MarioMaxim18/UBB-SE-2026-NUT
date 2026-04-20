@@ -1,33 +1,36 @@
-﻿using System.Threading.Tasks;
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using System.Threading.Tasks;
 using TeamNut.Models;
 using TeamNut.Services;
-
-namespace TeamNut.ViewModels
+public partial class MainViewModel : ObservableObject
 {
-    public partial class MainViewModel : ObservableObject
+    private readonly ReminderService _reminderService = new();
+    private const int InvalidUserId = 0;
+    private const string LoadingReminderText = "Loading...";
+    private const string NoUpcomingMealsText = "No upcoming meals";
+    private const string ReminderDisplayFormat = "{0} at {1}";
+    private const string ReminderTimeFormat = @"hh\:mm";
+    [ObservableProperty]
+    private string _nextReminderText = LoadingReminderText;
+    public async Task UpdateHeaderReminder()
     {
-        private readonly ReminderService reminderService = new ReminderService();
+        int userId = UserSession.UserId ?? InvalidUserId;
 
-        [ObservableProperty]
-        public partial string NextReminderText { get; set; } = "Loading...";
-
-        public async Task UpdateHeaderReminder()
+        if (userId != InvalidUserId)
         {
-            int userId = UserSession.UserId ?? 0;
+            var next = await _reminderService.GetNextReminder(userId);
 
-            if (userId != 0)
-            {
-                var next = await reminderService.GetNextReminder(userId);
-                NextReminderText = next != null
-                    ? $"{next.Name} at {next.Time:hh\\:mm}"
-                    : "No upcoming meals";
-            }
+            NextReminderText = next != null
+                ? string.Format(
+                    ReminderDisplayFormat,
+                    next.Name,
+                    next.Time.ToString(ReminderTimeFormat)
+                )
+                : NoUpcomingMealsText;
         }
-
-        public async Task LoadHeaderData()
-        {
-            await UpdateHeaderReminder();
-        }
+    }
+    public async Task LoadHeaderData()
+    {
+        await UpdateHeaderReminder();
     }
 }

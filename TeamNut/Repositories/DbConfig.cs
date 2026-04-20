@@ -6,19 +6,27 @@ namespace TeamNut.Repositories
 {
     internal class DbConfig
     {
+        private const string ProjectFileSearchPattern = "*.csproj";
+        private const string DatabaseFileName = "NutData.db";
+        private const string ConnectionStringFormat = "Data Source={0}";
+        private const string EmptyPathFallback = "";
+
         public static string ConnectionString
         {
             get
             {
                 string directory = AppDomain.CurrentDomain.BaseDirectory;
 
-                while (directory != null && !Directory.GetFiles(directory, "*.csproj").Any())
+                while (directory != null && !Directory .GetFiles(directory, ProjectFileSearchPattern) .Any())
                 {
                     directory = Directory.GetParent(directory)?.FullName;
                 }
 
-                string dbPath = Path.Combine(directory ?? string.Empty, "NutData.db");
-                return $"Data Source={dbPath}";
+                string dbPath = Path.Combine(
+                    directory ?? EmptyPathFallback,
+                    DatabaseFileName);
+
+                return string.Format(ConnectionStringFormat, dbPath);
             }
         }
     }

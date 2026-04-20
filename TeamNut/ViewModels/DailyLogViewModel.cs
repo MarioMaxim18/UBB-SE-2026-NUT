@@ -1,7 +1,7 @@
-using System;
-using System.Collections.ObjectModel;
-using System.Linq;
 using System.Threading.Tasks;
+using System.Collections.ObjectModel;
+using System;
+using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
 using TeamNut.Models;
 using TeamNut.Services;
@@ -10,186 +10,150 @@ namespace TeamNut.ViewModels
 {
     public class DailyLogViewModel : ObservableObject
     {
-        private readonly DailyLogService service;
-        private bool hasData;
-        private string statusMessage = string.Empty;
-        private DailyLog dailyTotals = new DailyLog();
-        private DailyLog weeklyTotals = new DailyLog();
-        private double dailyCaloriesGoal = 2000;
-        private double dailyProteinGoal = 150;
-        private double dailyCarbsGoal = 250;
-        private double dailyFatsGoal = 70;
-        private string dailyCaloriesText = string.Empty;
-        private string dailyProteinText = string.Empty;
-        private string dailyCarbsText = string.Empty;
-        private string dailyFatsText = string.Empty;
-        private string weeklyCaloriesText = string.Empty;
-        private string weeklyProteinText = string.Empty;
-        private string weeklyCarbsText = string.Empty;
-        private string weeklyFatsText = string.Empty;
-        private string dailyBurnedCaloriesText = string.Empty;
-        private string mealSearchText = string.Empty;
-        private ObservableCollection<Meal> availableMeals = new ObservableCollection<Meal>();
-        private ObservableCollection<Meal> filteredMeals = new ObservableCollection<Meal>();
-        private Meal? selectedMeal;
-        private string logMealStatusMessage = string.Empty;
+        private static class Constants
+        {
+            public const double DefaultDailyCaloriesGoal = 2000;
+            public const double DefaultDailyProteinGoal = 150;
+            public const double DefaultDailyCarbsGoal = 250;
+            public const double DefaultDailyFatsGoal = 70;
+
+            public const int DaysPerWeek = 7;
+            public const double PercentMultiplier = 100.0;
+
+            public const string CaloriesUnit = "kcal";
+            public const string GramsUnit = "g";
+
+            public const string NumberFormatNoDecimals = "F0";
+            public const string MetricFormatWithGoal = "{0:F0} / {1:F0} {2} ({3:F0}%)";
+            public const string MetricFormatNoGoal = "{0:F0} {1}";
+            public const string BurnedCaloriesFormat = "{0:F0} kcal";
+            public const string LoggedMealFormat = "Logged {0}.";
+
+            public const string NoMealSelectedMessage = "Select a meal first.";
+            public const string NoMealsFoundMessage = "No meals found.";
+            public const string NoDataMessage = "You need to have had atleast one consumed meal.";
+
+            public const string Empty = "";
+            public const StringComparison CaseInsensitiveComparison = StringComparison.OrdinalIgnoreCase;
+        }
+
+        private readonly DailyLogService _service;
+
+        private bool _hasData;
+        private string _statusMessage = Constants.Empty;
+        private DailyLog _dailyTotals = new();
+        private DailyLog _weeklyTotals = new();
+
+        private double _dailyCaloriesGoal = Constants.DefaultDailyCaloriesGoal;
+        private double _dailyProteinGoal = Constants.DefaultDailyProteinGoal;
+        private double _dailyCarbsGoal = Constants.DefaultDailyCarbsGoal;
+        private double _dailyFatsGoal = Constants.DefaultDailyFatsGoal;
+
+        private string _dailyCaloriesText = Constants.Empty;
+        private string _dailyProteinText = Constants.Empty;
+        private string _dailyCarbsText = Constants.Empty;
+        private string _dailyFatsText = Constants.Empty;
+
+        private string _weeklyCaloriesText = Constants.Empty;
+        private string _weeklyProteinText = Constants.Empty;
+        private string _weeklyCarbsText = Constants.Empty;
+        private string _weeklyFatsText = Constants.Empty;
+
+        private string _dailyBurnedCaloriesText = Constants.Empty;
+        private string _mealSearchText = Constants.Empty;
+
+        private ObservableCollection<Meal> _availableMeals = new();
+        private ObservableCollection<Meal> _filteredMeals = new();
+        private Meal? _selectedMeal;
+        private string _logMealStatusMessage = Constants.Empty;
 
         public DailyLogViewModel()
         {
-            service = new DailyLogService();
+            _service = new DailyLogService();
             _ = LoadMealsForAutocompleteAsync();
         }
 
         public bool HasData
         {
-            get => hasData;
-            set => SetProperty(ref hasData, value);
+            get => _hasData;
+            set => SetProperty(ref _hasData, value);
         }
 
         public string StatusMessage
         {
-            get => statusMessage;
-            set => SetProperty(ref statusMessage, value);
+            get => _statusMessage;
+            set => SetProperty(ref _statusMessage, value);
         }
 
         public DailyLog DailyTotals
         {
-            get => dailyTotals;
-            set => SetProperty(ref dailyTotals, value);
+            get => _dailyTotals;
+            set => SetProperty(ref _dailyTotals, value);
         }
 
         public DailyLog WeeklyTotals
         {
-            get => weeklyTotals;
-            set => SetProperty(ref weeklyTotals, value);
+            get => _weeklyTotals;
+            set => SetProperty(ref _weeklyTotals, value);
         }
 
         public double DailyCaloriesGoal
         {
-            get => dailyCaloriesGoal;
-            set => SetProperty(ref dailyCaloriesGoal, value);
+            get => _dailyCaloriesGoal;
+            set => SetProperty(ref _dailyCaloriesGoal, value);
         }
 
         public double DailyProteinGoal
         {
-            get => dailyProteinGoal;
-            set => SetProperty(ref dailyProteinGoal, value);
+            get => _dailyProteinGoal;
+            set => SetProperty(ref _dailyProteinGoal, value);
         }
 
         public double DailyCarbsGoal
         {
-            get => dailyCarbsGoal;
-            set => SetProperty(ref dailyCarbsGoal, value);
+            get => _dailyCarbsGoal;
+            set => SetProperty(ref _dailyCarbsGoal, value);
         }
 
         public double DailyFatsGoal
         {
-            get => dailyFatsGoal;
-            set => SetProperty(ref dailyFatsGoal, value);
+            get => _dailyFatsGoal;
+            set => SetProperty(ref _dailyFatsGoal, value);
         }
 
-        public double WeeklyCaloriesGoal => DailyCaloriesGoal * 7;
-
-        public double WeeklyProteinGoal => DailyProteinGoal * 7;
-
-        public double WeeklyCarbsGoal => DailyCarbsGoal * 7;
-
-        public double WeeklyFatsGoal => DailyFatsGoal * 7;
-
-        public string DailyCaloriesText
-        {
-            get => dailyCaloriesText;
-            set => SetProperty(ref dailyCaloriesText, value);
-        }
-
-        public string DailyProteinText
-        {
-            get => dailyProteinText;
-            set => SetProperty(ref dailyProteinText, value);
-        }
-
-        public string DailyCarbsText
-        {
-            get => dailyCarbsText;
-            set => SetProperty(ref dailyCarbsText, value);
-        }
-
-        public string DailyFatsText
-        {
-            get => dailyFatsText;
-            set => SetProperty(ref dailyFatsText, value);
-        }
-
-        public string WeeklyCaloriesText
-        {
-            get => weeklyCaloriesText;
-            set => SetProperty(ref weeklyCaloriesText, value);
-        }
-
-        public string WeeklyProteinText
-        {
-            get => weeklyProteinText;
-            set => SetProperty(ref weeklyProteinText, value);
-        }
-
-        public string WeeklyCarbsText
-        {
-            get => weeklyCarbsText;
-            set => SetProperty(ref weeklyCarbsText, value);
-        }
-
-        public string WeeklyFatsText
-        {
-            get => weeklyFatsText;
-            set => SetProperty(ref weeklyFatsText, value);
-        }
-
-        public string DailyBurnedCaloriesText
-        {
-            get => dailyBurnedCaloriesText;
-            set => SetProperty(ref dailyBurnedCaloriesText, value);
-        }
+        public double WeeklyCaloriesGoal => DailyCaloriesGoal * Constants.DaysPerWeek;
+        public double WeeklyProteinGoal => DailyProteinGoal * Constants.DaysPerWeek;
+        public double WeeklyCarbsGoal => DailyCarbsGoal * Constants.DaysPerWeek;
+        public double WeeklyFatsGoal => DailyFatsGoal * Constants.DaysPerWeek;
 
         public string MealSearchText
         {
-            get => mealSearchText;
+            get => _mealSearchText;
             set
             {
-                if (SetProperty(ref mealSearchText, value))
+                if (SetProperty(ref _mealSearchText, value))
                 {
                     UpdateFilteredMeals();
                 }
             }
         }
 
-        public ObservableCollection<Meal> AvailableMeals
-        {
-            get => availableMeals;
-            set => SetProperty(ref availableMeals, value);
-        }
-
-        public ObservableCollection<Meal> FilteredMeals
-        {
-            get => filteredMeals;
-            set => SetProperty(ref filteredMeals, value);
-        }
-
         public Meal? SelectedMeal
         {
-            get => selectedMeal;
-            set => SetProperty(ref selectedMeal, value);
+            get => _selectedMeal;
+            set => SetProperty(ref _selectedMeal, value);
         }
 
         public string LogMealStatusMessage
         {
-            get => logMealStatusMessage;
-            set => SetProperty(ref logMealStatusMessage, value);
+            get => _logMealStatusMessage;
+            set => SetProperty(ref _logMealStatusMessage, value);
         }
 
         public async Task LoadMealsForAutocompleteAsync()
         {
-            var meals = await service.GetMealsForAutocompleteAsync();
-            AvailableMeals = new ObservableCollection<Meal>(meals);
+            var meals = await _service.GetMealsForAutocompleteAsync();
+            _availableMeals = new ObservableCollection<Meal>(meals);
             UpdateFilteredMeals();
         }
 
@@ -197,54 +161,53 @@ namespace TeamNut.ViewModels
         {
             if (SelectedMeal == null)
             {
-                LogMealStatusMessage = "Select a meal first.";
+                LogMealStatusMessage = Constants.NoMealSelectedMessage;
                 return;
             }
 
-            await service.LogMealAsync(SelectedMeal);
-            LogMealStatusMessage = $"Logged {SelectedMeal.Name}.";
-            MealSearchText = string.Empty;
+            await _service.LogMealAsync(SelectedMeal);
+            LogMealStatusMessage = string.Format(Constants.LoggedMealFormat, SelectedMeal.Name);
+
+            MealSearchText = Constants.Empty;
             SelectedMeal = null;
+
             await LoadAsync();
         }
 
         private void UpdateFilteredMeals()
         {
-            FilteredMeals.Clear();
+            _filteredMeals.Clear();
+            var query = MealSearchText?.Trim() ?? Constants.Empty;
 
-            var query = MealSearchText?.Trim() ?? string.Empty;
             var filtered = string.IsNullOrWhiteSpace(query)
-                ? AvailableMeals
-                : new ObservableCollection<Meal>(AvailableMeals.Where(m => m.Name.Contains(query, StringComparison.OrdinalIgnoreCase)));
+                ? _availableMeals
+                : new ObservableCollection<Meal>(
+                    _availableMeals.Where(m =>
+                        m.Name.Contains(query, Constants.CaseInsensitiveComparison)));
 
             foreach (var meal in filtered)
             {
-                FilteredMeals.Add(meal);
+                _filteredMeals.Add(meal);
             }
 
-            if (!string.IsNullOrWhiteSpace(query) && FilteredMeals.Count == 0)
-            {
-                LogMealStatusMessage = "No meals found.";
-            }
-            else
-            {
-                LogMealStatusMessage = string.Empty;
-            }
+            LogMealStatusMessage = !string.IsNullOrWhiteSpace(query) && _filteredMeals.Count == 0
+                ? Constants.NoMealsFoundMessage
+                : Constants.Empty;
         }
 
         public async Task LoadAsync()
         {
-            if (!await service.HasAnyLogsAsync())
+            if (!await _service.HasAnyLogsAsync())
             {
                 HasData = false;
-                StatusMessage = "You need to have had atleast one consumed meal.";
+                StatusMessage = Constants.NoDataMessage;
                 return;
             }
 
             HasData = true;
-            StatusMessage = string.Empty;
+            StatusMessage = Constants.Empty;
 
-            var userData = await service.GetCurrentUserNutritionTargetsAsync();
+            var userData = await _service.GetCurrentUserNutritionTargetsAsync();
             if (userData != null)
             {
                 DailyCaloriesGoal = userData.CalorieNeeds > 0 ? userData.CalorieNeeds : DailyCaloriesGoal;
@@ -253,36 +216,32 @@ namespace TeamNut.ViewModels
                 DailyFatsGoal = userData.FatNeeds > 0 ? userData.FatNeeds : DailyFatsGoal;
             }
 
-            DailyTotals = await service.GetTodayTotalsAsync();
-            WeeklyTotals = await service.GetCurrentWeekTotalsAsync();
+            DailyTotals = await _service.GetTodayTotalsAsync();
+            WeeklyTotals = await _service.GetCurrentWeekTotalsAsync();
 
-            OnPropertyChanged(nameof(WeeklyCaloriesGoal));
-            OnPropertyChanged(nameof(WeeklyProteinGoal));
-            OnPropertyChanged(nameof(WeeklyCarbsGoal));
-            OnPropertyChanged(nameof(WeeklyFatsGoal));
+            _dailyCaloriesText = BuildMetricText(DailyTotals.Calories, DailyCaloriesGoal, Constants.CaloriesUnit);
+            _dailyProteinText = BuildMetricText(DailyTotals.Protein, DailyProteinGoal, Constants.GramsUnit);
+            _dailyCarbsText = BuildMetricText(DailyTotals.Carbs, DailyCarbsGoal, Constants.GramsUnit);
+            _dailyFatsText = BuildMetricText(DailyTotals.Fats, DailyFatsGoal, Constants.GramsUnit);
 
-            DailyCaloriesText = BuildMetricText(DailyTotals.Calories, DailyCaloriesGoal, "kcal");
-            DailyProteinText = BuildMetricText(DailyTotals.Protein, DailyProteinGoal, "g");
-            DailyCarbsText = BuildMetricText(DailyTotals.Carbs, DailyCarbsGoal, "g");
-            DailyFatsText = BuildMetricText(DailyTotals.Fats, DailyFatsGoal, "g");
-            var burnedCalories = await service.GetTodayBurnedCaloriesAsync();
-            DailyBurnedCaloriesText = $"{burnedCalories:F0} kcal";
+            var burnedCalories = await _service.GetTodayBurnedCaloriesAsync();
+            _dailyBurnedCaloriesText = string.Format(Constants.BurnedCaloriesFormat, burnedCalories);
 
-            WeeklyCaloriesText = BuildMetricText(WeeklyTotals.Calories, WeeklyCaloriesGoal, "kcal");
-            WeeklyProteinText = BuildMetricText(WeeklyTotals.Protein, WeeklyProteinGoal, "g");
-            WeeklyCarbsText = BuildMetricText(WeeklyTotals.Carbs, WeeklyCarbsGoal, "g");
-            WeeklyFatsText = BuildMetricText(WeeklyTotals.Fats, WeeklyFatsGoal, "g");
+            _weeklyCaloriesText = BuildMetricText(WeeklyTotals.Calories, WeeklyCaloriesGoal, Constants.CaloriesUnit);
+            _weeklyProteinText = BuildMetricText(WeeklyTotals.Protein, WeeklyProteinGoal, Constants.GramsUnit);
+            _weeklyCarbsText = BuildMetricText(WeeklyTotals.Carbs, WeeklyCarbsGoal, Constants.GramsUnit);
+            _weeklyFatsText = BuildMetricText(WeeklyTotals.Fats, WeeklyFatsGoal, Constants.GramsUnit);
         }
 
         private static string BuildMetricText(double total, double goal, string unit)
         {
             if (goal <= 0)
             {
-                return $"{total:F0} {unit}";
+                return string.Format(Constants.MetricFormatNoGoal, total, unit);
             }
 
-            var pct = (total / goal) * 100.0;
-            return $"{total:F0} / {goal:F0} {unit} ({pct:F0}%)";
+            var pct = (total / goal) * Constants.PercentMultiplier;
+            return string.Format(Constants.MetricFormatWithGoal, total, goal, unit, pct);
         }
     }
 }

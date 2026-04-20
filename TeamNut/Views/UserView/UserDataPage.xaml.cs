@@ -1,15 +1,15 @@
-using System;
-using System.Linq;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
+using System;
+using System.Linq;
 using TeamNut.ViewModels;
+
 
 namespace TeamNut.Views.UserView
 {
     public sealed partial class UserDataPage : Page
     {
         public UserViewModel ViewModel => App.UserViewModel;
-
         public UserDataPage()
         {
             InitializeComponent();
