@@ -17,17 +17,17 @@ namespace TeamNut.Repositories
 
         public async Task<int> GetOrCreateIngredientIdByNameAsync(string name)
         {
-            using var connection = new SqliteConnection(_connectionString);
-            await connection.OpenAsync();
+            using var conn = new SqliteConnection(_connectionString);
+            await conn.OpenAsync();
 
-            const string query = "SELECT food_id FROM Ingredients WHERE LOWER(name) = LOWER(@name)";
-            using (var findCommand = new SqliteCommand(query, connection))
+            const string findSql = "SELECT food_id FROM Ingredients WHERE LOWER(name) = LOWER(@name)";
+            using (var findCmd = new SqliteCommand(findSql, conn))
             {
-                findCommand.Parameters.AddWithValue("@name", name);
-                var existingFood = await findCommand.ExecuteScalarAsync();
-                if (existingFood != null && existingFood != DBNull.Value)
+                findCmd.Parameters.AddWithValue("@name", name);
+                var existing = await findCmd.ExecuteScalarAsync();
+                if (existing != null && existing != DBNull.Value)
                 {
-                    return Convert.ToInt32(existingFood);
+                    return Convert.ToInt32(existing);
                 }
             }
 
@@ -38,19 +38,19 @@ namespace TeamNut.Repositories
             insertCmd.Parameters.AddWithValue("@name", name);
             var id = await insertCmd.ExecuteScalarAsync();
             return Convert.ToInt32(id);*/
-            const string insertQuery = @"INSERT INTO Ingredients (name, calories_per_100g, protein_per_100g, carbs_per_100g, fat_per_100g)
+            const string insertSql = @"INSERT INTO Ingredients (name, calories_per_100g, protein_per_100g, carbs_per_100g, fat_per_100g)
                            VALUES (@name, 0, 0, 0, 0);
-                           SELECT last_insert_rowid();";
+                           SELECT last_insert_rowid();"; 
 
-            using var insertCommand = new SqliteCommand(insertQuery, connection);
-            insertCommand.Parameters.AddWithValue("@name", name);
-            var insertedId = await insertCommand.ExecuteScalarAsync();
-            return Convert.ToInt32(insertedId);
+            using var insertCmd = new SqliteCommand(insertSql, conn);
+            insertCmd.Parameters.AddWithValue("@name", name);
+            var id = await insertCmd.ExecuteScalarAsync();
+            return Convert.ToInt32(id);
         }
 
         public async Task<List<KeyValuePair<int, string>>> SearchIngredientsAsync(string search)
         {
-            var foodsList = new List<KeyValuePair<int, string>>();
+            var results = new List<KeyValuePair<int, string>>();
 
             const string sql = @"SELECT  food_id, name
                                  FROM Ingredients
@@ -58,56 +58,56 @@ namespace TeamNut.Repositories
                                  ORDER BY name
                                  LIMIT 20";
 
-            using var connection = new SqliteConnection(_connectionString);
-            using var command = new SqliteCommand(sql, connection);
-            command.Parameters.AddWithValue("@search", $"%{search}%");
+            using var conn = new SqliteConnection(_connectionString);
+            using var cmd = new SqliteCommand(sql, conn);
+            cmd.Parameters.AddWithValue("@search", $"%{search}%");
 
-            await connection.OpenAsync();
-            using var reader = await command.ExecuteReaderAsync();
+            await conn.OpenAsync();
+            using var reader = await cmd.ExecuteReaderAsync();
             while (await reader.ReadAsync())
             {
-                foodsList.Add(new KeyValuePair<int, string>(
+                results.Add(new KeyValuePair<int, string>(
                     Convert.ToInt32(reader["food_id"]),
                     reader["name"]?.ToString() ?? string.Empty));
             }
 
-            return foodsList;
+            return results;
         }
 
         public async Task<List<Ingredient>> GetAllAsync()
         {
-            var ingredientsList = new List<Ingredient>();
+            var ingredients = new List<Ingredient>();
 
-            const string query = @"SELECT food_id, name, calories_per_100g, protein_per_100g, carbs_per_100g, fat_per_100g
+            const string sql = @"SELECT food_id, name, calories_per_100g, protein_per_100g, carbs_per_100g, fat_per_100g
                                  FROM Ingredients
                                  ORDER BY name";
 
-            using var connection = new SqliteConnection(_connectionString);
-            using var command = new SqliteCommand(query, connection);
+            using var conn = new SqliteConnection(_connectionString);
+            using var cmd = new SqliteCommand(sql, conn);
 
-            await connection.OpenAsync();
-            using var reader = await command.ExecuteReaderAsync();
+            await conn.OpenAsync();
+            using var reader = await cmd.ExecuteReaderAsync();
 
             while (await reader.ReadAsync())
             {
-                ingredientsList.Add(new Ingredient
+                ingredients.Add(new Ingredient
                 {
                     FoodId = Convert.ToInt32(reader["food_id"]),
                     Name = reader["name"]?.ToString() ?? string.Empty,
-                    CaloriesPer100Grams = GetDoubleOrZero(reader, "calories_per_100g"),
-                    ProteinPer100Grams = GetDoubleOrZero(reader, "protein_per_100g"),
-                    CarbohydratesPer100Grams = GetDoubleOrZero(reader, "carbs_per_100g"),
-                    FatPer100Grams = GetDoubleOrZero(reader, "fat_per_100g")
+                    CaloriesPer100g = GetDoubleOrZero(reader, "calories_per_100g"),
+                    ProteinPer100g = GetDoubleOrZero(reader, "protein_per_100g"),
+                    CarbsPer100g = GetDoubleOrZero(reader, "carbs_per_100g"),
+                    FatPer100g = GetDoubleOrZero(reader, "fat_per_100g")
                 });
             }
 
-            return ingredientsList;
+            return ingredients;
         }
 
         private static double GetDoubleOrZero(SqliteDataReader reader, string column)
         {
-            var cellValue = reader[column];
-            return cellValue == DBNull.Value ? 0 : Convert.ToDouble(cellValue);
+            var value = reader[column];
+            return value == DBNull.Value ? 0 : Convert.ToDouble(value);
         }
     }
 }

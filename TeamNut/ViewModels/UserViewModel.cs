@@ -95,11 +95,11 @@ namespace TeamNut.ViewModels
                     StatusMessage = "Please select a valid birthdate.";
                     return;
                 }
-                CurrentUserData.BodyMassIndex = CurrentUserData.CalculateBmi();
+                CurrentUserData.Bmi = CurrentUserData.CalculateBmi();
                 CurrentUserData.CalorieNeeds = CurrentUserData.CalculateCalorieNeeds();
                 CurrentUserData.ProteinNeeds = CurrentUserData.CalculateProteinNeeds();
                 CurrentUserData.FatNeeds = CurrentUserData.CalculateFatNeeds();
-                CurrentUserData.CarbohydrateNeeds = CurrentUserData.CalculateCarbNeeds();
+                CurrentUserData.CarbNeeds = CurrentUserData.CalculateCarbNeeds();
 
                 var registeredUser = await _userService.RegisterUserAsync(CurrentUser);
                 if (registeredUser == null)

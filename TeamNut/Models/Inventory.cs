@@ -16,7 +16,7 @@ namespace TeamNut.Models
         [ObservableProperty]
         private int _quantityGrams;
 
-
+        
         [ObservableProperty]
         private string _ingredientName = string.Empty;
     }

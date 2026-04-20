@@ -22,26 +22,26 @@ namespace TeamNut.Services
 
         public async Task<bool> ConsumeMeal(int userId, int mealId)
         {
-
+            
             var requiredIngredients = await _mealPlanRepository.GetIngredientsForMeal(mealId);
 
-            foreach (var ingredient in requiredIngredients)
+            foreach (var req in requiredIngredients)
             {
                 var inventoryItems = await _inventoryRepository.GetAllByUserId(userId);
-                var inventoryItem = inventoryItems.FirstOrDefault(i => i.IngredientId == ingredient.IngredientId);
+                var stock = inventoryItems.FirstOrDefault(i => i.IngredientId == req.IngredientId);
 
-                if (inventoryItem != null)
+                if (stock != null)
                 {
-                    int qtyToRemove = (int)Math.Round(ingredient.Quantity);
-                    inventoryItem.QuantityGrams -= qtyToRemove;
+                    int qtyToRemove = (int)Math.Round(req.Quantity);
+                    stock.QuantityGrams -= qtyToRemove;
 
-                    if (inventoryItem.QuantityGrams <= 0)
+                    if (stock.QuantityGrams <= 0)
                     {
-                        await _inventoryRepository.Delete(inventoryItem.Id);
+                        await _inventoryRepository.Delete(stock.Id);
                     }
                     else
                     {
-                        await _inventoryRepository.Update(inventoryItem);
+                        await _inventoryRepository.Update(stock);
                     }
                 }
             }

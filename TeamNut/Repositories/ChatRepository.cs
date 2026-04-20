@@ -12,120 +12,120 @@ namespace TeamNut.Repositories
 
         public async Task<IEnumerable<Conversation>> GetAllConversationsAsync()
         {
-            var conversationList = new List<Conversation>();
-            using var connection = new SqliteConnection(_connectionString);
-            using var command = new SqliteCommand("SELECT c.id, c.has_unanswered, c.user_id, u.username FROM Conversations c JOIN Users u ON c.user_id = u.id ORDER BY c.has_unanswered DESC, c.id DESC", connection);
-            await connection.OpenAsync();
-            using var reader = await command.ExecuteReaderAsync();
+            var list = new List<Conversation>();
+            using var conn = new SqliteConnection(_connectionString);
+            using var cmd = new SqliteCommand("SELECT c.id, c.has_unanswered, c.user_id, u.username FROM Conversations c JOIN Users u ON c.user_id = u.id ORDER BY c.has_unanswered DESC, c.id DESC", conn);
+            await conn.OpenAsync();
+            using var reader = await cmd.ExecuteReaderAsync();
             while (await reader.ReadAsync())
             {
-                conversationList.Add(new Conversation
+                list.Add(new Conversation
                 {
                     Id = reader.GetInt32(0),
-                    HasUnansweredMessages = Convert.ToBoolean(reader.GetValue(1)),
+                    HasUnanswered = Convert.ToBoolean(reader.GetValue(1)),
                     UserId = reader.GetInt32(2),
                     Username = reader.GetString(3)
                 });
             }
-            return conversationList;
+            return list;
         }
 
         public async Task<IEnumerable<Conversation>> GetConversationsWithUserMessagesAsync()
         {
-            var conversationList = new List<Conversation>();
-            using var connection = new SqliteConnection(_connectionString);
-            using var command = new SqliteCommand("SELECT DISTINCT c.id, c.has_unanswered, c.user_id, u.username FROM Conversations c JOIN Users u ON c.user_id = u.id JOIN Messages m ON m.conversation_id = c.id JOIN Users su ON m.sender_id = su.id WHERE su.role <> 'Nutritionist' ORDER BY c.has_unanswered DESC, c.id DESC", connection);
-            await connection.OpenAsync();
-            using var reader = await command.ExecuteReaderAsync();
+            var list = new List<Conversation>();
+            using var conn = new SqliteConnection(_connectionString);
+            using var cmd = new SqliteCommand("SELECT DISTINCT c.id, c.has_unanswered, c.user_id, u.username FROM Conversations c JOIN Users u ON c.user_id = u.id JOIN Messages m ON m.conversation_id = c.id JOIN Users su ON m.sender_id = su.id WHERE su.role <> 'Nutritionist' ORDER BY c.has_unanswered DESC, c.id DESC", conn);
+            await conn.OpenAsync();
+            using var reader = await cmd.ExecuteReaderAsync();
             while (await reader.ReadAsync())
             {
-                conversationList.Add(new Conversation
+                list.Add(new Conversation
                 {
                     Id = reader.GetInt32(0),
-                    HasUnansweredMessages = Convert.ToBoolean(reader.GetValue(1)),
+                    HasUnanswered = Convert.ToBoolean(reader.GetValue(1)),
                     UserId = reader.GetInt32(2),
                     Username = reader.IsDBNull(3) ? string.Empty : reader.GetString(3)
                 });
             }
-            return conversationList;
+            return list;
         }
 
         public async Task<IEnumerable<Conversation>> GetConversationsWithMessagesAsync()
         {
-            var conversationList = new List<Conversation>();
-            using var connection = new SqliteConnection(_connectionString);
-            using var command = new SqliteCommand("SELECT DISTINCT c.id, c.has_unanswered, c.user_id, u.username FROM Conversations c JOIN Users u ON c.user_id = u.id JOIN Messages m ON m.conversation_id = c.id ORDER BY c.has_unanswered DESC, c.id DESC", connection);
-            await connection.OpenAsync();
-            using var reader = await command.ExecuteReaderAsync();
+            var list = new List<Conversation>();
+            using var conn = new SqliteConnection(_connectionString);
+            using var cmd = new SqliteCommand("SELECT DISTINCT c.id, c.has_unanswered, c.user_id, u.username FROM Conversations c JOIN Users u ON c.user_id = u.id JOIN Messages m ON m.conversation_id = c.id ORDER BY c.has_unanswered DESC, c.id DESC", conn);
+            await conn.OpenAsync();
+            using var reader = await cmd.ExecuteReaderAsync();
             while (await reader.ReadAsync())
             {
-                conversationList.Add(new Conversation
+                list.Add(new Conversation
                 {
                     Id = reader.GetInt32(0),
-                    HasUnansweredMessages = Convert.ToBoolean(reader.GetValue(1)),
+                    HasUnanswered = Convert.ToBoolean(reader.GetValue(1)),
                     UserId = reader.GetInt32(2),
                     Username = reader.IsDBNull(3) ? string.Empty : reader.GetString(3)
                 });
             }
-            return conversationList;
+            return list;
         }
 
         public async Task<IEnumerable<Conversation>> GetConversationsWhereNutritionistRespondedAsync(int nutritionistId)
         {
-            var conversationList = new List<Conversation>();
-            using var connection = new SqliteConnection(_connectionString);
-            using var command = new SqliteCommand("SELECT DISTINCT c.id, c.has_unanswered, c.user_id, u.username FROM Conversations c JOIN Users u ON c.user_id = u.id JOIN Messages m ON m.conversation_id = c.id WHERE m.sender_id = @nutritionistid ORDER BY c.has_unanswered DESC, c.id DESC", connection);
-            command.Parameters.AddWithValue("@nutritionistid", nutritionistId);
-            await connection.OpenAsync();
-            using var reader = await command.ExecuteReaderAsync();
+            var list = new List<Conversation>();
+            using var conn = new SqliteConnection(_connectionString);
+            using var cmd = new SqliteCommand("SELECT DISTINCT c.id, c.has_unanswered, c.user_id, u.username FROM Conversations c JOIN Users u ON c.user_id = u.id JOIN Messages m ON m.conversation_id = c.id WHERE m.sender_id = @nid ORDER BY c.has_unanswered DESC, c.id DESC", conn);
+            cmd.Parameters.AddWithValue("@nid", nutritionistId);
+            await conn.OpenAsync();
+            using var reader = await cmd.ExecuteReaderAsync();
             while (await reader.ReadAsync())
             {
-                conversationList.Add(new Conversation
+                list.Add(new Conversation
                 {
                     Id = reader.GetInt32(0),
-                    HasUnansweredMessages = Convert.ToBoolean(reader.GetValue(1)),
+                    HasUnanswered = Convert.ToBoolean(reader.GetValue(1)),
                     UserId = reader.GetInt32(2),
                     Username = reader.IsDBNull(3) ? string.Empty : reader.GetString(3)
                 });
             }
-            return conversationList;
+            return list;
         }
 
         public async Task<Conversation> GetOrCreateConversationForUserAsync(int userId)
         {
-            using var connection = new SqliteConnection(_connectionString);
-            using var checkCommand = new SqliteCommand("SELECT id, has_unanswered FROM Conversations WHERE user_id = @userid", connection);
-            checkCommand.Parameters.AddWithValue("@userid", userId);
-            await connection.OpenAsync();
-            using var reader = await checkCommand.ExecuteReaderAsync();
+            using var conn = new SqliteConnection(_connectionString);
+            using var check = new SqliteCommand("SELECT id, has_unanswered FROM Conversations WHERE user_id = @uid", conn);
+            check.Parameters.AddWithValue("@uid", userId);
+            await conn.OpenAsync();
+            using var reader = await check.ExecuteReaderAsync();
             if (await reader.ReadAsync())
             {
                 return new Conversation
                 {
                     Id = reader.GetInt32(0),
-                    HasUnansweredMessages = Convert.ToBoolean(reader.GetValue(1)),
+                    HasUnanswered = Convert.ToBoolean(reader.GetValue(1)),
                     UserId = userId
                 };
             }
             reader.Close();
 
-            using var insertCommand = new SqliteCommand("INSERT INTO Conversations (user_id, has_unanswered) VALUES (@userid, 0); SELECT last_insert_rowid();", connection);
-            insertCommand.Parameters.AddWithValue("@userid", userId);
-            var insertedId = await insertCommand.ExecuteScalarAsync();
-            return new Conversation { Id = Convert.ToInt32(insertedId), UserId = userId, HasUnansweredMessages = false };
+            using var ins = new SqliteCommand("INSERT INTO Conversations (user_id, has_unanswered) VALUES (@uid, 0); SELECT last_insert_rowid();", conn);
+            ins.Parameters.AddWithValue("@uid", userId);
+            var res = await ins.ExecuteScalarAsync();
+            return new Conversation { Id = Convert.ToInt32(res), UserId = userId, HasUnanswered = false };
         }
 
         public async Task<IEnumerable<Message>> GetMessagesForConversationAsync(int conversationId)
         {
-            var messageList = new List<Message>();
-            using var connection = new SqliteConnection(_connectionString);
-            using var command = new SqliteCommand("SELECT m.id, m.sent_at, m.conversation_id, m.sender_id, m.text_content, u.username, u.role FROM Messages m JOIN Users u ON m.sender_id = u.id WHERE m.conversation_id = @cid ORDER BY m.sent_at", connection);
-            command.Parameters.AddWithValue("@cid", conversationId);
-            await connection.OpenAsync();
-            using var reader = await command.ExecuteReaderAsync();
+            var list = new List<Message>();
+            using var conn = new SqliteConnection(_connectionString);
+            using var cmd = new SqliteCommand("SELECT m.id, m.sent_at, m.conversation_id, m.sender_id, m.text_content, u.username, u.role FROM Messages m JOIN Users u ON m.sender_id = u.id WHERE m.conversation_id = @cid ORDER BY m.sent_at", conn);
+            cmd.Parameters.AddWithValue("@cid", conversationId);
+            await conn.OpenAsync();
+            using var reader = await cmd.ExecuteReaderAsync();
             while (await reader.ReadAsync())
             {
-                messageList.Add(new Message
+                list.Add(new Message
                 {
                     Id = reader.GetInt32(0),
                     SentAt = reader.GetDateTime(1),
@@ -136,32 +136,32 @@ namespace TeamNut.Repositories
                     SenderRole = reader.IsDBNull(6) ? string.Empty : reader.GetString(6)
                 });
                 // set helper fields
-                var currentMessage = messageList[messageList.Count - 1];
+                var last = list[list.Count - 1];
                 try
                 {
-                    currentMessage.IsFromCurrentUser = currentMessage.SenderId == TeamNut.Models.UserSession.UserId;
+                    last.IsFromCurrentUser = last.SenderId == TeamNut.Models.UserSession.UserId;
                 }
                 catch { }
             }
-            return messageList;
+            return list;
         }
 
         public async Task AddMessageAsync(int conversationId, int senderId, string text, bool isNutritionist)
         {
-            using var connection = new SqliteConnection(_connectionString);
-            using var command = new SqliteCommand("INSERT INTO Messages (conversation_id, sender_id, text_content) VALUES (@conversationid, @senderid, @text)", connection);
-            command.Parameters.AddWithValue("@conversationid", conversationId);
-            command.Parameters.AddWithValue("@senderid", senderId);
-            command.Parameters.AddWithValue("@text", text);
-            await connection.OpenAsync();
-            await command.ExecuteNonQueryAsync();
+            using var conn = new SqliteConnection(_connectionString);
+            using var cmd = new SqliteCommand("INSERT INTO Messages (conversation_id, sender_id, text_content) VALUES (@cid, @sid, @txt)", conn);
+            cmd.Parameters.AddWithValue("@cid", conversationId);
+            cmd.Parameters.AddWithValue("@sid", senderId);
+            cmd.Parameters.AddWithValue("@txt", text);
+            await conn.OpenAsync();
+            await cmd.ExecuteNonQueryAsync();
 
             // if sender is user (not nutritionist), mark conversation as unanswered
-            using var updateCommand = new SqliteCommand("UPDATE Conversations SET has_unanswered = CASE WHEN @isUser = 1 THEN 1 ELSE 0 END WHERE id = @conversationid", connection);
+            using var update = new SqliteCommand("UPDATE Conversations SET has_unanswered = CASE WHEN @isUser = 1 THEN 1 ELSE 0 END WHERE id = @cid", conn);
             // @isUser should be 1 when the sender is a regular user, 0 when sender is a nutritionist
-            updateCommand.Parameters.AddWithValue("@isUser", isNutritionist ? 0 : 1);
-            updateCommand.Parameters.AddWithValue("@conversationid", conversationId);
-            await updateCommand.ExecuteNonQueryAsync();
+            update.Parameters.AddWithValue("@isUser", isNutritionist ? 0 : 1);
+            update.Parameters.AddWithValue("@cid", conversationId);
+            await update.ExecuteNonQueryAsync();
         }
     }
 }

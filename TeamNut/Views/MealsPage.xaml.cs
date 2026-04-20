@@ -19,13 +19,13 @@ namespace TeamNut
         {
             this.InitializeComponent();
             viewModel = new MealSearchViewModel();
-
+            
             Loaded += (s, e) => btnSearch_Click(this, new RoutedEventArgs());
         }
 
         private async void btnSearch_Click(object sender, RoutedEventArgs e)
         {
-
+           
             var filter = new MealFilter
             {
                 SearchTerm = txtSearch.Text ?? "",
@@ -34,10 +34,10 @@ namespace TeamNut
                 IsGlutenFree = chkGlutenFree?.IsChecked == true,
                 IsLactoseFree = chkLactoseFree?.IsChecked == true,
                 IsNutFree = chkNutFree?.IsChecked == true,
-                IsFavoriteOnly = chkFavorites?.IsChecked == true
+                IsFavoriteOnly = chkFavorites?.IsChecked == true 
             };
 
-
+           
             var results = await viewModel.SearchMealsAsync(filter);
 
             allMeals = results.ToList();
@@ -68,15 +68,15 @@ namespace TeamNut
         {
             if (sender is Button btn && btn.DataContext is Meal meal)
             {
-
+                
                 meal.IsFavorite = !meal.IsFavorite;
 
                 btn.Content = meal.IsFavorite ? "★" : "☆";
 
-
+                
                 await viewModel.ToggleFavoriteAsync(meal);
 
-
+                
                 if (chkFavorites?.IsChecked == true && !meal.IsFavorite)
                 {
                     allMeals.Remove(meal);
@@ -85,7 +85,7 @@ namespace TeamNut
             }
         }
 
-
+        
 
         private async void listMeals_ItemClick(object sender, ItemClickEventArgs e)
         {
@@ -97,7 +97,7 @@ namespace TeamNut
             {
                 panel.Children.Add(new Image { Source = new Microsoft.UI.Xaml.Media.Imaging.BitmapImage(new Uri(meal.ImageUrl)), Height = 150 });
             }
-            panel.Children.Add(new TextBlock { Text = $"Calories: {meal.Calories}\nProtein: {meal.Protein}g\nCarbs: {meal.Carbohydrates}g\nFat: {meal.Fat}g\n\nIngredients:\n{ingredientsText}" });
+            panel.Children.Add(new TextBlock { Text = $"Calories: {meal.Calories}\nProtein: {meal.Protein}g\nCarbs: {meal.Carbs}g\nFat: {meal.Fat}g\n\nIngredients:\n{ingredientsText}" });
             ContentDialog dialog = new ContentDialog { Title = meal.Name, Content = panel, CloseButtonText = "Close", XamlRoot = this.XamlRoot };
             await dialog.ShowAsync();
         }
