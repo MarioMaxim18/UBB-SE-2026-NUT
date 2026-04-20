@@ -7,7 +7,7 @@ namespace TeamNut.ViewModels
 {
     public partial class MainViewModel : ObservableObject
     {
-        private readonly ReminderService reminderService = new();
+        private readonly ReminderService reminderService = new ReminderService();
 
         [ObservableProperty]
         public partial string NextReminderText { get; set; } = "Loading...";

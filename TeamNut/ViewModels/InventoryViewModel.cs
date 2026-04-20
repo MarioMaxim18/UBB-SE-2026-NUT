@@ -63,11 +63,11 @@ namespace TeamNut.ViewModels
             set => SetProperty(ref quantityToAdd, value);
         }
 
-        public ObservableCollection<Inventory> Items { get; } = new();
+        public ObservableCollection<Inventory> Items { get; } = new ObservableCollection<Inventory>();
 
-        public ObservableCollection<Ingredient> AvailableIngredients { get; } = new();
+        public ObservableCollection<Ingredient> AvailableIngredients { get; } = new ObservableCollection<Ingredient>();
 
-        public ObservableCollection<Ingredient> FilteredIngredients { get; } = new();
+        public ObservableCollection<Ingredient> FilteredIngredients { get; } = new ObservableCollection<Ingredient>();
 
         public InventoryViewModel(int userId)
         {

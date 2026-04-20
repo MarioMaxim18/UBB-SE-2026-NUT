@@ -36,7 +36,9 @@ namespace TeamNut.Views.NutritionistChat
                     MessagesScrollViewer.ChangeView(null, MessagesScrollViewer.ScrollableHeight, null, true);
                 }
             }
-            catch { }
+            catch
+            {
+            }
         }
 
         protected override void OnNavigatedFrom(Microsoft.UI.Xaml.Navigation.NavigationEventArgs e)

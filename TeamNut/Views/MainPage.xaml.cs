@@ -17,12 +17,12 @@ namespace TeamNut.Views
         private bool remindersLoaded = false;
         private readonly Microsoft.UI.Dispatching.DispatcherQueue dispatcher;
         private readonly Microsoft.UI.Xaml.DispatcherTimer reminderTimer;
-        private readonly HashSet<int> shownReminders = new();
-        private readonly ReminderService reminderService = new();
+        private readonly HashSet<int> shownReminders = new HashSet<int>();
+        private readonly ReminderService reminderService = new ReminderService();
 
-        public MainViewModel ViewModel { get; } = new();
+        public MainViewModel ViewModel { get; } = new MainViewModel();
 
-        public RemindersViewModel RemindersViewModel { get; } = new();
+        public RemindersViewModel RemindersViewModel { get; } = new RemindersViewModel();
 
         public MainPage()
         {
@@ -147,7 +147,9 @@ namespace TeamNut.Views
                     LoadTopReminder();
                 }
             }
-            catch { }
+            catch
+            {
+            }
         }
 
         private void MainTabView_SelectionChanged(object sender, SelectionChangedEventArgs e)

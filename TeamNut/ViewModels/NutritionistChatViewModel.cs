@@ -19,10 +19,10 @@ namespace TeamNut.ViewModels
         private int? currentConversationId;
 
         [ObservableProperty]
-        public partial ObservableCollection<Conversation> Conversations { get; set; } = new();
+        public partial ObservableCollection<Conversation> Conversations { get; set; } = new ObservableCollection<Conversation>();
 
         [ObservableProperty]
-        public partial ObservableCollection<Message> Messages { get; set; } = new();
+        public partial ObservableCollection<Message> Messages { get; set; } = new ObservableCollection<Message>();
 
         [ObservableProperty]
         public partial string InputText { get; set; } = string.Empty;
@@ -165,7 +165,9 @@ namespace TeamNut.ViewModels
                     }
                 }
             }
-            catch (TaskCanceledException) { }
+            catch (TaskCanceledException)
+            {
+            }
         }
 
         public void StopAutoRefresh()
@@ -174,7 +176,9 @@ namespace TeamNut.ViewModels
             {
                 autoRefreshCts?.Cancel();
             }
-            catch { }
+            catch
+            {
+            }
         }
 
         [RelayCommand]

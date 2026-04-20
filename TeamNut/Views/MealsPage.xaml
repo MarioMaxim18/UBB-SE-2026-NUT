@@ -16,10 +16,10 @@
             <TextBox x:Name="txtSearch"
                      PlaceholderText="Search meal..."
                      Width="250"
-                     KeyDown="txtSearch_KeyDown"/>
+                     KeyDown="TxtSearch_KeyDown"/>
 
             <Button Content="Search"
-                    Click="btnSearch_Click"/>
+                    Click="BtnSearch_Click"/>
 
             <Button Content="Filters">
                 <Button.Flyout>
@@ -41,7 +41,7 @@
         <ListView x:Name="listMeals"
                   Grid.Row="1"
                   IsItemClickEnabled="True"
-                  ItemClick="listMeals_ItemClick">
+                  ItemClick="ListMeals_ItemClick">
 
             <ListView.ItemTemplate>
                 <DataTemplate>

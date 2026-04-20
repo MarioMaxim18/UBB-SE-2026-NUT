@@ -12,10 +12,10 @@ namespace TeamNut.ViewModels
     public partial class UserViewModel : ObservableObject
     {
         [ObservableProperty]
-        public partial User CurrentUser { get; set; } = new();
+        public partial User CurrentUser { get; set; } = new User();
 
         [ObservableProperty]
-        public partial UserData CurrentUserData { get; set; } = new();
+        public partial UserData CurrentUserData { get; set; } = new UserData();
 
         [ObservableProperty]
         public partial bool IsNutritionistChecked { get; set; }

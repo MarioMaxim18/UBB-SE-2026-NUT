@@ -52,7 +52,9 @@ namespace TeamNut.Services
             {
                 RemindersChanged?.Invoke(this, reminder.UserId);
             }
-            catch { }
+            catch
+            {
+            }
 
             return "Success";
         }
@@ -73,7 +75,9 @@ namespace TeamNut.Services
                     RemindersChanged?.Invoke(this, existing.UserId);
                 }
             }
-            catch { }
+            catch
+            {
+            }
         }
 
         public static void NotifyRemindersChangedForUser(int userId)
@@ -82,7 +86,9 @@ namespace TeamNut.Services
             {
                 RemindersChanged?.Invoke(null, userId);
             }
-            catch { }
+            catch
+            {
+            }
         }
     }
 }

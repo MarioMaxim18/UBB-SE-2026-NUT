@@ -7,7 +7,7 @@ namespace TeamNut.Views.RemindersView
 {
     public sealed partial class RemindersPage : Page
     {
-        public RemindersViewModel ViewModel { get; } = new();
+        public RemindersViewModel ViewModel { get; } = new RemindersViewModel();
 
         public RemindersPage()
         {

@@ -192,7 +192,9 @@ namespace TeamNut.Repositories
                         favouriteIds.Add(Convert.ToInt32(favReader["mealId"]));
                     }
                 }
-                catch { }
+                catch
+                {
+                }
 
                 const string poolSql = @"
                     SELECT meal_id, total_calories, total_protein, total_carbs, total_fat
@@ -235,24 +237,28 @@ namespace TeamNut.Repositories
                 bool bestHasFavourite = false;
 
                 for (int i = 0; i < pool.Count - 2; i++)
-                for (int j = i + 1; j < pool.Count - 1; j++)
-                for (int k = j + 1; k < pool.Count; k++)
                 {
-                    int score = Math.Abs(pool[i].cal + pool[j].cal + pool[k].cal - calorieNeeds);
-                    bool hasFav = favouriteIds.Contains(pool[i].id)
-                               || favouriteIds.Contains(pool[j].id)
-                               || favouriteIds.Contains(pool[k].id);
-
-                    bool better = score < bestScore
-                               || (hasFav && !bestHasFavourite && score <= bestScore + 100);
-
-                    if (better)
+                    for (int j = i + 1; j < pool.Count - 1; j++)
                     {
-                        bestScore = score;
-                        bestHasFavourite = hasFav;
-                        bi = i;
-                        bj = j;
-                        bk = k;
+                        for (int k = j + 1; k < pool.Count; k++)
+                        {
+                            int score = Math.Abs(pool[i].cal + pool[j].cal + pool[k].cal - calorieNeeds);
+                            bool hasFav = favouriteIds.Contains(pool[i].id)
+                                       || favouriteIds.Contains(pool[j].id)
+                                       || favouriteIds.Contains(pool[k].id);
+
+                            bool better = score < bestScore
+                                       || (hasFav && !bestHasFavourite && score <= bestScore + 100);
+
+                            if (better)
+                            {
+                                bestScore = score;
+                                bestHasFavourite = hasFav;
+                                bi = i;
+                                bj = j;
+                                bk = k;
+                            }
+                        }
                     }
                 }
 

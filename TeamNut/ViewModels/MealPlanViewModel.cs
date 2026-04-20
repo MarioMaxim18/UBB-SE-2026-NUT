@@ -22,7 +22,7 @@ namespace TeamNut.ModelViews
         public partial bool IsBusy { get; set; }
 
         [ObservableProperty]
-        public partial ObservableCollection<MealViewModel> GeneratedMeals { get; set; } = new();
+        public partial ObservableCollection<MealViewModel> GeneratedMeals { get; set; } = new ObservableCollection<MealViewModel>();
 
         private int currentMealPlanId;
 

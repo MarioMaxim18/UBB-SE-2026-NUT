@@ -7,20 +7,20 @@ namespace TeamNut.Views.UserView
         public UserView()
         {
             this.InitializeComponent();
-            displayRegisterView();
+            DisplayRegisterView();
         }
 
-        public void displayRegisterView()
+        public void DisplayRegisterView()
         {
             RootFrame.Navigate(typeof(RegisterPage));
         }
 
-        public void displayLoginView()
+        public void DisplayLoginView()
         {
             RootFrame.Navigate(typeof(LoginPage));
         }
 
-        public void displayUserDataView()
+        public void DisplayUserDataView()
         {
             RootFrame.Navigate(typeof(UserDataPage));
         }

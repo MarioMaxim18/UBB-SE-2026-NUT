@@ -13,8 +13,8 @@ namespace TeamNut.ViewModels
         private readonly DailyLogService service;
         private bool hasData;
         private string statusMessage = string.Empty;
-        private DailyLog dailyTotals = new();
-        private DailyLog weeklyTotals = new();
+        private DailyLog dailyTotals = new DailyLog();
+        private DailyLog weeklyTotals = new DailyLog();
         private double dailyCaloriesGoal = 2000;
         private double dailyProteinGoal = 150;
         private double dailyCarbsGoal = 250;
@@ -29,8 +29,8 @@ namespace TeamNut.ViewModels
         private string weeklyFatsText = string.Empty;
         private string dailyBurnedCaloriesText = string.Empty;
         private string mealSearchText = string.Empty;
-        private ObservableCollection<Meal> availableMeals = new();
-        private ObservableCollection<Meal> filteredMeals = new();
+        private ObservableCollection<Meal> availableMeals = new ObservableCollection<Meal>();
+        private ObservableCollection<Meal> filteredMeals = new ObservableCollection<Meal>();
         private Meal? selectedMeal;
         private string logMealStatusMessage = string.Empty;
 

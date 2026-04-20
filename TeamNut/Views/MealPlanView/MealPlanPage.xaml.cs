@@ -286,7 +286,7 @@ namespace TeamNut.Views.MealPlanView
                 var messageText = $"Successfully saved {ViewModel.GeneratedMeals.Count} meals to daily log:\n\n";
                 foreach (var meal in ViewModel.GeneratedMeals)
                 {
-                    messageText += $"ù {meal.Name}: {meal.Calories} kcal\n";
+                    messageText += $"ÔøΩ {meal.Name}: {meal.Calories} kcal\n";
                 }
 
                 var successDialog = new ContentDialog

@@ -14,7 +14,7 @@ namespace TeamNut.ViewModels
         private readonly ReminderService reminderService;
         private readonly Microsoft.UI.Dispatching.DispatcherQueue? dispatcher;
 
-        public ObservableCollection<Reminder> Reminders { get; } = new();
+        public ObservableCollection<Reminder> Reminders { get; } = new ObservableCollection<Reminder>();
 
         [ObservableProperty]
         public partial bool IsBusy { get; set; }

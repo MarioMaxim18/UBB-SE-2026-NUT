@@ -84,7 +84,9 @@ namespace TeamNut.Services
                         ReminderService.NotifyRemindersChangedForUser(userId);
                     }
                 }
-                catch { }
+                catch
+                {
+                }
 
                 if (mealPlanId <= 0)
                 {
