@@ -1,4 +1,3 @@
-//using Microsoft.Data.Sqlite;
 using Microsoft.Data.Sqlite;
 using System;
 using System.Collections.Generic;
@@ -24,7 +23,6 @@ public class UserRepository : IRepository<User>
         {
             return new User
             {
-                //Id = reader.GetInt32(0), (old)
                 Id = Convert.ToInt32(reader[0]),
                 Username = reader.GetString(1),
                 Password = reader.GetString(2),
@@ -61,7 +59,6 @@ public class UserRepository : IRepository<User>
     public async Task Add(User entity)
     {
         using var conn = new SqliteConnection(_connectionString);
-        //  removed OUTPUT INSERTED.id and added the SELECT query at the end
         string sql = "INSERT INTO Users (username, password, role) VALUES (@u, @p, @r); SELECT last_insert_rowid();";
 
         using var cmd = new SqliteCommand(sql, conn);
@@ -71,7 +68,6 @@ public class UserRepository : IRepository<User>
 
         await conn.OpenAsync();
 
-        // last_insert_rowid() returns the ID of the row we created
         var result = await cmd.ExecuteScalarAsync();
 
         if (result != null)
