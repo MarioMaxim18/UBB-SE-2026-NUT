@@ -219,18 +219,18 @@ namespace TeamNut.ViewModels
             DailyTotals = await _service.GetTodayTotalsAsync();
             WeeklyTotals = await _service.GetCurrentWeekTotalsAsync();
 
-            DailyCaloriesText = BuildMetricText(DailyTotals.Calories, DailyCaloriesGoal, Constants.CaloriesUnit);
-            DailyProteinText = BuildMetricText(DailyTotals.Protein, DailyProteinGoal, Constants.GramsUnit);
-            DailyCarbsText = BuildMetricText(DailyTotals.Carbs, DailyCarbsGoal, Constants.GramsUnit);
-            DailyFatsText = BuildMetricText(DailyTotals.Fats, DailyFatsGoal, Constants.GramsUnit);
+            _dailyCaloriesText = BuildMetricText(DailyTotals.Calories, DailyCaloriesGoal, Constants.CaloriesUnit);
+            _dailyProteinText = BuildMetricText(DailyTotals.Protein, DailyProteinGoal, Constants.GramsUnit);
+            _dailyCarbsText = BuildMetricText(DailyTotals.Carbs, DailyCarbsGoal, Constants.GramsUnit);
+            _dailyFatsText = BuildMetricText(DailyTotals.Fats, DailyFatsGoal, Constants.GramsUnit);
 
             var burnedCalories = await _service.GetTodayBurnedCaloriesAsync();
-            DailyBurnedCaloriesText = string.Format(Constants.BurnedCaloriesFormat, burnedCalories);
+            _dailyBurnedCaloriesText = string.Format(Constants.BurnedCaloriesFormat, burnedCalories);
 
-            WeeklyCaloriesText = BuildMetricText(WeeklyTotals.Calories, WeeklyCaloriesGoal, Constants.CaloriesUnit);
-            WeeklyProteinText = BuildMetricText(WeeklyTotals.Protein, WeeklyProteinGoal, Constants.GramsUnit);
-            WeeklyCarbsText = BuildMetricText(WeeklyTotals.Carbs, WeeklyCarbsGoal, Constants.GramsUnit);
-            WeeklyFatsText = BuildMetricText(WeeklyTotals.Fats, WeeklyFatsGoal, Constants.GramsUnit);
+            _weeklyCaloriesText = BuildMetricText(WeeklyTotals.Calories, WeeklyCaloriesGoal, Constants.CaloriesUnit);
+            _weeklyProteinText = BuildMetricText(WeeklyTotals.Protein, WeeklyProteinGoal, Constants.GramsUnit);
+            _weeklyCarbsText = BuildMetricText(WeeklyTotals.Carbs, WeeklyCarbsGoal, Constants.GramsUnit);
+            _weeklyFatsText = BuildMetricText(WeeklyTotals.Fats, WeeklyFatsGoal, Constants.GramsUnit);
         }
 
         private static string BuildMetricText(double total, double goal, string unit)

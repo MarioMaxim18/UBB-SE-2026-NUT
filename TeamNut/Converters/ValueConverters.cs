@@ -1,20 +1,20 @@
+using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Media;
 using System;
 using Windows.UI;
+using Windows.UI.Text;
 
 namespace TeamNut
 {
-    #region Shared Converter Constants
-
     internal static class ConverterConstants
     {
         public const string ParamInverse = "Inverse";
         public const string RoleNutritionist = "Nutritionist";
         public const string RoleUser = "User";
-        public static readonly Microsoft.UI.Text.FontWeight FontBold = Microsoft.UI.Text.FontWeights.Bold;
-        public static readonly Microsoft.UI.Text.FontWeight FontNormal = Microsoft.UI.Text.FontWeights.Normal;
+        public static readonly FontWeight FontBold = FontWeights.Bold;
+        public static readonly FontWeight FontNormal = FontWeights.Normal;
         public const int VisibleThreshold = 0;
         public static readonly Color Transparent = Color.FromArgb(0, 0, 0, 0);
         public static readonly Color NutritionistBackground = Color.FromArgb(255, 180, 210, 240);

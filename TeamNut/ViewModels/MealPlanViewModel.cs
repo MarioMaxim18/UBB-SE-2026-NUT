@@ -249,5 +249,10 @@ namespace TeamNut.ModelViews
             await _mealPlanService.SaveMealsToDailyLogAsync(CurrentMealPlanId);
             StatusMessage = string.Format(MealSavedSuccessFormat, GeneratedMeals.Count);
         }
+
+        internal async Task SaveToDailyLogAsync()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

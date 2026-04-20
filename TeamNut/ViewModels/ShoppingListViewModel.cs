@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.Input;
 using System.Threading.Tasks;
 using TeamNut.Models;
 using TeamNut.Services;
+using System.Linq;
 
 namespace TeamNut.ViewModels
 {

@@ -137,7 +137,7 @@ namespace TeamNut.ViewModels
         private void EnqueueUI(Action action)
         {
             if (_dispatcher != null)
-                _dispatcher.TryEnqueue(action);
+                _dispatcher.TryEnqueue(() => action());
             else
                 action();
         }
