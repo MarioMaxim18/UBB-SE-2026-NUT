@@ -6,35 +6,47 @@ using TeamNut.Repositories;
 
 namespace TeamNut.Services
 {
+    /// <summary>Service for creating, retrieving, and deleting health reminders.</summary>
     public class ReminderService
     {
         private readonly ReminderRepository reminderRepository;
 
+        /// <summary>Raised when reminders are added, updated, or deleted for a user.</summary>
         public static event EventHandler<int>? RemindersChanged;
+
         private const int MaxReminderNameLength = 50;
         private const int InvalidUserId = 0;
         private const string ResultSuccess = "Success";
         private const string ErrorInvalidName = "Error: Name must be between 1 and 50 characters.";
         private const string ConfirmConsumptionLogFormat = "User {0} confirmed meal {1}. Updating logs...";
 
+        /// <summary>Initializes a new instance of the <see cref="ReminderService"/> class.</summary>
         public ReminderService()
         {
             reminderRepository = new ReminderRepository();
         }
 
+        /// <summary>Gets the next upcoming reminder for the given user.</summary>
+        /// <param name="userId">The user identifier.</param>
+        /// <returns>The next <see cref="Reminder"/>, or <c>null</c>.</returns>
         public async Task<Reminder?> GetNextReminder(int userId)
         {
             return await reminderRepository.GetNextReminder(userId);
         }
 
+        /// <summary>Gets a reminder by its identifier.</summary>
+        /// <param name="id">The reminder identifier.</param>
+        /// <returns>The <see cref="Reminder"/>, or <c>null</c>.</returns>
         public async Task<Reminder?> GetReminderById(int id)
         {
             return await reminderRepository.GetById(id);
         }
 
+        /// <summary>Saves a reminder (adds if new, updates if existing).</summary>
+        /// <param name="reminder">The reminder to save.</param>
+        /// <returns>"Success" on success, or an error message string.</returns>
         public async Task<string> SaveReminder(Reminder reminder)
         {
-            // Ensure UserId is set
             if ((reminder.UserId == InvalidUserId ||
                  reminder.UserId == default) &&
                 UserSession.UserId != null)
@@ -43,7 +55,6 @@ namespace TeamNut.Services
                     UserSession.UserId ?? reminder.UserId;
             }
 
-            // Validate name
             if (string.IsNullOrWhiteSpace(reminder.Name) ||
                 reminder.Name.Length > MaxReminderNameLength)
             {
@@ -71,6 +82,10 @@ namespace TeamNut.Services
             return ResultSuccess;
         }
 
+        /// <summary>Logs a meal consumption confirmation for a user.</summary>
+        /// <param name="userId">The user identifier.</param>
+        /// <param name="mealId">The meal identifier.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task ConfirmConsumption(int userId, int mealId)
         {
             Console.WriteLine(
@@ -80,11 +95,17 @@ namespace TeamNut.Services
                     mealId));
         }
 
+        /// <summary>Gets all reminders for the given user.</summary>
+        /// <param name="userId">The user identifier.</param>
+        /// <returns>All reminders belonging to the user.</returns>
         public async Task<IEnumerable<Reminder>> GetUserReminders(int userId)
         {
             return await reminderRepository.GetAllByUserId(userId);
         }
 
+        /// <summary>Deletes a reminder by its identifier.</summary>
+        /// <param name="id">The reminder identifier.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task DeleteReminder(int id)
         {
             try
@@ -105,6 +126,8 @@ namespace TeamNut.Services
             }
         }
 
+        /// <summary>Raises the <see cref="RemindersChanged"/> event for the given user.</summary>
+        /// <param name="userId">The user whose reminders changed.</param>
         public static void NotifyRemindersChangedForUser(int userId)
         {
             try

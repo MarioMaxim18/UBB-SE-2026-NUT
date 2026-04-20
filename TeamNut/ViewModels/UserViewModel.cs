@@ -9,6 +9,7 @@ using TeamNut.Services;
 
 namespace TeamNut.ViewModels
 {
+    /// <summary>View model for user registration, login, and profile data.</summary>
     public partial class UserViewModel : ObservableObject
     {
         private const string RoleNutritionist = "Nutritionist";
@@ -21,20 +22,38 @@ namespace TeamNut.ViewModels
         private const string ErrorDatabaseConnectionFormat = "Database Connection Failed! Start SSMS and check your server. Error: {0}";
         private const string ErrorSavingDataFormat = "An error occurred while saving: {0}";
 
+        /// <summary>Gets or sets the current user being registered or logged in.</summary>
         [ObservableProperty]
         public partial User CurrentUser { get; set; } = new User();
+
+        /// <summary>Gets or sets the health profile data for the current user.</summary>
         [ObservableProperty]
         public partial UserData CurrentUserData { get; set; } = new UserData();
+
+        /// <summary>Gets or sets a value indicating whether the nutritionist role is selected.</summary>
         [ObservableProperty]
         public partial bool IsNutritionistChecked { get; set; }
+
+        /// <summary>Gets or sets the status message shown to the user.</summary>
         [ObservableProperty]
         public partial string StatusMessage { get; set; } = string.Empty;
+
+        /// <summary>Gets or sets the selected birth date.</summary>
         [ObservableProperty]
         public partial DateTimeOffset SelectedDate { get; set; } = DateTimeOffset.Now;
+
+        /// <summary>Raised when registration data is valid and the user should proceed to enter health data.</summary>
         public event EventHandler? RegistrationValid;
+
+        /// <summary>Raised when login succeeds.</summary>
         public event EventHandler? LoginSuccess;
+
+        /// <summary>Raised when health data is saved successfully.</summary>
         public event EventHandler? SaveDataSuccess;
+
         private readonly UserService userService;
+
+        /// <summary>Initializes a new instance of the <see cref="UserViewModel"/> class.</summary>
         public UserViewModel()
         {
             userService = new UserService();

@@ -6,15 +6,21 @@ using TeamNut.ViewModels;
 
 namespace TeamNut.Views.UserView
 {
+    /// <summary>Page for entering physical health data during registration.</summary>
     public sealed partial class UserDataPage : Page
     {
+        /// <summary>Gets the shared user view model.</summary>
         public UserViewModel ViewModel => App.UserViewModel;
+
+        /// <summary>Initializes a new instance of the <see cref="UserDataPage"/> class.</summary>
         public UserDataPage()
         {
             InitializeComponent();
             this.DataContext = ViewModel;
         }
 
+        /// <summary>Subscribes to save-data events when navigated to.</summary>
+        /// <param name="e">Navigation event arguments.</param>
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
@@ -22,6 +28,8 @@ namespace TeamNut.Views.UserView
             ViewModel.SaveDataSuccess += ViewModel_SaveDataSuccess;
         }
 
+        /// <summary>Unsubscribes from save-data events when navigated away.</summary>
+        /// <param name="e">Navigation event arguments.</param>
         protected override void OnNavigatedFrom(NavigationEventArgs e)
         {
             base.OnNavigatedFrom(e);

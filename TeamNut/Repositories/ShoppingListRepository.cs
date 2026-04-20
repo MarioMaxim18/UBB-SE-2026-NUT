@@ -6,10 +6,14 @@ using TeamNut.Models;
 
 namespace TeamNut.Repositories
 {
+    /// <summary>Repository for shopping list data persistence.</summary>
     public class ShoppingListRepository : IRepository<ShoppingItem>
     {
         private readonly string connectionString = DbConfig.ConnectionString;
 
+        /// <summary>Inserts a new shopping item.</summary>
+        /// <param name="item">The item to insert.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task Add(ShoppingItem item)
         {
             using var conn = new SqliteConnection(connectionString);
@@ -32,6 +36,8 @@ namespace TeamNut.Repositories
             }
         }
 
+        /// <summary>Gets all shopping items.</summary>
+        /// <returns>All shopping items in the database.</returns>
         public async Task<IEnumerable<ShoppingItem>> GetAll()
         {
             var items = new List<ShoppingItem>();
@@ -54,6 +60,9 @@ namespace TeamNut.Repositories
             return items;
         }
 
+        /// <summary>Gets a shopping item by its identifier.</summary>
+        /// <param name="id">The item identifier.</param>
+        /// <returns>The item, or <c>null</c> if not found.</returns>
         public async Task<ShoppingItem?> GetById(int id)
         {
             using var conn = new SqliteConnection(connectionString);
@@ -77,6 +86,10 @@ namespace TeamNut.Repositories
             return null;
         }
 
+        /// <summary>Gets a shopping item for a specific user and ingredient.</summary>
+        /// <param name="userId">The user identifier.</param>
+        /// <param name="ingredientId">The ingredient identifier.</param>
+        /// <returns>The matching item, or <c>null</c>.</returns>
         public async Task<ShoppingItem?> GetByUserAndIngredient(int userId, int ingredientId)
         {
             using var conn = new SqliteConnection(connectionString);
@@ -101,6 +114,9 @@ namespace TeamNut.Repositories
             return null;
         }
 
+        /// <summary>Gets all shopping items for the given user.</summary>
+        /// <param name="userId">The user identifier.</param>
+        /// <returns>The user's shopping items.</returns>
         public async Task<List<ShoppingItem>> GetAllByUserId(int userId)
         {
             var items = new List<ShoppingItem>();
@@ -126,6 +142,9 @@ namespace TeamNut.Repositories
             return items;
         }
 
+        /// <summary>Updates an existing shopping item.</summary>
+        /// <param name="item">The item to update.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task Update(ShoppingItem item)
         {
             using var conn = new SqliteConnection(connectionString);
@@ -144,6 +163,9 @@ namespace TeamNut.Repositories
             await cmd.ExecuteNonQueryAsync();
         }
 
+        /// <summary>Deletes a shopping item by its identifier.</summary>
+        /// <param name="id">The item identifier.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task Delete(int id)
         {
             using var conn = new SqliteConnection(connectionString);
@@ -157,6 +179,9 @@ namespace TeamNut.Repositories
             await cmd.ExecuteNonQueryAsync();
         }
 
+        /// <summary>Gets ingredients needed for today's meal plan that aren't already in inventory.</summary>
+        /// <param name="userId">The user identifier.</param>
+        /// <returns>A list of shopping items representing missing ingredients.</returns>
         public async Task<List<ShoppingItem>> GetIngredientsNeededFromMealPlan(int userId)
         {
             var items = new List<ShoppingItem>();

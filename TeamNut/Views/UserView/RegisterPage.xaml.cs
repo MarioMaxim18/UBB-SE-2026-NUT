@@ -6,9 +6,13 @@ using TeamNut.ViewModels;
 
 namespace TeamNut.Views.UserView
 {
+    /// <summary>Page for new user registration.</summary>
     public sealed partial class RegisterPage : Page
     {
+        /// <summary>Gets the shared user view model.</summary>
         public UserViewModel ViewModel => App.UserViewModel;
+
+        /// <summary>Initializes a new instance of the <see cref="RegisterPage"/> class.</summary>
         public RegisterPage()
         {
             InitializeComponent();
@@ -16,12 +20,16 @@ namespace TeamNut.Views.UserView
             ViewModel.RegistrationValid += ViewModel_RegistrationValid;
         }
 
+        /// <summary>Subscribes to login events when navigated to.</summary>
+        /// <param name="e">Navigation event arguments.</param>
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
             ViewModel.LoginSuccess += ViewModel_LoginSuccess;
         }
 
+        /// <summary>Unsubscribes from login events when navigated away.</summary>
+        /// <param name="e">Navigation event arguments.</param>
         protected override void OnNavigatedFrom(NavigationEventArgs e)
         {
             base.OnNavigatedFrom(e);
@@ -43,6 +51,7 @@ namespace TeamNut.Views.UserView
                 ViewModel.CurrentUser.Password = pwBox.Password;
             }
         }
+
         private void ToLogin_Click(object sender, RoutedEventArgs e)
         {
             if (this.Frame != null)
@@ -50,6 +59,7 @@ namespace TeamNut.Views.UserView
                 this.Frame.Navigate(typeof(LoginPage));
             }
         }
+
         private void ViewModel_RegistrationValid(object? sender, EventArgs e)
         {
             this.Frame?.Navigate(typeof(UserDataPage), ViewModel.CurrentUser);

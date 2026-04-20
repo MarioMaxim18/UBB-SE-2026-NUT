@@ -8,6 +8,7 @@ using TeamNut.ViewModels;
 
 namespace TeamNut
 {
+    /// <summary>Page for browsing and searching meals.</summary>
     public sealed partial class MealsPage : Page
     {
         private MealSearchViewModel viewModel;
@@ -29,6 +30,7 @@ namespace TeamNut
         private const string DoubleLineBreak = "\n\n";
         private int pageSize = DefaultPageSize;
 
+        /// <summary>Initializes a new instance of the <see cref="MealsPage"/> class.</summary>
         public MealsPage()
         {
             InitializeComponent();
