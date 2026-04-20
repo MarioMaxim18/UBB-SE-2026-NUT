@@ -27,7 +27,9 @@ namespace TeamNut.Repositories
 
             var result = await cmd.ExecuteScalarAsync();
             if (result != null)
+            {
                 item.Id = Convert.ToInt32(result);
+            }
         }
 
         public async Task<IEnumerable<ShoppingItem>> GetAll()
@@ -155,14 +157,12 @@ namespace TeamNut.Repositories
             await cmd.ExecuteNonQueryAsync();
         }
 
-
         public async Task<List<ShoppingItem>> GetIngredientsNeededFromMealPlan(int userId)
         {
             var items = new List<ShoppingItem>();
             using var conn = new SqliteConnection(connectionString);
             await conn.OpenAsync();
 
-           
             string query = @"
         SELECT 
             mi.food_id as ingredient_id, 
@@ -195,14 +195,11 @@ namespace TeamNut.Repositories
                     UserId = userId,
                     IngredientId = Convert.ToInt32(reader["ingredient_id"]),
                     IngredientName = reader["ingredient_name"]?.ToString() ?? string.Empty,
-                  
                     QuantityGrams = Convert.ToDouble(reader["quantity_needed"]),
                     IsChecked = false
                 });
             }
 
-            
-            
             return items;
         }
 

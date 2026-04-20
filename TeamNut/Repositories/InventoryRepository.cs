@@ -37,7 +37,7 @@ namespace TeamNut.Repositories
                 updateCmd.Parameters.AddWithValue("@qty", newQty);
                 updateCmd.Parameters.AddWithValue("@id", existingId);
 
-                await reader.CloseAsync(); 
+                await reader.CloseAsync();
                 await updateCmd.ExecuteNonQueryAsync();
             }
             else
@@ -51,7 +51,7 @@ namespace TeamNut.Repositories
                 insertCmd.Parameters.AddWithValue("@iid", entity.IngredientId);
                 insertCmd.Parameters.AddWithValue("@qty", entity.QuantityGrams);
 
-                await reader.CloseAsync(); 
+                await reader.CloseAsync();
                 await insertCmd.ExecuteNonQueryAsync();
             }
         }

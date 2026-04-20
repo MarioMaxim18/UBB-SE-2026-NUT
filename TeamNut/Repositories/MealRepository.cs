@@ -15,8 +15,14 @@ namespace TeamNut.Repositories
 
         public List<Meal> GetMeals()
         {
-            try { return GetAll().Result.ToList(); }
-            catch { return new List<Meal>(); }
+            try
+            {
+                return GetAll().Result.ToList();
+            }
+            catch
+            {
+                return new List<Meal>();
+            }
         }
 
         public async Task<IEnumerable<Meal>> GetFilteredMeals(MealFilter filter)
@@ -170,7 +176,6 @@ namespace TeamNut.Repositories
             cmd.Parameters.AddWithValue("@glu", meal.IsGlutenFree ? 1 : 0);
             cmd.Parameters.AddWithValue("@desc", meal.Description ?? (object)DBNull.Value);
         }
-
 
         private Meal MapReaderToMeal(SqliteDataReader reader)
         {
