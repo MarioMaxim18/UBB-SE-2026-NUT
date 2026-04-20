@@ -6,75 +6,88 @@ using Windows.UI;
 
 namespace TeamNut
 {
+    #region Shared Converter Constants
+
+    internal static class ConverterConstants
+    {
+        public const string ParamInverse = "Inverse";
+        public const string RoleNutritionist = "Nutritionist";
+        public const string RoleUser = "User";
+        public static readonly Microsoft.UI.Text.FontWeight FontBold = Microsoft.UI.Text.FontWeights.Bold;
+        public static readonly Microsoft.UI.Text.FontWeight FontNormal = Microsoft.UI.Text.FontWeights.Normal;
+        public const int VisibleThreshold = 0;
+        public static readonly Color Transparent = Color.FromArgb(0, 0, 0, 0);
+        public static readonly Color NutritionistBackground = Color.FromArgb(255, 180, 210, 240);
+        public static readonly Color UserBackground = Color.FromArgb(255, 200, 235, 195);
+        public static readonly Color UnansweredHighlight = Color.FromArgb(255, 255, 250, 200);
+    }
+
     public class BoolToVisibilityConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {
-            // if parameter is provided, treat value as string role comparison
             if (parameter != null && value != null)
             {
                 var param = parameter.ToString();
                 var strVal = value.ToString();
-                if (param == "Nutritionist")
-                    return string.Equals(strVal, "Nutritionist", StringComparison.OrdinalIgnoreCase) ? Visibility.Visible : Visibility.Collapsed;
-                if (param == "User")
-                    return !string.Equals(strVal, "Nutritionist", StringComparison.OrdinalIgnoreCase) ? Visibility.Visible : Visibility.Collapsed;
+
+                if (param == ConverterConstants.RoleNutritionist)
+                {
+                    return string.Equals(
+                        strVal,
+                        ConverterConstants.RoleNutritionist,
+                        StringComparison.OrdinalIgnoreCase)
+                        ? Visibility.Visible
+                        : Visibility.Collapsed;
+                }
+
+                if (param == ConverterConstants.RoleUser)
+                {
+                    return !string.Equals(
+                        strVal,
+                        ConverterConstants.RoleNutritionist,
+                        StringComparison.OrdinalIgnoreCase)
+                        ? Visibility.Visible
+                        : Visibility.Collapsed;
+                }
             }
 
             if (value is bool boolValue)
             {
-                if (parameter?.ToString() == "Inverse")
-                {
-                    return boolValue ? Visibility.Collapsed : Visibility.Visible;
-                }
-                return boolValue ? Visibility.Visible : Visibility.Collapsed;
+                bool inverse =
+                    parameter?.ToString() == ConverterConstants.ParamInverse;
+
+                bool show = inverse ? !boolValue : boolValue;
+                return show ? Visibility.Visible : Visibility.Collapsed;
             }
 
             return Visibility.Collapsed;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)
-        {
-            throw new NotImplementedException();
-        }
+            => throw new NotImplementedException();
     }
 
     public class BoolToFontWeightConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {
-            if (value is bool b && b)
-            {
-                return Microsoft.UI.Text.FontWeights.Bold;
-            }
-            return Microsoft.UI.Text.FontWeights.Normal;
+            return value is bool b && b
+                ? ConverterConstants.FontBold
+                : ConverterConstants.FontNormal;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)
-        {
-            throw new NotImplementedException();
-        }
+            => throw new NotImplementedException();
     }
 
     public class InverseBoolConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string language)
-        {
-            if (value is bool boolValue)
-            {
-                return !boolValue;
-            }
-            return true;
-        }
+            => value is bool b ? !b : true;
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)
-        {
-            if (value is bool boolValue)
-            {
-                return !boolValue;
-            }
-            return true;
-        }
+            => value is bool b ? !b : true;
     }
 
     public class EmptyStringToVisibilityConverter : IValueConverter
@@ -82,18 +95,16 @@ namespace TeamNut
         public object Convert(object value, Type targetType, object parameter, string language)
         {
             bool isEmpty = string.IsNullOrWhiteSpace(value?.ToString());
+            bool inverse =
+                parameter?.ToString() == ConverterConstants.ParamInverse;
 
-            if (parameter?.ToString() == "Inverse")
-            {
-                return isEmpty ? Visibility.Collapsed : Visibility.Visible;
-            }
-            return isEmpty ? Visibility.Visible : Visibility.Collapsed;
+            return (inverse ? !isEmpty : isEmpty)
+                ? Visibility.Visible
+                : Visibility.Collapsed;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)
-        {
-            throw new NotImplementedException();
-        }
+            => throw new NotImplementedException();
     }
 
     public class RoleToHorizontalAlignmentConverter : IValueConverter
@@ -101,33 +112,42 @@ namespace TeamNut
         public object Convert(object value, Type targetType, object parameter, string language)
         {
             var role = value?.ToString() ?? string.Empty;
-            return string.Equals(role, "Nutritionist", StringComparison.OrdinalIgnoreCase) ? HorizontalAlignment.Left : HorizontalAlignment.Right;
+
+            return string.Equals(
+                role,
+                ConverterConstants.RoleNutritionist,
+                StringComparison.OrdinalIgnoreCase)
+                ? HorizontalAlignment.Left
+                : HorizontalAlignment.Right;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)
-        {
-            throw new NotImplementedException();
-        }
+            => throw new NotImplementedException();
     }
 
     public class IntZeroToVisibilityConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {
-            if (value == null) return Visibility.Visible;
+            bool inverse =
+                parameter?.ToString() == ConverterConstants.ParamInverse;
+
+            if (value == null)
+                return Visibility.Visible;
+
             if (int.TryParse(value.ToString(), out int intVal))
             {
-                bool isZero = intVal == 0;
-                if (parameter?.ToString() == "Inverse") return isZero ? Visibility.Collapsed : Visibility.Visible;
-                return isZero ? Visibility.Visible : Visibility.Collapsed;
+                bool isZero = intVal == ConverterConstants.VisibleThreshold;
+                return (inverse ? !isZero : isZero)
+                    ? Visibility.Visible
+                    : Visibility.Collapsed;
             }
+
             return Visibility.Visible;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)
-        {
-            throw new NotImplementedException();
-        }
+            => throw new NotImplementedException();
     }
 
     public class RoleToBackgroundConverter : IValueConverter
@@ -135,78 +155,74 @@ namespace TeamNut
         public object Convert(object value, Type targetType, object parameter, string language)
         {
             var role = value?.ToString() ?? string.Empty;
-            if (string.Equals(role, "Nutritionist", StringComparison.OrdinalIgnoreCase))
-            {
-                return new SolidColorBrush(Color.FromArgb(255, 180, 210, 240));
-            }
-            return new SolidColorBrush(Color.FromArgb(255, 200, 235, 195));
+
+            var color = string.Equals(
+                role,
+                ConverterConstants.RoleNutritionist,
+                StringComparison.OrdinalIgnoreCase)
+                ? ConverterConstants.NutritionistBackground
+                : ConverterConstants.UserBackground;
+
+            return new SolidColorBrush(color);
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)
-        {
-            throw new NotImplementedException();
-        }
+            => throw new NotImplementedException();
     }
 
-    // Highlights conversations that have unanswered messages, but only for nutritionist users
     public class UnansweredToHighlightConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {
             try
             {
-                bool hasUnanswered = false;
-                if (value is bool b) hasUnanswered = b;
+                bool hasUnanswered = value is bool b && b;
 
-                // Only highlight for nutritionists
                 var role = TeamNut.Models.UserSession.Role ?? string.Empty;
-                if (!string.Equals(role, "Nutritionist", StringComparison.OrdinalIgnoreCase))
+                if (!string.Equals(
+                        role,
+                        ConverterConstants.RoleNutritionist,
+                        StringComparison.OrdinalIgnoreCase))
                 {
-                    return new SolidColorBrush(Color.FromArgb(0, 0, 0, 0)); // transparent
+                    return new SolidColorBrush(
+                        ConverterConstants.Transparent);
                 }
 
-                if (hasUnanswered)
-                {
-                    // light yellow highlight
-                    return new SolidColorBrush(Color.FromArgb(255, 255, 250, 200));
-                }
-
-                return new SolidColorBrush(Color.FromArgb(0, 0, 0, 0));
+                return new SolidColorBrush(
+                    hasUnanswered
+                        ? ConverterConstants.UnansweredHighlight
+                        : ConverterConstants.Transparent);
             }
             catch
             {
-                return new SolidColorBrush(Color.FromArgb(0, 0, 0, 0));
+                return new SolidColorBrush(ConverterConstants.Transparent);
             }
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)
-        {
-            throw new NotImplementedException();
-        }
+            => throw new NotImplementedException();
     }
 
     public class IntGreaterThanZeroToVisibilityConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {
-            if (value is int intValue)
+            bool inverse =
+                parameter?.ToString() == ConverterConstants.ParamInverse;
+
+            bool visible = value switch
             {
-                var visible = intValue > 0;
-                if (parameter?.ToString() == "Inverse") return visible ? Visibility.Collapsed : Visibility.Visible;
-                return visible ? Visibility.Visible : Visibility.Collapsed;
-            }
-            if (value is long longValue)
-            {
-                var visible = longValue > 0;
-                if (parameter?.ToString() == "Inverse") return visible ? Visibility.Collapsed : Visibility.Visible;
-                return visible ? Visibility.Visible : Visibility.Collapsed;
-            }
-            return Visibility.Collapsed;
+                int i => i > ConverterConstants.VisibleThreshold,
+                long l => l > ConverterConstants.VisibleThreshold,
+                _ => false
+            };
+
+            return (inverse ? !visible : visible)
+                ? Visibility.Visible
+                : Visibility.Collapsed;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)
-        {
-            throw new NotImplementedException();
-        }
+            => throw new NotImplementedException();
     }
 }
