@@ -1,34 +1,39 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
-using Microsoft.UI.Dispatching;
+﻿using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using Microsoft.UI.Dispatching;
 using TeamNut.Models;
 using TeamNut.Services;
-using System;
 
 namespace TeamNut.ViewModels
 {
     public partial class RemindersViewModel : ObservableObject
     {
-        private readonly ReminderService _reminderService;
-        private readonly DispatcherQueue? _dispatcher;
+        private readonly ReminderService reminderService;
+        private readonly DispatcherQueue? dispatcher;
         private const int InvalidUserId = 0;
         private const string SaveSuccessResult = "Success";
         private const string InvalidReminderResult = "Error: invalid reminder";
         private const string LoadErrorLogFormat = "Reminders Load Error: {0}";
-        public ObservableCollection<Reminder> Reminders { get; } = new();
+
+        public ObservableCollection<Reminder> Reminders { get; } = new ObservableCollection<Reminder>();
+
         [ObservableProperty]
-        private bool isBusy;
+        public partial bool IsBusy { get; set; }
+
         [ObservableProperty]
-        private Reminder? selectedReminder;
+        public partial Reminder? SelectedReminder { get; set; }
+
         [ObservableProperty]
-        private Reminder? nextReminder;
+        public partial Reminder? NextReminder { get; set; }
+
         public RemindersViewModel()
         {
-            _reminderService = new ReminderService();
-            _dispatcher = DispatcherQueue.GetForCurrentThread();
+            reminderService = new ReminderService();
+            dispatcher = DispatcherQueue.GetForCurrentThread();
 
             ReminderService.RemindersChanged += OnRemindersChanged;
         }
@@ -38,16 +43,20 @@ namespace TeamNut.ViewModels
             int currentUserId = UserSession.UserId ?? InvalidUserId;
 
             if (currentUserId == userId)
+            {
                 await LoadReminders();
+            }
         }
 
         [RelayCommand]
         public async Task DeleteReminder(Reminder reminder)
         {
             if (reminder == null)
+            {
                 return;
+            }
 
-            await _reminderService.DeleteReminder(reminder.Id);
+            await reminderService.DeleteReminder(reminder.Id);
 
             EnqueueUI(() => Reminders.Remove(reminder));
 
@@ -59,7 +68,9 @@ namespace TeamNut.ViewModels
         public async Task SaveReminder(Reminder reminder)
         {
             if (reminder == null)
+            {
                 return;
+            }
 
             await SaveReminderAsync(reminder);
         }
@@ -67,12 +78,16 @@ namespace TeamNut.ViewModels
         public async Task<string> SaveReminderAsync(Reminder reminder)
         {
             if (reminder == null)
+            {
                 return InvalidReminderResult;
+            }
 
-            string result = await _reminderService.SaveReminder(reminder);
+            string result = await reminderService.SaveReminder(reminder);
 
             if (result == SaveSuccessResult)
+            {
                 await LoadReminders();
+            }
 
             return result;
         }
@@ -81,7 +96,9 @@ namespace TeamNut.ViewModels
         public async Task LoadReminders()
         {
             if (IsBusy)
+            {
                 return;
+            }
 
             try
             {
@@ -89,16 +106,20 @@ namespace TeamNut.ViewModels
 
                 int userId = UserSession.UserId ?? InvalidUserId;
                 if (userId == InvalidUserId)
+                {
                     return;
+                }
 
-                var reminders = (await _reminderService.GetUserReminders(userId)).ToList();
-                var next = await _reminderService.GetNextReminder(userId);
+                var reminders = (await reminderService.GetUserReminders(userId)).ToList();
+                var next = await reminderService.GetNextReminder(userId);
 
                 EnqueueUI(() =>
                 {
                     Reminders.Clear();
                     foreach (var reminder in reminders)
+                    {
                         Reminders.Add(reminder);
+                    }
 
                     NextReminder = next;
                 });
@@ -129,17 +150,23 @@ namespace TeamNut.ViewModels
         public void EditReminder(Reminder reminder)
         {
             if (reminder == null)
+            {
                 return;
+            }
 
             EnqueueUI(() => SelectedReminder = reminder);
         }
 
         private void EnqueueUI(Action action)
         {
-            if (_dispatcher != null)
-                _dispatcher.TryEnqueue(() => action());
+            if (dispatcher != null)
+            {
+                dispatcher.TryEnqueue(() => action());
+            }
             else
+            {
                 action();
+            }
         }
     }
 }

@@ -1,12 +1,12 @@
+using System;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
-using System;
 
 namespace TeamNut.Views.RemindersView
 {
     public sealed partial class RemindersPage : Page
     {
-        public TeamNut.ViewModels.RemindersViewModel ViewModel { get; } = new();
+        public TeamNut.ViewModels.RemindersViewModel ViewModel { get; } = new TeamNut.ViewModels.RemindersViewModel();
         private const int DialogStackSpacing = 8;
         private const int FrequencyComboWidth = 200;
         private static readonly Microsoft.UI.Xaml.Thickness FrequencyComboMargin = new(0, 4, 0, 0);
@@ -42,10 +42,15 @@ namespace TeamNut.Views.RemindersView
             ViewModel.PropertyChanged += async (s, e) =>
             {
                 if (e.PropertyName != nameof(ViewModel.SelectedReminder))
+                {
                     return;
+                }
 
                 var reminder = ViewModel.SelectedReminder;
-                if (reminder == null) return;
+                if (reminder == null)
+                {
+                    return;
+                }
 
                 try
                 {
@@ -107,9 +112,21 @@ namespace TeamNut.Views.RemindersView
                     bool ValidateInputs()
                     {
                         var name = nameBox.Text ?? string.Empty;
-                        if (string.IsNullOrWhiteSpace(name)) return false;
-                        if (name.Length > MaxReminderNameLength) return false;
-                        if (freqCombo.SelectedItem == null) return false;
+                        if (string.IsNullOrWhiteSpace(name))
+                        {
+                            return false;
+                        }
+
+                        if (name.Length > MaxReminderNameLength)
+                        {
+                            return false;
+                        }
+
+                        if (freqCombo.SelectedItem == null)
+                        {
+                            return false;
+                        }
+
                         return true;
                     }
 

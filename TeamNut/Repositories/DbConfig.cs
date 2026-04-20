@@ -17,7 +17,7 @@ namespace TeamNut.Repositories
             {
                 string? directory = AppDomain.CurrentDomain.BaseDirectory;
 
-                while (directory != null && !Directory .GetFiles(directory, ProjectFileSearchPattern) .Any())
+                while (directory != null && !Directory.GetFiles(directory, ProjectFileSearchPattern).Any())
                 {
                     directory = Directory.GetParent(directory)?.FullName;
                 }

@@ -1,9 +1,8 @@
+using System;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
-using System;
-using TeamNut.ViewModels; 
-
+using TeamNut.ViewModels;
 
 namespace TeamNut.Views.UserView
 {

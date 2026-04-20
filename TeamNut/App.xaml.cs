@@ -6,7 +6,7 @@ namespace TeamNut
 {
     public partial class App : Application
     {
-        internal Window? window;
+        internal Window? AppWindow;
 
         public static UserViewModel UserViewModel { get; } = new UserViewModel();
 
@@ -22,9 +22,9 @@ namespace TeamNut
 
         protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
         {
-            window = new MainWindow();
-            window.Content = new UserView();
-            window.Activate();
+            AppWindow = new MainWindow();
+            AppWindow.Content = new UserView();
+            AppWindow.Activate();
         }
     }
 }

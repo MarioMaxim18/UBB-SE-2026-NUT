@@ -8,8 +8,8 @@ namespace TeamNut.Services
 {
     public class MealPlanService
     {
-        private readonly MealPlanRepository _mealPlanRepository;
-        private readonly UserRepository _userRepository;
+        private readonly MealPlanRepository mealPlanRepository;
+        private readonly UserRepository userRepository;
         private const int MinValidId = 1;
         private const string DateFormatIso = "yyyy-MM-dd";
         private static readonly TimeSpan BreakfastTime = new(8, 0, 0);
@@ -40,19 +40,21 @@ namespace TeamNut.Services
 
         public MealPlanService()
         {
-            _mealPlanRepository = new MealPlanRepository();
-            _userRepository = new UserRepository();
+            mealPlanRepository = new MealPlanRepository();
+            userRepository = new UserRepository();
         }
 
         public async Task<int> GeneratePersonalizedMealPlanAsync(int userId)
         {
             if (userId < MinValidId)
+            {
                 throw new InvalidOperationException(ErrInvalidUserId);
+            }
 
             try
             {
                 int mealPlanId =
-                    await _mealPlanRepository
+                    await mealPlanRepository
                         .GeneratePersonalizedDailyMealPlan(userId);
 
                 try
@@ -83,15 +85,21 @@ namespace TeamNut.Services
 
                         if (meals.Count > 0 &&
                             !string.IsNullOrWhiteSpace(meals[0].Name))
+                        {
                             breakfastName = meals[0].Name.Trim();
+                        }
 
                         if (meals.Count > 1 &&
                             !string.IsNullOrWhiteSpace(meals[1].Name))
+                        {
                             lunchName = meals[1].Name.Trim();
+                        }
 
                         if (meals.Count > 2 &&
                             !string.IsNullOrWhiteSpace(meals[2].Name))
+                        {
                             dinnerName = meals[2].Name.Trim();
+                        }
 
                         await reminderService.SaveReminder(
                             new Reminder
@@ -130,30 +138,36 @@ namespace TeamNut.Services
                             .NotifyRemindersChangedForUser(userId);
                     }
                 }
-                catch { }
+                catch
+                {
+                }
 
                 if (mealPlanId < MinValidId)
+                {
                     throw new InvalidOperationException(
                         ErrGenerateMealPlanFailed);
+                }
 
                 return mealPlanId;
             }
             catch (Exception ex)
             {
-                throw new InvalidOperationException( $"Error generating meal plan: {ex.Message}", ex);
+                throw new InvalidOperationException($"Error generating meal plan: {ex.Message}", ex);
             }
         }
 
         public async Task<List<Meal>> GetMealsForMealPlanAsync(int mealPlanId)
         {
             if (mealPlanId < MinValidId)
+            {
                 throw new ArgumentException(
                     ErrInvalidMealPlanId,
                     nameof(mealPlanId));
+            }
 
             try
             {
-                return await _mealPlanRepository .GetMealsForMealPlan(mealPlanId) ?? new List<Meal>();
+                return await mealPlanRepository.GetMealsForMealPlan(mealPlanId) ?? new List<Meal>();
             }
             catch (Exception ex)
             {
@@ -164,39 +178,46 @@ namespace TeamNut.Services
 
         public async Task<MealPlan?> GetMealPlanByIdAsync(int mealPlanId)
         {
-            if (mealPlanId < MinValidId) return null;
+            if (mealPlanId < MinValidId)
+            {
+                return null;
+            }
 
             try
             {
-                return await _mealPlanRepository.GetById(mealPlanId);
+                return await mealPlanRepository.GetById(mealPlanId);
             }
             catch (Exception ex)
             {
-                throw new InvalidOperationException( $"Error retrieving meal plan: {ex.Message}", ex);
+                throw new InvalidOperationException($"Error retrieving meal plan: {ex.Message}", ex);
             }
         }
 
         public async Task<MealPlan?> GetTodaysMealPlanAsync(int userId)
         {
             if (userId < MinValidId)
+            {
                 throw new ArgumentException(
                     ErrInvalidUserIdForPlan,
                     nameof(userId));
+            }
 
             try
             {
-                var latest = await _mealPlanRepository.GetLatestMealPlan(userId);
+                var latest = await mealPlanRepository.GetLatestMealPlan(userId);
 
                 if (latest?.CreatedAt.Date == DateTime.Today)
+                {
                     return latest;
+                }
 
                 int newPlanId = await GeneratePersonalizedMealPlanAsync(userId);
 
-                return await _mealPlanRepository.GetById(newPlanId);
+                return await mealPlanRepository.GetById(newPlanId);
             }
             catch (Exception ex)
             {
-                throw new InvalidOperationException( $"Error retrieving today's meal plan: {ex.Message}", ex);
+                throw new InvalidOperationException($"Error retrieving today's meal plan: {ex.Message}", ex);
             }
         }
 
@@ -204,7 +225,7 @@ namespace TeamNut.Services
         {
             try
             {
-                return await _mealPlanRepository.GetAll();
+                return await mealPlanRepository.GetAll();
             }
             catch (Exception ex)
             {
@@ -217,7 +238,9 @@ namespace TeamNut.Services
             CalculateTotalNutrition(List<Meal> meals)
         {
             if (meals == null || meals.Count == 0)
+            {
                 return (0, 0, 0, 0);
+            }
 
             int calories = 0, protein = 0, carbs = 0, fat = 0;
 
@@ -289,7 +312,7 @@ namespace TeamNut.Services
             try
             {
                 var userData =
-                    await _userRepository.GetUserDataByUserId(userId);
+                    await userRepository.GetUserDataByUserId(userId);
 
                 return userData?.Goal?.ToLower()
                     ?? GoalMaintenance;
@@ -303,11 +326,13 @@ namespace TeamNut.Services
         public async Task SaveMealsToDailyLogAsync(int mealPlanId)
         {
             if (!UserSession.UserId.HasValue)
+            {
                 throw new InvalidOperationException(
                     ErrUserMustBeLoggedIn);
+            }
 
             var meals = await GetMealsForMealPlanAsync(mealPlanId);
-            await _mealPlanRepository.SaveMealsToDailyLog(
+            await mealPlanRepository.SaveMealsToDailyLog(
                 UserSession.UserId.Value,
                 meals);
         }
@@ -317,10 +342,12 @@ namespace TeamNut.Services
             int calories)
         {
             if (!UserSession.UserId.HasValue)
+            {
                 throw new InvalidOperationException(
                     ErrUserMustBeLoggedIn);
+            }
 
-            await _mealPlanRepository.SaveMealToDailyLog(
+            await mealPlanRepository.SaveMealToDailyLog(
                 UserSession.UserId.Value,
                 mealId,
                 calories);

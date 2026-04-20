@@ -43,7 +43,9 @@ namespace TeamNut.Views.ShoppingListView
             AutoSuggestBoxTextChangedEventArgs args)
         {
             if (args.Reason != AutoSuggestionBoxTextChangeReason.UserInput)
+            {
                 return;
+            }
 
             if (sender.Text.Length >= MinSearchLength)
             {
@@ -81,7 +83,9 @@ namespace TeamNut.Views.ShoppingListView
         private async void AcceptButton_Click(object sender, RoutedEventArgs e)
         {
             if (sender is not Button { DataContext: ShoppingItem item })
+            {
                 return;
+            }
 
             var dialog = new ContentDialog
             {
@@ -101,7 +105,9 @@ namespace TeamNut.Views.ShoppingListView
         private async void CancelButton_Click(object sender, RoutedEventArgs e)
         {
             if (sender is not Button { DataContext: ShoppingItem item })
+            {
                 return;
+            }
 
             var dialog = new ContentDialog
             {

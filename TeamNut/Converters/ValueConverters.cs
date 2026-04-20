@@ -1,8 +1,8 @@
+using System;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Media;
-using System;
 using Windows.UI;
 using Windows.UI.Text;
 

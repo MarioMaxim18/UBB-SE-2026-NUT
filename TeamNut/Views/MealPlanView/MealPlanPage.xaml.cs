@@ -1,6 +1,6 @@
+using System;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using System;
 using TeamNut.ModelViews;
 using TeamNut.Models;
 using TeamNut.Services;
@@ -10,7 +10,7 @@ namespace TeamNut.Views.MealPlanView
     public sealed partial class MealPlanPage : Page
     {
         public MealPlanViewModel ViewModel { get; } = new MealPlanViewModel();
-        private UserService _userService;
+        private UserService userService;
 
         private const string ButtonOk = "OK";
         private const string ButtonSave = "Save";
@@ -36,7 +36,7 @@ namespace TeamNut.Views.MealPlanView
         private const string MsgNoMealPlanLoaded = "No meal plan is currently loaded. Please generate a meal plan first.";
         private const string MsgNoMealsGenerated = "No meals to save. Please generate a meal plan first.";
         private const string MsgPreferenceInfo = "Changes will be reflected in your next meal plan generation.";
-        private const string MealBullet = "â€¢";
+        private const string MealBullet = "";
         private const string KcalUnit = "kcal";
         private const int WeightMin = 1;
         private const int WeightMax = 500;
@@ -57,7 +57,7 @@ namespace TeamNut.Views.MealPlanView
         {
             InitializeComponent();
             DataContext = ViewModel;
-            _userService = new UserService();
+            userService = new UserService();
 
             ViewModel.PropertyChanged += (s, e) =>
             {
@@ -98,7 +98,7 @@ namespace TeamNut.Views.MealPlanView
                 return;
             }
 
-            var userData = await _userService.GetUserDataAsync(userId.Value);
+            var userData = await userService.GetUserDataAsync(userId.Value);
 
             if (userData == null)
             {
@@ -188,7 +188,9 @@ namespace TeamNut.Views.MealPlanView
             dialog.Content = panel;
 
             if (await dialog.ShowAsync() != ContentDialogResult.Primary)
+            {
                 return;
+            }
 
             if (weightBox.Value < WeightMin || heightBox.Value < HeightMin)
             {
@@ -209,7 +211,7 @@ namespace TeamNut.Views.MealPlanView
 
             try
             {
-                await _userService.UpdateUserDataAsync(userData);
+                await userService.UpdateUserDataAsync(userData);
 
                 await ShowSimpleDialog(TitleSettingsUpdated, MsgSettingsSaved);
                 StatusMessageText.Text = MsgSettingsStatus;
@@ -253,8 +255,7 @@ namespace TeamNut.Views.MealPlanView
             {
                 await ShowSimpleDialog(
                     TitleSaveFailed,
-                    $"Failed to save to daily log:\n\n{ex.Message}"
-                );
+                    $"Failed to save to daily log:\n\n{ex.Message}");
             }
         }
 
@@ -294,8 +295,7 @@ namespace TeamNut.Views.MealPlanView
         {
             await ShowSimpleDialog(
                 ViewModel.ErrorDialogTitle,
-                ViewModel.ErrorDialogMessage
-            );
+                ViewModel.ErrorDialogMessage);
 
             ViewModel.ShowErrorDialog = false;
         }

@@ -1,18 +1,18 @@
 using System;
 using System.Collections.Generic;
-using Microsoft.Data.Sqlite;
 using System.Threading.Tasks;
+using Microsoft.Data.Sqlite;
 using TeamNut.Models;
 
 namespace TeamNut.Repositories
 {
     public class ShoppingListRepository : IRepository<ShoppingItem>
     {
-        private readonly string _connectionString = DbConfig.ConnectionString;
+        private readonly string connectionString = DbConfig.ConnectionString;
 
         public async Task Add(ShoppingItem item)
         {
-            using var conn = new SqliteConnection(_connectionString);
+            using var conn = new SqliteConnection(connectionString);
             await conn.OpenAsync();
 
             string query = @"INSERT INTO ShoppingItems (user_id, ingredient_id, quantity_grams, is_checked)
@@ -34,7 +34,7 @@ namespace TeamNut.Repositories
         {
             var items = new List<ShoppingItem>();
 
-            using var conn = new SqliteConnection(_connectionString);
+            using var conn = new SqliteConnection(connectionString);
             await conn.OpenAsync();
 
             string query = @"SELECT s.id, s.user_id, s.ingredient_id, s.quantity_grams, s.is_checked, i.name AS ingredient_name 
@@ -54,7 +54,7 @@ namespace TeamNut.Repositories
 
         public async Task<ShoppingItem?> GetById(int id)
         {
-            using var conn = new SqliteConnection(_connectionString);
+            using var conn = new SqliteConnection(connectionString);
             await conn.OpenAsync();
 
             string query = @"SELECT s.id, s.user_id, s.ingredient_id, s.quantity_grams, s.is_checked, i.name AS ingredient_name 
@@ -77,7 +77,7 @@ namespace TeamNut.Repositories
 
         public async Task<ShoppingItem?> GetByUserAndIngredient(int userId, int ingredientId)
         {
-            using var conn = new SqliteConnection(_connectionString);
+            using var conn = new SqliteConnection(connectionString);
             await conn.OpenAsync();
 
             string query = @"SELECT s.id, s.user_id, s.ingredient_id, s.quantity_grams, s.is_checked, i.name AS ingredient_name 
@@ -103,7 +103,7 @@ namespace TeamNut.Repositories
         {
             var items = new List<ShoppingItem>();
 
-            using var conn = new SqliteConnection(_connectionString);
+            using var conn = new SqliteConnection(connectionString);
             await conn.OpenAsync();
 
             string query = @"SELECT s.id, s.user_id, s.ingredient_id, s.quantity_grams, s.is_checked, i.name AS ingredient_name 
@@ -126,7 +126,7 @@ namespace TeamNut.Repositories
 
         public async Task Update(ShoppingItem item)
         {
-            using var conn = new SqliteConnection(_connectionString);
+            using var conn = new SqliteConnection(connectionString);
             await conn.OpenAsync();
 
             string query = @"UPDATE ShoppingItems 
@@ -144,7 +144,7 @@ namespace TeamNut.Repositories
 
         public async Task Delete(int id)
         {
-            using var conn = new SqliteConnection(_connectionString);
+            using var conn = new SqliteConnection(connectionString);
             await conn.OpenAsync();
 
             string query = "DELETE FROM ShoppingItems WHERE id = @id";
@@ -159,7 +159,7 @@ namespace TeamNut.Repositories
         public async Task<List<ShoppingItem>> GetIngredientsNeededFromMealPlan(int userId)
         {
             var items = new List<ShoppingItem>();
-            using var conn = new SqliteConnection(_connectionString);
+            using var conn = new SqliteConnection(connectionString);
             await conn.OpenAsync();
 
            

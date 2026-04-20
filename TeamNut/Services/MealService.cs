@@ -8,55 +8,55 @@ namespace TeamNut.Services
 {
     public class MealService
     {
-        private readonly MealRepository _mealRepository;
+        private readonly MealRepository mealRepository;
 
         public MealService()
         {
-            _mealRepository = new MealRepository();
+            mealRepository = new MealRepository();
         }
 
-        
         public async Task<List<Meal>> GetMealsAsync(MealFilter? filter = null)
         {
-            
             if (filter == null)
             {
-                var allMeals = await _mealRepository.GetAll();
+                var allMeals = await mealRepository.GetAll();
                 return allMeals.ToList();
             }
 
-            
-            var results = await _mealRepository.GetFilteredMeals(filter);
+            var results = await mealRepository.GetFilteredMeals(filter);
             return results.ToList();
         }
 
-      
         public async Task<List<Meal>> GetFilteredMealsAsync(MealFilter filter)
         {
-            var results = await _mealRepository.GetFilteredMeals(filter);
+            var results = await mealRepository.GetFilteredMeals(filter);
             return results.ToList();
         }
 
         public async Task<Meal?> GetByIdAsync(int id)
         {
-            return await _mealRepository.GetById(id);
+            return await mealRepository.GetById(id);
         }
 
         public async Task<List<Meal>> GetAllAsync()
         {
-            var list = await _mealRepository.GetAll();
+            var list = await mealRepository.GetAll();
             return list.ToList();
         }
 
         public async Task ToggleFavoriteAsync(Meal meal)
         {
-            if (meal == null || !UserSession.UserId.HasValue) return;
-            await _mealRepository.SetFavoriteAsync(UserSession.UserId.Value, meal.Id, meal.IsFavorite);
+            if (meal == null || !UserSession.UserId.HasValue)
+            {
+                return;
+            }
+
+            await mealRepository.SetFavoriteAsync(UserSession.UserId.Value, meal.Id, meal.IsFavorite);
         }
 
         public async Task<List<string>> GetMealIngredientLinesAsync(int mealId)
         {
-            return await _mealRepository.GetIngredientLinesForMealAsync(mealId);
+            return await mealRepository.GetIngredientLinesForMealAsync(mealId);
         }
     }
 }

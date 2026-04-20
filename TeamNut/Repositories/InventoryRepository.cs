@@ -1,21 +1,20 @@
-using Microsoft.Data.Sqlite;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.Data.Sqlite;
 using TeamNut.Models;
 
 namespace TeamNut.Repositories
 {
     internal class InventoryRepository : IRepository<Inventory>
     {
-        private readonly string _connectionString = DbConfig.ConnectionString;
+        private readonly string connectionString = DbConfig.ConnectionString;
 
         public async Task Add(Inventory entity)
         {
-            using var conn = new SqliteConnection(_connectionString);
+            using var conn = new SqliteConnection(connectionString);
             await conn.OpenAsync();
 
-            
             const string checkSql = @"
         SELECT id, quantity_grams 
         FROM Inventory 
@@ -29,7 +28,6 @@ namespace TeamNut.Repositories
 
             if (await reader.ReadAsync())
             {
-                
                 int existingId = Convert.ToInt32(reader["id"]);
                 int existingQty = Convert.ToInt32(reader["quantity_grams"]);
                 int newQty = existingQty + entity.QuantityGrams;
@@ -44,7 +42,6 @@ namespace TeamNut.Repositories
             }
             else
             {
-                
                 const string insertSql = @"
             INSERT INTO Inventory (user_id, ingredient_id, quantity_grams) 
             VALUES (@uid, @iid, @qty)";
@@ -67,7 +64,7 @@ namespace TeamNut.Repositories
                                  JOIN Ingredients ing ON inv.ingredient_id = ing.food_id 
                                  WHERE inv.user_id = @uid";
 
-            using var conn = new SqliteConnection(_connectionString);
+            using var conn = new SqliteConnection(connectionString);
             using var cmd = new SqliteCommand(sql, conn);
             cmd.Parameters.AddWithValue("@uid", userId);
 
@@ -84,7 +81,7 @@ namespace TeamNut.Repositories
 
         public async Task Delete(int id)
         {
-            using var conn = new SqliteConnection(_connectionString);
+            using var conn = new SqliteConnection(connectionString);
             const string sql = "DELETE FROM Inventory WHERE id = @id";
             using var cmd = new SqliteCommand(sql, conn);
             cmd.Parameters.AddWithValue("@id", id);
@@ -95,7 +92,7 @@ namespace TeamNut.Repositories
 
         public async Task<Inventory?> GetById(int id)
         {
-            using var conn = new SqliteConnection(_connectionString);
+            using var conn = new SqliteConnection(connectionString);
             const string sql = "SELECT * FROM Inventory WHERE id = @id";
             using var cmd = new SqliteCommand(sql, conn);
             cmd.Parameters.AddWithValue("@id", id);
@@ -106,7 +103,7 @@ namespace TeamNut.Repositories
 
         public async Task Update(Inventory entity)
         {
-            using var conn = new SqliteConnection(_connectionString);
+            using var conn = new SqliteConnection(connectionString);
             const string sql = "UPDATE Inventory SET quantity_grams = @qty WHERE id = @id";
             using var cmd = new SqliteCommand(sql, conn);
             cmd.Parameters.AddWithValue("@id", entity.Id);
@@ -119,7 +116,6 @@ namespace TeamNut.Repositories
 
         private Inventory MapReaderToInventory(SqliteDataReader reader)
         {
-            
             return new Inventory
             {
                 Id = Convert.ToInt32(reader["id"]),

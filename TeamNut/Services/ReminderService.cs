@@ -8,7 +8,7 @@ namespace TeamNut.Services
 {
     public class ReminderService
     {
-        private readonly ReminderRepository _reminderRepository;
+        private readonly ReminderRepository reminderRepository;
 
         public static event EventHandler<int>? RemindersChanged;
         private const int MaxReminderNameLength = 50;
@@ -19,17 +19,17 @@ namespace TeamNut.Services
 
         public ReminderService()
         {
-            _reminderRepository = new ReminderRepository();
+            reminderRepository = new ReminderRepository();
         }
 
         public async Task<Reminder?> GetNextReminder(int userId)
         {
-            return await _reminderRepository.GetNextReminder(userId);
+            return await reminderRepository.GetNextReminder(userId);
         }
 
         public async Task<Reminder?> GetReminderById(int id)
         {
-            return await _reminderRepository.GetById(id);
+            return await reminderRepository.GetById(id);
         }
 
         public async Task<string> SaveReminder(Reminder reminder)
@@ -52,11 +52,11 @@ namespace TeamNut.Services
 
             if (reminder.Id == InvalidUserId)
             {
-                await _reminderRepository.Add(reminder);
+                await reminderRepository.Add(reminder);
             }
             else
             {
-                await _reminderRepository.Update(reminder);
+                await reminderRepository.Update(reminder);
             }
 
             try
@@ -82,7 +82,7 @@ namespace TeamNut.Services
 
         public async Task<IEnumerable<Reminder>> GetUserReminders(int userId)
         {
-            return await _reminderRepository.GetAllByUserId(userId);
+            return await reminderRepository.GetAllByUserId(userId);
         }
 
         public async Task DeleteReminder(int id)
@@ -90,9 +90,9 @@ namespace TeamNut.Services
             try
             {
                 var existing =
-                    await _reminderRepository.GetById(id);
+                    await reminderRepository.GetById(id);
 
-                await _reminderRepository.Delete(id);
+                await reminderRepository.Delete(id);
 
                 if (existing != null)
                 {

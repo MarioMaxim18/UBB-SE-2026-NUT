@@ -1,9 +1,9 @@
-using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using TeamNut.Models;
 using TeamNut.Services;
 
@@ -22,9 +22,9 @@ namespace TeamNut.ViewModels
         private const string ErrorSavingDataFormat = "An error occurred while saving: {0}";
 
         [ObservableProperty]
-        public partial User CurrentUser { get; set; } = new();
+        public partial User CurrentUser { get; set; } = new User();
         [ObservableProperty]
-        public partial UserData CurrentUserData { get; set; } = new();
+        public partial UserData CurrentUserData { get; set; } = new UserData();
         [ObservableProperty]
         public partial bool IsNutritionistChecked { get; set; }
         [ObservableProperty]

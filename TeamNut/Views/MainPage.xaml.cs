@@ -8,12 +8,12 @@ namespace TeamNut.Views
 {
     public sealed partial class MainPage : Page
     {
-        private readonly Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
-        private readonly DispatcherTimer _reminderTimer;
-        private readonly System.Collections.Generic.HashSet<int> _shownReminders = new();
-        private readonly ReminderService _reminderService = new();
-        public MainViewModel ViewModel { get; } = new();
-        public TeamNut.ViewModels.RemindersViewModel RemindersViewModel { get; } = new();
+        private readonly Microsoft.UI.Dispatching.DispatcherQueue dispatcher;
+        private readonly DispatcherTimer reminderTimer;
+        private readonly System.Collections.Generic.HashSet<int> shownReminders = new System.Collections.Generic.HashSet<int>();
+        private readonly ReminderService reminderService = new ReminderService();
+        public MainViewModel ViewModel { get; } = new MainViewModel();
+        public TeamNut.ViewModels.RemindersViewModel RemindersViewModel { get; } = new TeamNut.ViewModels.RemindersViewModel();
         private static readonly TimeSpan ReminderPollInterval = TimeSpan.FromSeconds(30);
         private static readonly TimeSpan ReminderTriggerWindow = TimeSpan.FromSeconds(30);
         private const string DateFormatIso = "yyyy-MM-dd";
@@ -38,7 +38,7 @@ namespace TeamNut.Views
         {
             InitializeComponent();
 
-            _dispatcher = Microsoft.UI.Dispatching.DispatcherQueue
+            dispatcher = Microsoft.UI.Dispatching.DispatcherQueue
                 .GetForCurrentThread();
 
             _ = ViewModel.LoadHeaderData();
@@ -46,12 +46,12 @@ namespace TeamNut.Views
 
             ReminderService.RemindersChanged += OnRemindersChanged;
 
-            _reminderTimer = new DispatcherTimer
+            reminderTimer = new DispatcherTimer
             {
                 Interval = ReminderPollInterval
             };
-            _reminderTimer.Tick += ReminderTimer_Tick;
-            _reminderTimer.Start();
+            reminderTimer.Tick += ReminderTimer_Tick;
+            reminderTimer.Start();
         }
 
         private async void ReminderTimer_Tick(object? sender, object? e)
@@ -59,24 +59,38 @@ namespace TeamNut.Views
             try
             {
                 int userId = UserSession.UserId ?? 0;
-                if (userId == 0) return;
+                if (userId == 0)
+                {
+                    return;
+                }
 
                 var reminders =
-                    await _reminderService.GetUserReminders(userId);
+                    await reminderService.GetUserReminders(userId);
 
                 var today = DateTime.Today.ToString(DateFormatIso);
                 var now = DateTime.Now.TimeOfDay;
 
                 foreach (var rem in reminders)
                 {
-                    if (rem == null) continue;
-                    if (rem.ReminderDate != today) continue;
-                    if (_shownReminders.Contains(rem.Id)) continue;
+                    if (rem == null)
+                    {
+                        continue;
+                    }
+
+                    if (rem.ReminderDate != today)
+                    {
+                        continue;
+                    }
+
+                    if (shownReminders.Contains(rem.Id))
+                    {
+                        continue;
+                    }
 
                     var diff = (rem.Time - now).Duration();
                     if (diff <= ReminderTriggerWindow)
                     {
-                        _shownReminders.Add(rem.Id);
+                        shownReminders.Add(rem.Id);
                         await ShowReminderDialog(rem);
                     }
                 }
@@ -101,7 +115,9 @@ namespace TeamNut.Views
                 };
 
                 if (await dialog.ShowAsync() != ContentDialogResult.Primary)
+                {
                     return;
+                }
 
                 try
                 {
@@ -132,7 +148,7 @@ namespace TeamNut.Views
                         await inventory.ConsumeMeal(userId, matched.Id);
                     }
 
-                    await _reminderService.DeleteReminder(rem.Id);
+                    await reminderService.DeleteReminder(rem.Id);
                     ReminderService
                         .NotifyRemindersChangedForUser(userId);
                 }
@@ -153,11 +169,14 @@ namespace TeamNut.Views
             try
             {
                 int current = UserSession.UserId ?? 0;
-                if (current != userId) return;
-
-                if (_dispatcher != null)
+                if (current != userId)
                 {
-                    _dispatcher.TryEnqueue(LoadTopReminder);
+                    return;
+                }
+
+                if (dispatcher != null)
+                {
+                    dispatcher.TryEnqueue(LoadTopReminder);
                 }
                 else
                 {
@@ -172,10 +191,13 @@ namespace TeamNut.Views
             try
             {
                 int userId = UserSession.UserId ?? 0;
-                if (userId == 0) return;
+                if (userId == 0)
+                {
+                    return;
+                }
 
                 var next =
-                    await _reminderService.GetNextReminder(userId);
+                    await reminderService.GetNextReminder(userId);
 
                 var text = next != null
                     ? $"{next.Name} at {next.Time:hh\\:mm}"
@@ -198,9 +220,9 @@ namespace TeamNut.Views
             UserSession.Logout();
 
             if (Application.Current is App app &&
-                app.window != null)
+                app.AppWindow != null)
             {
-                app.window.Content =
+                app.AppWindow.Content =
                     new TeamNut.Views.UserView.UserView();
             }
         }
@@ -212,10 +234,13 @@ namespace TeamNut.Views
             try
             {
                 int userId = UserSession.UserId ?? 0;
-                if (userId == 0) return;
+                if (userId == 0)
+                {
+                    return;
+                }
 
                 var reminder =
-                    await _reminderService.GetNextReminder(userId);
+                    await reminderService.GetNextReminder(userId);
 
                 if (reminder == null)
                 {
@@ -330,31 +355,31 @@ namespace TeamNut.Views
             object sender,
             SelectionChangedEventArgs e)
         {
-            if (MainTabView.SelectedItem == MealsTab && MealsFrame.Content == null)
+            if ((MainTabView.SelectedItem as Microsoft.UI.Xaml.Controls.TabViewItem) == MealsTab && MealsFrame.Content == null)
             {
                 MealsFrame.Navigate(typeof(MealsPage));
             }
-            else if (MainTabView.SelectedItem == MealPlanTab && MealPlanFrame.Content == null)
+            else if ((MainTabView.SelectedItem as Microsoft.UI.Xaml.Controls.TabViewItem) == MealPlanTab && MealPlanFrame.Content == null)
             {
                 MealPlanFrame.Navigate(typeof(TeamNut.Views.MealPlanView.MealPlanPage));
             }
-            else if (MainTabView.SelectedItem == DailyLogTab && DailyLogFrame.Content == null)
+            else if ((MainTabView.SelectedItem as Microsoft.UI.Xaml.Controls.TabViewItem) == DailyLogTab && DailyLogFrame.Content == null)
             {
                 DailyLogFrame.Navigate(typeof(TeamNut.Views.CalorieLoggingView.CalorieLoggingPage));
             }
-            else if (MainTabView.SelectedItem == InventoryTab && InventoryFrame.Content == null)
+            else if ((MainTabView.SelectedItem as Microsoft.UI.Xaml.Controls.TabViewItem) == InventoryTab && InventoryFrame.Content == null)
             {
                 InventoryFrame.Navigate(typeof(TeamNut.Views.InventoryView.InventoryPage));
             }
-            else if (MainTabView.SelectedItem == ChatTab && ChatFrame.Content == null)
+            else if ((MainTabView.SelectedItem as Microsoft.UI.Xaml.Controls.TabViewItem) == ChatTab && ChatFrame.Content == null)
             {
                 ChatFrame.Navigate(typeof(TeamNut.Views.NutritionistChat.NutritionistChatPage));
             }
-            else if (MainTabView.SelectedItem == ShoppingListTab && ShoppingListFrame.Content == null)
+            else if ((MainTabView.SelectedItem as Microsoft.UI.Xaml.Controls.TabViewItem) == ShoppingListTab && ShoppingListFrame.Content == null)
             {
                 ShoppingListFrame.Navigate(typeof(TeamNut.Views.ShoppingListView.ShoppingListPage));
             }
-            else if (MainTabView.SelectedItem == RemindersTab && RemindersFrame.Content == null)
+            else if ((MainTabView.SelectedItem as Microsoft.UI.Xaml.Controls.TabViewItem) == RemindersTab && RemindersFrame.Content == null)
             {
                 RemindersFrame.Navigate(typeof(TeamNut.Views.RemindersView.RemindersPage));
             }
