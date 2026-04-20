@@ -1,0 +1,16 @@
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using TeamNut.Models;
+
+namespace TeamNut.Services
+{
+    public interface IMealService
+    {
+        Task<List<Meal>> GetAllAsync();
+        Task<Meal?> GetByIdAsync(int id);
+        Task<List<Meal>> GetFilteredMealsAsync(MealFilter filter);
+        Task<List<string>> GetMealIngredientLinesAsync(int mealId);
+        Task<List<Meal>> GetMealsAsync(MealFilter? filter = null);
+        Task ToggleFavoriteAsync(Meal meal);
+    }
+}

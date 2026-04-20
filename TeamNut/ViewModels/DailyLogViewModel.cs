@@ -10,7 +10,7 @@ namespace TeamNut.ViewModels
 {
     public class DailyLogViewModel : ObservableObject
     {
-        private readonly DailyLogService _service;
+        private readonly IDailyLogService _service;
         private bool _hasData;
         private string _statusMessage = string.Empty;
         private DailyLog _dailyTotals = new();
@@ -34,9 +34,9 @@ namespace TeamNut.ViewModels
         private Meal? _selectedMeal;
         private string _logMealStatusMessage = string.Empty;
 
-        public DailyLogViewModel()
+        public DailyLogViewModel(IDailyLogService dailyLogService)
         {
-            _service = new DailyLogService();
+            _service = dailyLogService;
             _ = LoadMealsForAutocompleteAsync();
         }
 

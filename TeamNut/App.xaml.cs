@@ -38,11 +38,16 @@ namespace TeamNut
 
 
             services.AddTransient<IChatRepository, ChatRepository>();
-
-
             services.AddTransient<IChatService, ChatService>();
-
             services.AddTransient<NutritionistChatViewModel>();
+
+
+            services.AddTransient<IDailyLogRepository, DailyLogRepository>();
+            services.AddTransient<IDailyLogService, DailyLogService>();
+            services.AddTransient<DailyLogViewModel>();
+
+
+
 
             return services.BuildServiceProvider();
         }

@@ -6,17 +6,17 @@ using TeamNut.Repositories;
 
 namespace TeamNut.Services
 {
-    public class DailyLogService
+    public class DailyLogService : IDailyLogService
     {
-        private readonly DailyLogRepository _repository;
-        private readonly UserRepository _userRepository;
-        private readonly MealService _mealService;
+        private readonly IDailyLogRepository _repository;
+        private readonly IRepository<User> _userRepository;
+        private readonly IMealService _mealService;
 
-        public DailyLogService()
+        public DailyLogService(IDailyLogRepository dailyLogRepo, IRepository<User> userRepo, IMealService mealService)
         {
-            _repository = new DailyLogRepository();
-            _userRepository = new UserRepository();
-            _mealService = new MealService();
+            _repository = dailyLogRepo;
+            _userRepository = userRepo;
+            _mealService = mealService;
         }
 
         private int GetUserId()

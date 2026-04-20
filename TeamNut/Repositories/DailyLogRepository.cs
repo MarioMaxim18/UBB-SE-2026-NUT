@@ -5,9 +5,14 @@ using TeamNut.Models;
 
 namespace TeamNut.Repositories
 {
-    public class DailyLogRepository
+    public class DailyLogRepository : IDailyLogRepository
     {
-        private readonly string _connectionString = DbConfig.ConnectionString;
+        private readonly string _connectionString;
+
+        public DailyLogRepository(IDbConfig dbConfig)
+        {
+            _connectionString = dbConfig.ConnectionString;
+        }
 
         public async Task Add(DailyLog log)
         {

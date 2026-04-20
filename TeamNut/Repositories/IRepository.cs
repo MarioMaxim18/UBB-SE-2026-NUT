@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TeamNut.Repositories
 {
-    internal interface IRepository<T> where T : class
+    public interface IRepository<T> where T : class
     {
         Task<T> GetById(int id);
         Task<IEnumerable<T>> GetAll();

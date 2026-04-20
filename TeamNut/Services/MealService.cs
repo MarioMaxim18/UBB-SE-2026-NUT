@@ -6,7 +6,7 @@ using TeamNut.Repositories;
 
 namespace TeamNut.Services
 {
-    public class MealService
+    public class MealService : IMealService
     {
         private readonly MealRepository _mealRepository;
 
@@ -15,22 +15,22 @@ namespace TeamNut.Services
             _mealRepository = new MealRepository();
         }
 
-        
+
         public async Task<List<Meal>> GetMealsAsync(MealFilter? filter = null)
         {
-            
+
             if (filter == null)
             {
                 var allMeals = await _mealRepository.GetAll();
                 return allMeals.ToList();
             }
 
-            
+
             var results = await _mealRepository.GetFilteredMeals(filter);
             return results.ToList();
         }
 
-      
+
         public async Task<List<Meal>> GetFilteredMealsAsync(MealFilter filter)
         {
             var results = await _mealRepository.GetFilteredMeals(filter);

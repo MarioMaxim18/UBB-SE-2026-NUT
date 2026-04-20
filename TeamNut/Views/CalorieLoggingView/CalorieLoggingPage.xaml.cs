@@ -2,18 +2,19 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using TeamNut.Models;
 using TeamNut.ViewModels;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace TeamNut.Views.CalorieLoggingView
 {
     public sealed partial class CalorieLoggingPage : Page
     {
-        private readonly DailyLogViewModel _viewModel;
+        private DailyLogViewModel _viewModel { get; }
 
         public CalorieLoggingPage()
         {
             this.InitializeComponent();
 
-            _viewModel = new DailyLogViewModel();
+            _viewModel = App.Services.GetService<DailyLogViewModel>();
             this.DataContext = _viewModel;
 
             LoadData();
