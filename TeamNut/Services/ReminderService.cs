@@ -86,20 +86,21 @@ namespace TeamNut.Services
 
         public async Task DeleteReminder(int id)
         {
-            try
+            var existing =
+                await reminderRepository.GetById(id);
+
+            await reminderRepository.Delete(id);
+
+            if (existing != null)
             {
-                var existing =
-                    await reminderRepository.GetById(id);
-
-                await reminderRepository.Delete(id);
-
-                if (existing != null)
+                try
                 {
                     RemindersChanged?.Invoke(this, existing.UserId);
                 }
-            }
-            catch
-            {
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"RemindersChanged handler error: {ex.Message}");
+                }
             }
         }
 
