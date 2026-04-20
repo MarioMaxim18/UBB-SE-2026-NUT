@@ -93,7 +93,7 @@ namespace TeamNut.Repositories
             await cmd.ExecuteNonQueryAsync();
         }
 
-        public async Task<Inventory> GetById(int id)
+        public async Task<Inventory?> GetById(int id)
         {
             using var conn = new SqliteConnection(_connectionString);
             const string sql = "SELECT * FROM Inventory WHERE id = @id";

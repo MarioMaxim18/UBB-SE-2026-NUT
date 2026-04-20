@@ -64,7 +64,7 @@ namespace TeamNut.Services
                     endOfWeek);
         }
 
-        public async Task<UserData> GetCurrentUserNutritionTargetsAsync()
+        public async Task<UserData?> GetCurrentUserNutritionTargetsAsync()
         {
             return await _userRepository
                 .GetUserDataByUserId(GetUserId());

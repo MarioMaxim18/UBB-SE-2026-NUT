@@ -325,5 +325,39 @@ namespace TeamNut.Views
                     $"Error showing reminder details: {ex.Message}");
             }
         }
+
+        private void MainTabView_SelectionChanged(
+            object sender,
+            SelectionChangedEventArgs e)
+        {
+            if (MainTabView.SelectedItem == MealsTab && MealsFrame.Content == null)
+            {
+                MealsFrame.Navigate(typeof(MealsPage));
+            }
+            else if (MainTabView.SelectedItem == MealPlanTab && MealPlanFrame.Content == null)
+            {
+                MealPlanFrame.Navigate(typeof(TeamNut.Views.MealPlanView.MealPlanPage));
+            }
+            else if (MainTabView.SelectedItem == DailyLogTab && DailyLogFrame.Content == null)
+            {
+                DailyLogFrame.Navigate(typeof(TeamNut.Views.CalorieLoggingView.CalorieLoggingPage));
+            }
+            else if (MainTabView.SelectedItem == InventoryTab && InventoryFrame.Content == null)
+            {
+                InventoryFrame.Navigate(typeof(TeamNut.Views.InventoryView.InventoryPage));
+            }
+            else if (MainTabView.SelectedItem == ChatTab && ChatFrame.Content == null)
+            {
+                ChatFrame.Navigate(typeof(TeamNut.Views.NutritionistChat.NutritionistChatPage));
+            }
+            else if (MainTabView.SelectedItem == ShoppingListTab && ShoppingListFrame.Content == null)
+            {
+                ShoppingListFrame.Navigate(typeof(TeamNut.Views.ShoppingListView.ShoppingListPage));
+            }
+            else if (MainTabView.SelectedItem == RemindersTab && RemindersFrame.Content == null)
+            {
+                RemindersFrame.Navigate(typeof(TeamNut.Views.RemindersView.RemindersPage));
+            }
+        }
     }
 }

@@ -24,7 +24,7 @@ namespace TeamNut.ViewModels
         public async Task LoadMealsAsync(string? filter = null)
         {
             var list = await _mealService.GetMealsAsync(
-                new MealFilter { SearchTerm = filter }
+                new MealFilter { SearchTerm = filter ?? string.Empty }
             );
             Meals = new ObservableCollection<Meal>(list);
             OnPropertyChanged(nameof(Meals));

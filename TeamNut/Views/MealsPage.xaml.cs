@@ -34,10 +34,10 @@ namespace TeamNut
             InitializeComponent();
             viewModel = new MealSearchViewModel();
 
-            Loaded += (s, e) => btnSearch_Click(this, new RoutedEventArgs());
+            Loaded += (s, e) => BtnSearch_Click(this, new RoutedEventArgs());
         }
 
-        private async void btnSearch_Click(object sender, RoutedEventArgs e)
+        private async void BtnSearch_Click(object sender, RoutedEventArgs e)
         {
             var filter = new MealFilter
             {
@@ -97,7 +97,7 @@ namespace TeamNut
             }
         }
 
-        private async void listMeals_ItemClick(object sender, ItemClickEventArgs e)
+        private async void ListMeals_ItemClick(object sender, ItemClickEventArgs e)
         {
             if (e.ClickedItem is not Meal meal)
                 return;
@@ -170,13 +170,13 @@ namespace TeamNut
             }
         }
 
-        private void txtSearch_KeyDown(
+        private void TxtSearch_KeyDown(
             object sender,
             Microsoft.UI.Xaml.Input.KeyRoutedEventArgs e)
         {
             if (e.Key == Windows.System.VirtualKey.Enter)
             {
-                btnSearch_Click(this, new RoutedEventArgs());
+                BtnSearch_Click(this, new RoutedEventArgs());
             }
         }
     }

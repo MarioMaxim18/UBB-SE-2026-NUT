@@ -252,7 +252,7 @@ namespace TeamNut.ModelViews
 
         internal async Task SaveToDailyLogAsync()
         {
-            throw new NotImplementedException();
+            await SaveToDailyLog();
         }
     }
 }

@@ -130,7 +130,8 @@ namespace TeamNut.Repositories
             {
                 const string checkMealsSql = "SELECT COUNT(*) FROM Meals";
                 using var checkCmd = new SqliteCommand(checkMealsSql, conn, transaction);
-                long mealCount = (long)await checkCmd.ExecuteScalarAsync();
+                var mealCountScalar = await checkCmd.ExecuteScalarAsync();
+                long mealCount = mealCountScalar != null ? Convert.ToInt64(mealCountScalar) : 0;
                 if (mealCount == 0)
                 {
                     throw new Exception("No meals found in database.");
@@ -337,13 +338,13 @@ namespace TeamNut.Repositories
                 {
                     Id = Convert.ToInt32(reader["meal_id"]),
                     Name = reader["name"]?.ToString() ?? string.Empty,
-                    ImageUrl = reader["imageUrl"]?.ToString(),
+                    ImageUrl = reader["imageUrl"]?.ToString() ?? string.Empty,
                     IsKeto = Convert.ToBoolean(reader["isKeto"]),
                     IsVegan = Convert.ToBoolean(reader["isVegan"]),
                     IsNutFree = Convert.ToBoolean(reader["isNutFree"]),
                     IsLactoseFree = Convert.ToBoolean(reader["isLactoseFree"]),
                     IsGlutenFree = Convert.ToBoolean(reader["isGlutenFree"]),
-                    Description = reader["description"]?.ToString(),
+                    Description = reader["description"]?.ToString() ?? string.Empty,
                     Calories = Convert.ToInt32(reader["total_calories"]),
                     Protein = Convert.ToInt32(reader["total_protein"]),
                     Carbs = Convert.ToInt32(reader["total_carbs"]),
@@ -410,7 +411,7 @@ namespace TeamNut.Repositories
                 Id = Convert.ToInt32(reader["mealplan_id"]),
                 UserId = Convert.ToInt32(reader["user_id"]),
                 CreatedAt = Convert.ToDateTime(reader["created_at"]),
-                GoalType = reader["goal_type"]?.ToString(),
+                GoalType = reader["goal_type"]?.ToString() ?? string.Empty,
             };
         }
 

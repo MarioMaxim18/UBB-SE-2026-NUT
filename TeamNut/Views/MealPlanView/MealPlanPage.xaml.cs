@@ -199,7 +199,7 @@ namespace TeamNut.Views.MealPlanView
             userData.Weight = (int)weightBox.Value;
             userData.Height = (int)heightBox.Value;
             userData.Gender = genderCombo.SelectedIndex == IndexMale ? GenderMale : GenderFemale;
-            userData.Goal = goalCombo.SelectedItem.ToString().ToLower();
+            userData.Goal = goalCombo.SelectedItem?.ToString()?.ToLower() ?? "maintenance";
 
             userData.Bmi = userData.CalculateBmi();
             userData.CalorieNeeds = userData.CalculateCalorieNeeds();
@@ -255,6 +255,38 @@ namespace TeamNut.Views.MealPlanView
                     TitleSaveFailed,
                     $"Failed to save to daily log:\n\n{ex.Message}"
                 );
+            }
+        }
+
+        private async void AddMealToLogsButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is not Button { DataContext: MealViewModel meal })
+            {
+                return;
+            }
+
+            try
+            {
+                var mealPlanService = new MealPlanService();
+                await mealPlanService.SaveMealToDailyLogAsync(meal.Id, meal.Calories);
+                StatusMessageText.Text = $"{meal.Name} saved to daily log.";
+            }
+            catch (Exception ex)
+            {
+                await ShowSimpleDialog(TitleSaveFailed, $"Failed to save meal:\n\n{ex.Message}");
+            }
+        }
+
+        private async void RegenerateTestButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                StatusMessageText.Text = "Regenerating meal plan...";
+                await ViewModel.LoadOrGenerateTodaysMealPlanAsync();
+            }
+            catch (Exception ex)
+            {
+                await ShowSimpleDialog(TitleRegenerationFailed, ex.Message);
             }
         }
 

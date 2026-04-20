@@ -108,7 +108,7 @@ namespace TeamNut.Repositories
             return await GetFilteredMeals(new MealFilter());
         }
 
-        public async Task<Meal> GetById(int id)
+        public async Task<Meal?> GetById(int id)
         {
             var result = await GetFilteredMeals(new MealFilter());
             return result.FirstOrDefault(m => m.Id == id);
