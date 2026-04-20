@@ -1,11 +1,14 @@
-using System;
-using Windows.Media.Playback;
-using Windows.Media.Core;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using System;
 using TeamNut.Models;
+using TeamNut.Repositories.Interfaces;
 using TeamNut.Services; 
+using TeamNut.Services.Interfaces; 
 using TeamNut.Views;
+using Windows.Media.Core;
+using Windows.Media.Playback;
 
 namespace TeamNut.Views
 {
@@ -19,16 +22,21 @@ namespace TeamNut.Views
         private readonly Microsoft.UI.Xaml.DispatcherTimer _reminderTimer;
         private readonly System.Collections.Generic.HashSet<int> _shownReminders = new();
 
-        private readonly ReminderService _reminderService = new();
-        public MainViewModel ViewModel { get; } = new();
-        public TeamNut.ViewModels.RemindersViewModel RemindersViewModel { get; } = new();
+        private readonly IReminderService _reminderService ;
+        public MainViewModel ViewModel { get; } 
+        public TeamNut.ViewModels.RemindersViewModel RemindersViewModel { get; } 
         public MainPage()
         {
             this.InitializeComponent();
+
+            ViewModel = App.Services.GetRequiredService<MainViewModel>();
+            RemindersViewModel = App.Services.GetRequiredService<TeamNut.ViewModels.RemindersViewModel>();
+            _reminderService = App.Services.GetRequiredService<IReminderService>();
+
             _dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
             _ = ViewModel.LoadHeaderData();
             LoadTopReminder();
-            ReminderService.RemindersChanged += OnRemindersChanged;
+            _reminderService.RemindersChanged += OnRemindersChanged;
 
             _reminderTimer = new Microsoft.UI.Xaml.DispatcherTimer();
             _reminderTimer.Interval = TimeSpan.FromSeconds(30);
@@ -86,24 +94,24 @@ namespace TeamNut.Views
                 {
                     try
                     {
-                        var mealService = new TeamNut.Services.MealService();
+                        var mealService = App.Services.GetRequiredService<IMealService>();
                         var meals = await mealService.GetMealsAsync();
                         var matched = meals.Find(m => string.Equals(m.Name?.Trim(), rem.Name?.Trim(), StringComparison.OrdinalIgnoreCase));
                         int userId = UserSession.UserId ?? 0;
 
                         if (matched != null)
                         {
-                            var repo = new TeamNut.Repositories.MealPlanRepository();
+                            var repo = App.Services.GetRequiredService<IMealPlanRepository>();
                             await repo.SaveMealToDailyLog(userId, matched.Id, matched.Calories);
 
-                            var inventory = new TeamNut.Services.InventoryService();
+                            var inventory = App.Services.GetRequiredService<IInventoryService>();
                             await inventory.ConsumeMeal(userId, matched.Id);
                         }
 
                         
                         await _reminderService.DeleteReminder(rem.Id);
                         
-                        ReminderService.NotifyRemindersChangedForUser(userId);
+                        _reminderService.NotifyRemindersChangedForUser(userId);
                     }
                     catch (Exception ex)
                     {

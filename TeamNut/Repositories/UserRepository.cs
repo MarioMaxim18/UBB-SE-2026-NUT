@@ -11,7 +11,12 @@ namespace TeamNut.Repositories;
 
 public class UserRepository : IUserRepository
 {
-    private readonly string _connectionString = DbConfig.ConnectionString;
+    private readonly string _connectionString;
+
+    public UserRepository(IDbConfig dbConfig)
+    {
+        _connectionString = dbConfig.ConnectionString;
+    }
     public async Task<User> GetById(int id)
     {
         using var conn = new SqliteConnection(_connectionString);

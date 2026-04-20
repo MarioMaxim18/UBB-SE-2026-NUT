@@ -13,16 +13,18 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using TeamNut.ViewModels; 
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Microsoft.Extensions.DependencyInjection;
 
 
 namespace TeamNut.Views.UserView
 {
     public sealed partial class LoginPage : Page
     {
-        public UserViewModel ViewModel => App.UserViewModel;
+        public UserViewModel ViewModel { get; }
         public LoginPage()
         {
             InitializeComponent();
+            ViewModel = App.Services.GetRequiredService<UserViewModel>();
             this.DataContext = ViewModel;
         }
 

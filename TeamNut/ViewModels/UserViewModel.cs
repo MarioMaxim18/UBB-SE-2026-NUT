@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using TeamNut.Models;
 using TeamNut.Services;
+using TeamNut.Services.Interfaces;
 
 namespace TeamNut.ViewModels
 {
@@ -30,11 +31,11 @@ namespace TeamNut.ViewModels
         public event EventHandler LoginSuccess;
         public event EventHandler SaveDataSuccess;
 
-        private readonly UserService _userService;
+        private readonly IUserService _userService;
 
-        public UserViewModel()
+        public UserViewModel(IUserService userService)
         {
-            _userService = new UserService();
+            _userService = userService;
         }
 
         [RelayCommand]

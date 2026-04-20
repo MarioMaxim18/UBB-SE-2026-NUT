@@ -20,7 +20,6 @@ namespace TeamNut
 
         public static IServiceProvider Services { get; private set; }
 
-        public static UserViewModel UserViewModel { get; } = new UserViewModel();
 
         public App()
         {
@@ -71,6 +70,11 @@ namespace TeamNut
             services.AddTransient<IReminderRepository, ReminderRepository>();
             services.AddSingleton<IReminderService, ReminderService>();
             services.AddTransient<RemindersViewModel>();
+
+            services.AddTransient<IUserRepository, UserRepository>();
+            services.AddTransient<IUserService, UserService>();
+            services.AddSingleton<UserViewModel>();
+
 
 
             return services.BuildServiceProvider();

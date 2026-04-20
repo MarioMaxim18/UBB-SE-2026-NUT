@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
@@ -13,16 +14,18 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using TeamNut.ViewModels;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Microsoft.Extensions.DependencyInjection;
 
 
 namespace TeamNut.Views.UserView
 {
     public sealed partial class UserDataPage : Page
     {
-        public UserViewModel ViewModel => App.UserViewModel;
+        public UserViewModel ViewModel { get; }
         public UserDataPage()
         {
             InitializeComponent();
+            ViewModel = App.Services.GetRequiredService<UserViewModel>();
             this.DataContext = ViewModel;
         }
 
