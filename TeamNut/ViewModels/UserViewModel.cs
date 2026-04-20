@@ -148,7 +148,7 @@ namespace TeamNut.ViewModels
             }
             catch (Exception ex)
             {
-                StatusMessage = "Could not reach the local database (NutData.db). Check the file is next to the project and you have read/write access. " + ex.Message;
+                StatusMessage = "Database Connection Failed! Check your SQLite database file. Error: " + ex.Message;
             }
         }
     }

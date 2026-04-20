@@ -135,13 +135,8 @@ namespace TeamNut.Repositories
                     SenderUsername = reader.IsDBNull(5) ? string.Empty : reader.GetString(5),
                     SenderRole = reader.IsDBNull(6) ? string.Empty : reader.GetString(6)
                 });
-                // set helper fields
                 var last = list[list.Count - 1];
-                try
-                {
-                    last.IsFromCurrentUser = last.SenderId == TeamNut.Models.UserSession.UserId;
-                }
-                catch { }
+                last.IsFromCurrentUser = UserSession.UserId.HasValue && last.SenderId == UserSession.UserId.Value;
             }
             return list;
         }
