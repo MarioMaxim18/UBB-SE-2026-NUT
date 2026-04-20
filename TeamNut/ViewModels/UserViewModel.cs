@@ -1,14 +1,15 @@
-using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using TeamNut.Models;
 using TeamNut.Services;
 
 namespace TeamNut.ViewModels
 {
+    /// <summary>View model for user registration, login, and profile data.</summary>
     public partial class UserViewModel : ObservableObject
     {
         private const string RoleNutritionist = "Nutritionist";
@@ -21,23 +22,41 @@ namespace TeamNut.ViewModels
         private const string ErrorDatabaseConnectionFormat = "Database Connection Failed! Start SSMS and check your server. Error: {0}";
         private const string ErrorSavingDataFormat = "An error occurred while saving: {0}";
 
+        /// <summary>Gets or sets the current user being registered or logged in.</summary>
         [ObservableProperty]
-        public partial User CurrentUser { get; set; } = new();
+        public partial User CurrentUser { get; set; } = new User();
+
+        /// <summary>Gets or sets the health profile data for the current user.</summary>
         [ObservableProperty]
-        public partial UserData CurrentUserData { get; set; } = new();
+        public partial UserData CurrentUserData { get; set; } = new UserData();
+
+        /// <summary>Gets or sets a value indicating whether the nutritionist role is selected.</summary>
         [ObservableProperty]
         public partial bool IsNutritionistChecked { get; set; }
+
+        /// <summary>Gets or sets the status message shown to the user.</summary>
         [ObservableProperty]
         public partial string StatusMessage { get; set; } = string.Empty;
+
+        /// <summary>Gets or sets the selected birth date.</summary>
         [ObservableProperty]
         public partial DateTimeOffset SelectedDate { get; set; } = DateTimeOffset.Now;
-        public event EventHandler RegistrationValid;
-        public event EventHandler LoginSuccess;
-        public event EventHandler SaveDataSuccess;
-        private readonly UserService _userService;
+
+        /// <summary>Raised when registration data is valid and the user should proceed to enter health data.</summary>
+        public event EventHandler? RegistrationValid;
+
+        /// <summary>Raised when login succeeds.</summary>
+        public event EventHandler? LoginSuccess;
+
+        /// <summary>Raised when health data is saved successfully.</summary>
+        public event EventHandler? SaveDataSuccess;
+
+        private readonly UserService userService;
+
+        /// <summary>Initializes a new instance of the <see cref="UserViewModel"/> class.</summary>
         public UserViewModel()
         {
-            _userService = new UserService();
+            userService = new UserService();
         }
 
         [RelayCommand]
@@ -56,7 +75,7 @@ namespace TeamNut.ViewModels
                 return;
             }
 
-            if (await _userService.CheckIfUsernameExistsAsync(CurrentUser.Username))
+            if (await userService.CheckIfUsernameExistsAsync(CurrentUser.Username))
             {
                 StatusMessage = ErrorUsernameExists;
                 return;
@@ -68,7 +87,7 @@ namespace TeamNut.ViewModels
             }
             else
             {
-                var registeredUser = await _userService.RegisterUserAsync(CurrentUser);
+                var registeredUser = await userService.RegisterUserAsync(CurrentUser);
                 if (registeredUser != null)
                 {
                     UserSession.Login(
@@ -108,7 +127,7 @@ namespace TeamNut.ViewModels
                 CurrentUserData.FatNeeds = CurrentUserData.CalculateFatNeeds();
                 CurrentUserData.CarbNeeds = CurrentUserData.CalculateCarbNeeds();
 
-                var registeredUser = await _userService.RegisterUserAsync(CurrentUser);
+                var registeredUser = await userService.RegisterUserAsync(CurrentUser);
                 if (registeredUser == null)
                 {
                     StatusMessage = ErrorRegistrationFailed;
@@ -116,7 +135,7 @@ namespace TeamNut.ViewModels
                 }
 
                 CurrentUserData.UserId = registeredUser.Id;
-                await _userService.AddUserDataAsync(CurrentUserData);
+                await userService.AddUserDataAsync(CurrentUserData);
 
                 UserSession.Login(
                     registeredUser.Id,
@@ -145,7 +164,7 @@ namespace TeamNut.ViewModels
 
             try
             {
-                var user = await _userService.LoginAsync(
+                var user = await userService.LoginAsync(
                     CurrentUser.Username,
                     CurrentUser.Password);
 

@@ -10,7 +10,7 @@ namespace TeamNut.Repositories
     {
         private readonly string connectionString = DbConfig.ConnectionString;
 
-        public async Task<Reminder> GetById(int id)
+        public async Task<Reminder?> GetById(int id)
         {
             using var conn = new SqliteConnection(connectionString);
             const string sql = "SELECT * FROM Reminders WHERE id = @id";
@@ -110,11 +110,11 @@ namespace TeamNut.Repositories
             {
                 Id = Convert.ToInt32(reader["id"]),
                 UserId = Convert.ToInt32(reader["user_id"]),
-                Name = reader["name"].ToString(),
+                Name = reader["name"]?.ToString() ?? string.Empty,
                 HasSound = Convert.ToBoolean(reader["has_sound"]),
-                Time = TimeSpan.Parse(reader["time"].ToString()),
-                ReminderDate = reader["reminder_date"].ToString(),
-                Frequency = reader["frequency"].ToString(),
+                Time = TimeSpan.Parse(reader["time"]?.ToString() ?? "00:00:00"),
+                ReminderDate = reader["reminder_date"]?.ToString() ?? string.Empty,
+                Frequency = reader["frequency"]?.ToString() ?? string.Empty,
             };
         }
 
@@ -129,7 +129,7 @@ namespace TeamNut.Repositories
             await cmd.ExecuteNonQueryAsync();
         }
 
-        public async Task<Reminder> GetNextReminder(int userId)
+        public async Task<Reminder?> GetNextReminder(int userId)
         {
             using var conn = new SqliteConnection(connectionString);
             const string sql = @"SELECT * FROM Reminders

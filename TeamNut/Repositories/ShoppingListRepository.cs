@@ -1,18 +1,22 @@
 using System;
 using System.Collections.Generic;
-using Microsoft.Data.Sqlite;
 using System.Threading.Tasks;
+using Microsoft.Data.Sqlite;
 using TeamNut.Models;
 
 namespace TeamNut.Repositories
 {
+    /// <summary>Repository for shopping list data persistence.</summary>
     public class ShoppingListRepository : IRepository<ShoppingItem>
     {
-        private readonly string _connectionString = DbConfig.ConnectionString;
+        private readonly string connectionString = DbConfig.ConnectionString;
 
+        /// <summary>Inserts a new shopping item.</summary>
+        /// <param name="item">The item to insert.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task Add(ShoppingItem item)
         {
-            using var conn = new SqliteConnection(_connectionString);
+            using var conn = new SqliteConnection(connectionString);
             await conn.OpenAsync();
 
             string query = @"INSERT INTO ShoppingItems (user_id, ingredient_id, quantity_grams, is_checked)
@@ -27,18 +31,22 @@ namespace TeamNut.Repositories
 
             var result = await cmd.ExecuteScalarAsync();
             if (result != null)
+            {
                 item.Id = Convert.ToInt32(result);
+            }
         }
 
+        /// <summary>Gets all shopping items.</summary>
+        /// <returns>All shopping items in the database.</returns>
         public async Task<IEnumerable<ShoppingItem>> GetAll()
         {
             var items = new List<ShoppingItem>();
 
-            using var conn = new SqliteConnection(_connectionString);
+            using var conn = new SqliteConnection(connectionString);
             await conn.OpenAsync();
 
-            string query = @"SELECT s.id, s.user_id, s.ingredient_id, s.quantity_grams, s.is_checked, i.name AS ingredient_name 
-                             FROM ShoppingItems s 
+            string query = @"SELECT s.id, s.user_id, s.ingredient_id, s.quantity_grams, s.is_checked, i.name AS ingredient_name
+                             FROM ShoppingItems s
                              JOIN Ingredients i ON s.ingredient_id = i.food_id";
 
             using var cmd = new SqliteCommand(query, conn);
@@ -52,13 +60,16 @@ namespace TeamNut.Repositories
             return items;
         }
 
-        public async Task<ShoppingItem> GetById(int id)
+        /// <summary>Gets a shopping item by its identifier.</summary>
+        /// <param name="id">The item identifier.</param>
+        /// <returns>The item, or <c>null</c> if not found.</returns>
+        public async Task<ShoppingItem?> GetById(int id)
         {
-            using var conn = new SqliteConnection(_connectionString);
+            using var conn = new SqliteConnection(connectionString);
             await conn.OpenAsync();
 
-            string query = @"SELECT s.id, s.user_id, s.ingredient_id, s.quantity_grams, s.is_checked, i.name AS ingredient_name 
-                             FROM ShoppingItems s 
+            string query = @"SELECT s.id, s.user_id, s.ingredient_id, s.quantity_grams, s.is_checked, i.name AS ingredient_name
+                             FROM ShoppingItems s
                              JOIN Ingredients i ON s.ingredient_id = i.food_id
                              WHERE s.id = @id";
 
@@ -75,13 +86,17 @@ namespace TeamNut.Repositories
             return null;
         }
 
-        public async Task<ShoppingItem> GetByUserAndIngredient(int userId, int ingredientId)
+        /// <summary>Gets a shopping item for a specific user and ingredient.</summary>
+        /// <param name="userId">The user identifier.</param>
+        /// <param name="ingredientId">The ingredient identifier.</param>
+        /// <returns>The matching item, or <c>null</c>.</returns>
+        public async Task<ShoppingItem?> GetByUserAndIngredient(int userId, int ingredientId)
         {
-            using var conn = new SqliteConnection(_connectionString);
+            using var conn = new SqliteConnection(connectionString);
             await conn.OpenAsync();
 
-            string query = @"SELECT s.id, s.user_id, s.ingredient_id, s.quantity_grams, s.is_checked, i.name AS ingredient_name 
-                             FROM ShoppingItems s 
+            string query = @"SELECT s.id, s.user_id, s.ingredient_id, s.quantity_grams, s.is_checked, i.name AS ingredient_name
+                             FROM ShoppingItems s
                              JOIN Ingredients i ON s.ingredient_id = i.food_id
                              WHERE s.user_id = @userId AND s.ingredient_id = @ingredientId";
 
@@ -99,15 +114,18 @@ namespace TeamNut.Repositories
             return null;
         }
 
+        /// <summary>Gets all shopping items for the given user.</summary>
+        /// <param name="userId">The user identifier.</param>
+        /// <returns>The user's shopping items.</returns>
         public async Task<List<ShoppingItem>> GetAllByUserId(int userId)
         {
             var items = new List<ShoppingItem>();
 
-            using var conn = new SqliteConnection(_connectionString);
+            using var conn = new SqliteConnection(connectionString);
             await conn.OpenAsync();
 
-            string query = @"SELECT s.id, s.user_id, s.ingredient_id, s.quantity_grams, s.is_checked, i.name AS ingredient_name 
-                             FROM ShoppingItems s 
+            string query = @"SELECT s.id, s.user_id, s.ingredient_id, s.quantity_grams, s.is_checked, i.name AS ingredient_name
+                             FROM ShoppingItems s
                              JOIN Ingredients i ON s.ingredient_id = i.food_id
                              WHERE s.user_id = @userId";
 
@@ -124,12 +142,15 @@ namespace TeamNut.Repositories
             return items;
         }
 
+        /// <summary>Updates an existing shopping item.</summary>
+        /// <param name="item">The item to update.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task Update(ShoppingItem item)
         {
-            using var conn = new SqliteConnection(_connectionString);
+            using var conn = new SqliteConnection(connectionString);
             await conn.OpenAsync();
 
-            string query = @"UPDATE ShoppingItems 
+            string query = @"UPDATE ShoppingItems
                              SET ingredient_id = @ingredientId, quantity_grams = @quantityGrams, is_checked = @isChecked
                              WHERE id = @id";
 
@@ -142,9 +163,12 @@ namespace TeamNut.Repositories
             await cmd.ExecuteNonQueryAsync();
         }
 
+        /// <summary>Deletes a shopping item by its identifier.</summary>
+        /// <param name="id">The item identifier.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task Delete(int id)
         {
-            using var conn = new SqliteConnection(_connectionString);
+            using var conn = new SqliteConnection(connectionString);
             await conn.OpenAsync();
 
             string query = "DELETE FROM ShoppingItems WHERE id = @id";
@@ -155,18 +179,19 @@ namespace TeamNut.Repositories
             await cmd.ExecuteNonQueryAsync();
         }
 
-
+        /// <summary>Gets ingredients needed for today's meal plan that aren't already in inventory.</summary>
+        /// <param name="userId">The user identifier.</param>
+        /// <returns>A list of shopping items representing missing ingredients.</returns>
         public async Task<List<ShoppingItem>> GetIngredientsNeededFromMealPlan(int userId)
         {
             var items = new List<ShoppingItem>();
-            using var conn = new SqliteConnection(_connectionString);
+            using var conn = new SqliteConnection(connectionString);
             await conn.OpenAsync();
 
-           
             string query = @"
-        SELECT 
-            mi.food_id as ingredient_id, 
-            i.name as ingredient_name, 
+        SELECT
+            mi.food_id as ingredient_id,
+            i.name as ingredient_name,
             (SUM(mi.quantity) - IFNULL(MAX(inv.quantity_grams), 0)) as quantity_needed
         FROM MealPlan mp
         JOIN MealPlanMeal mpm ON mp.mealplan_id = mpm.mealPlanId
@@ -194,15 +219,12 @@ namespace TeamNut.Repositories
                 {
                     UserId = userId,
                     IngredientId = Convert.ToInt32(reader["ingredient_id"]),
-                    IngredientName = reader["ingredient_name"].ToString(),
-                  
+                    IngredientName = reader["ingredient_name"]?.ToString() ?? string.Empty,
                     QuantityGrams = Convert.ToDouble(reader["quantity_needed"]),
                     IsChecked = false
                 });
             }
 
-            
-            
             return items;
         }
 
@@ -214,7 +236,7 @@ namespace TeamNut.Repositories
                 UserId = Convert.ToInt32(reader["user_id"]),
                 IngredientId = Convert.ToInt32(reader["ingredient_id"]),
                 QuantityGrams = Convert.ToDouble(reader["quantity_grams"]),
-                IngredientName = reader["ingredient_name"].ToString(),
+                IngredientName = reader["ingredient_name"]?.ToString() ?? string.Empty,
                 IsChecked = Convert.ToBoolean(reader["is_checked"])
             };
         }

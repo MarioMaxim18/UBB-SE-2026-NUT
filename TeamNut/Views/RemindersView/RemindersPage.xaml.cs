@@ -1,15 +1,19 @@
-using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Navigation;
-using System;
+// <copyright file="RemindersPage.xaml.cs" company="TeamNut">
+// Copyright (c) TeamNut. All rights reserved.
+// </copyright>
 
 namespace TeamNut.Views.RemindersView
 {
+    using System;
+    using Microsoft.UI.Xaml;
+    using Microsoft.UI.Xaml.Controls;
+    using Microsoft.UI.Xaml.Navigation;
+
+    /// <summary>Page for managing reminders.</summary>
     public sealed partial class RemindersPage : Page
     {
-        public TeamNut.ViewModels.RemindersViewModel ViewModel { get; } = new();
         private const int DialogStackSpacing = 8;
         private const int FrequencyComboWidth = 200;
-        private static readonly Microsoft.UI.Xaml.Thickness FrequencyComboMargin = new(0, 4, 0, 0);
         private const int MaxReminderNameLength = 50;
         private const string DateFormatIso = "yyyy-MM-dd";
         private const string ButtonSave = "Save";
@@ -32,31 +36,42 @@ namespace TeamNut.Views.RemindersView
         private const string MsgConfirmDelete = "Are you sure you want to delete this reminder?";
         private const string SaveSuccessText = "Success";
 
+        private static readonly Thickness FrequencyComboMargin = new Thickness(0, 4, 0, 0);
+
+        /// <summary>Gets the view model.</summary>
+        public TeamNut.ViewModels.RemindersViewModel ViewModel { get; } = new TeamNut.ViewModels.RemindersViewModel();
+
+        /// <summary>Initializes a new instance of the <see cref="RemindersPage"/> class.</summary>
         public RemindersPage()
         {
-            InitializeComponent();
-            DataContext = ViewModel;
+            this.InitializeComponent();
+            this.DataContext = this.ViewModel;
 
-            Loaded += async (_, _) => await ViewModel.LoadReminders();
+            this.Loaded += async (_, _) => await this.ViewModel.LoadReminders();
 
-            ViewModel.PropertyChanged += async (s, e) =>
+            this.ViewModel.PropertyChanged += async (s, e) =>
             {
-                if (e.PropertyName != nameof(ViewModel.SelectedReminder))
+                if (e.PropertyName != nameof(this.ViewModel.SelectedReminder))
+                {
                     return;
+                }
 
-                var reminder = ViewModel.SelectedReminder;
-                if (reminder == null) return;
+                var reminder = this.ViewModel.SelectedReminder;
+                if (reminder == null)
+                {
+                    return;
+                }
 
                 try
                 {
                     var panel = new StackPanel
                     {
-                        Spacing = DialogStackSpacing
+                        Spacing = DialogStackSpacing,
                     };
 
                     var nameBox = new TextBox
                     {
-                        Text = reminder.Name ?? string.Empty
+                        Text = reminder.Name ?? string.Empty,
                     };
 
                     var datePicker = new DatePicker();
@@ -68,18 +83,18 @@ namespace TeamNut.Views.RemindersView
 
                     var timePicker = new TimePicker
                     {
-                        Time = reminder.Time
+                        Time = reminder.Time,
                     };
 
                     var soundToggle = new ToggleSwitch
                     {
-                        IsOn = reminder.HasSound
+                        IsOn = reminder.HasSound,
                     };
 
                     var freqCombo = new ComboBox
                     {
                         Width = FrequencyComboWidth,
-                        Margin = FrequencyComboMargin
+                        Margin = FrequencyComboMargin,
                     };
                     freqCombo.Items.Add(FrequencyOnce);
                     freqCombo.Items.Add(FrequencyDaily);
@@ -107,9 +122,21 @@ namespace TeamNut.Views.RemindersView
                     bool ValidateInputs()
                     {
                         var name = nameBox.Text ?? string.Empty;
-                        if (string.IsNullOrWhiteSpace(name)) return false;
-                        if (name.Length > MaxReminderNameLength) return false;
-                        if (freqCombo.SelectedItem == null) return false;
+                        if (string.IsNullOrWhiteSpace(name))
+                        {
+                            return false;
+                        }
+
+                        if (name.Length > MaxReminderNameLength)
+                        {
+                            return false;
+                        }
+
+                        if (freqCombo.SelectedItem == null)
+                        {
+                            return false;
+                        }
+
                         return true;
                     }
 
@@ -122,12 +149,11 @@ namespace TeamNut.Views.RemindersView
                         {
                             Content = panel,
                             VerticalScrollMode = ScrollMode.Auto,
-                            VerticalScrollBarVisibility =
-                                ScrollBarVisibility.Auto
+                            VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
                         },
                         PrimaryButtonText = ButtonSave,
                         CloseButtonText = ButtonCancel,
-                        XamlRoot = XamlRoot
+                        XamlRoot = this.XamlRoot,
                     };
 
                     dialog.IsPrimaryButtonEnabled = ValidateInputs();
@@ -140,16 +166,14 @@ namespace TeamNut.Views.RemindersView
                     if (result == ContentDialogResult.Primary)
                     {
                         reminder.Name = nameBox.Text;
-                        reminder.ReminderDate =
-                            datePicker.Date.ToString(DateFormatIso);
+                        reminder.ReminderDate = datePicker.Date.ToString(DateFormatIso);
                         reminder.Time = timePicker.Time;
                         reminder.HasSound = soundToggle.IsOn;
                         reminder.Frequency =
                             freqCombo.SelectedItem?.ToString()
                             ?? FrequencyOnce;
 
-                        var saveResult =
-                            await ViewModel.SaveReminderAsync(reminder);
+                        var saveResult = await this.ViewModel.SaveReminderAsync(reminder);
 
                         if (saveResult != SaveSuccessText)
                         {
@@ -158,7 +182,7 @@ namespace TeamNut.Views.RemindersView
                                 Title = TitleSaveFailed,
                                 Content = saveResult,
                                 CloseButtonText = ButtonOk,
-                                XamlRoot = XamlRoot
+                                XamlRoot = this.XamlRoot,
                             }.ShowAsync();
                         }
                     }
@@ -170,14 +194,22 @@ namespace TeamNut.Views.RemindersView
                 }
                 finally
                 {
-                    ViewModel.SelectedReminder = null;
+                    this.ViewModel.SelectedReminder = null;
                 }
             };
         }
 
+        /// <summary>Called when navigated to this page.</summary>
+        /// <param name="e">Navigation event arguments.</param>
+        protected override async void OnNavigatedTo(NavigationEventArgs e)
+        {
+            base.OnNavigatedTo(e);
+            await this.ViewModel.LoadReminders();
+        }
+
         private async void DeleteButton_Click(
             object sender,
-            Microsoft.UI.Xaml.RoutedEventArgs e)
+            RoutedEventArgs e)
         {
             if (sender is Button btn &&
                 btn.DataContext is TeamNut.Models.Reminder reminder)
@@ -188,22 +220,15 @@ namespace TeamNut.Views.RemindersView
                     Content = MsgConfirmDelete,
                     PrimaryButtonText = ButtonYes,
                     CloseButtonText = ButtonCancel,
-                    XamlRoot = XamlRoot
+                    XamlRoot = this.XamlRoot,
                 };
 
-                if (await confirm.ShowAsync() ==
-                    ContentDialogResult.Primary)
+                if (await confirm.ShowAsync() == ContentDialogResult.Primary)
                 {
-                    await ViewModel.DeleteReminder(reminder);
-                    ViewModel?.Reminders.Remove(reminder);
+                    await this.ViewModel.DeleteReminder(reminder);
+                    this.ViewModel?.Reminders.Remove(reminder);
                 }
             }
-        }
-
-        protected override async void OnNavigatedTo(NavigationEventArgs e)
-        {
-            base.OnNavigatedTo(e);
-            await ViewModel.LoadReminders();
         }
     }
 }

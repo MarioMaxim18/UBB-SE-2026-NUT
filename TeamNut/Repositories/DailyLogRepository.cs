@@ -5,10 +5,14 @@ using TeamNut.Models;
 
 namespace TeamNut.Repositories
 {
+    /// <summary>Repository for daily meal log persistence and aggregation queries.</summary>
     public class DailyLogRepository
     {
         private readonly string connectionString = DbConfig.ConnectionString;
 
+        /// <summary>Inserts a new daily log entry.</summary>
+        /// <param name="log">The log entry to insert.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task Add(DailyLog log)
         {
             using var conn = new SqliteConnection(connectionString);
@@ -26,6 +30,9 @@ namespace TeamNut.Repositories
             await cmd.ExecuteNonQueryAsync();
         }
 
+        /// <summary>Returns whether the user has any log entries.</summary>
+        /// <param name="userId">The user identifier.</param>
+        /// <returns><c>true</c> if at least one log exists.</returns>
         public async Task<bool> HasAnyLogs(int userId)
         {
             using var conn = new SqliteConnection(connectionString);
@@ -39,6 +46,11 @@ namespace TeamNut.Repositories
             return count > 0;
         }
 
+        /// <summary>Gets aggregated nutrition totals for a user over a date range.</summary>
+        /// <param name="userId">The user identifier.</param>
+        /// <param name="startInclusive">The start date (inclusive).</param>
+        /// <param name="endExclusive">The end date (exclusive).</param>
+        /// <returns>A <see cref="DailyLog"/> with summed nutrition values.</returns>
         public async Task<DailyLog> GetNutritionTotalsForRange(int userId, DateTime startInclusive, DateTime endExclusive)
         {
             using var conn = new SqliteConnection(connectionString);

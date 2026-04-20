@@ -1,11 +1,12 @@
-using CommunityToolkit.Mvvm.ComponentModel;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace TeamNut.Models
 {
+    /// <summary>Represents a user's physical health profile and calculated nutrition needs.</summary>
     public partial class UserData : ObservableValidator
     {
         private const int MinWeightKg = 1;
@@ -45,49 +46,63 @@ namespace TeamNut.Models
         private const int CaloriesPerGramProtein = 4;
         private const int CaloriesPerGramCarbs = 4;
         private const int CaloriesPerGramFat = 9;
-        
+
+        /// <summary>Gets or sets the health data record identifier.</summary>
         [ObservableProperty]
         public partial int Id { get; set; }
 
+        /// <summary>Gets or sets the user identifier.</summary>
         [ObservableProperty]
         public partial int UserId { get; set; }
 
+        /// <summary>Gets or sets the user's body weight in kilograms.</summary>
         [ObservableProperty]
         [Range(MinWeightKg, MaxWeightKg, ErrorMessage = ErrorWeightRange)]
         public partial int Weight { get; set; }
 
+        /// <summary>Gets or sets the user's height in centimetres.</summary>
         [ObservableProperty]
         [Range(MinHeightCm, MaxHeightCm, ErrorMessage = ErrorHeightRange)]
         public partial int Height { get; set; }
 
+        /// <summary>Gets or sets the user's age in years.</summary>
         [ObservableProperty]
         public partial int Age { get; set; }
 
+        /// <summary>Gets or sets the user's gender (male or female).</summary>
         [ObservableProperty]
         [Required(ErrorMessage = ErrorGenderRequired)]
         [RegularExpression(RegexGender, ErrorMessage = ErrorGenderInvalid)]
         public partial string Gender { get; set; } = string.Empty;
 
+        /// <summary>Gets or sets the user's fitness goal.</summary>
         [ObservableProperty]
         [Required(ErrorMessage = ErrorGoalRequired)]
         [RegularExpression(RegexGoal, ErrorMessage = ErrorGoalInvalid)]
         public partial string Goal { get; set; } = string.Empty;
 
+        /// <summary>Gets or sets the calculated Body Mass Index.</summary>
         [ObservableProperty]
         public partial double Bmi { get; set; }
 
+        /// <summary>Gets or sets the daily calorie target.</summary>
         [ObservableProperty]
         public partial int CalorieNeeds { get; set; }
 
+        /// <summary>Gets or sets the daily protein target in grams.</summary>
         [ObservableProperty]
         public partial int ProteinNeeds { get; set; }
 
+        /// <summary>Gets or sets the daily carbohydrate target in grams.</summary>
         [ObservableProperty]
         public partial int CarbNeeds { get; set; }
 
+        /// <summary>Gets or sets the daily fat target in grams.</summary>
         [ObservableProperty]
         public partial int FatNeeds { get; set; }
 
+        /// <summary>Validates all properties and returns any error messages.</summary>
+        /// <returns>A list of validation error messages.</returns>
         public List<string> GetValidationErrors()
         {
             ValidateAllProperties();
@@ -97,24 +112,36 @@ namespace TeamNut.Models
                 .ToList();
         }
 
+        /// <summary>Calculates age from a birth date.</summary>
+        /// <param name="birthDate">The birth date.</param>
+        /// <returns>Age in years, or 0 if <paramref name="birthDate"/> is <c>null</c>.</returns>
         public int CalculateAge(DateTimeOffset? birthDate)
         {
-            if (birthDate == null) return 0;
+            if (birthDate == null)
+            {
+                return 0;
+            }
 
             var today = DateTime.Today;
             var birth = birthDate.Value.DateTime;
 
             int age = today.Year - birth.Year;
             if (birth.Date > today.AddYears(-age))
+            {
                 age--;
+            }
 
             return age;
         }
 
+        /// <summary>Calculates Body Mass Index from weight and height.</summary>
+        /// <returns>The BMI value, or 0 if weight or height are invalid.</returns>
         public double CalculateBmi()
         {
             if (Height <= 0 || Weight <= 0)
+            {
                 return 0;
+            }
 
             double heightMeters = Height / 100.0;
             double bmi = Weight / (heightMeters * heightMeters);
@@ -122,10 +149,14 @@ namespace TeamNut.Models
             return (int)Math.Round(bmi);
         }
 
+        /// <summary>Calculates daily calorie needs based on profile and goal.</summary>
+        /// <returns>The daily calorie target, or 0 if data is invalid.</returns>
         public int CalculateCalorieNeeds()
         {
             if (Weight <= 0 || Height <= 0 || Age <= 0)
+            {
                 return 0;
+            }
 
             double bmr =
                 Gender.Equals(GenderMale, StringComparison.OrdinalIgnoreCase)
@@ -142,7 +173,9 @@ namespace TeamNut.Models
                         : 0;
 
             if (bmr <= 0)
+            {
                 return 0;
+            }
 
             double tdee = bmr * ActivityMultiplier;
 
@@ -158,9 +191,14 @@ namespace TeamNut.Models
             return (int)Math.Round(adjustedCalories);
         }
 
+        /// <summary>Calculates daily protein needs based on goal.</summary>
+        /// <returns>The daily protein target in grams.</returns>
         public int CalculateProteinNeeds()
         {
-            if (Weight <= 0) return 0;
+            if (Weight <= 0)
+            {
+                return 0;
+            }
 
             double proteinPerKg = Goal.ToLower() switch
             {
@@ -174,10 +212,15 @@ namespace TeamNut.Models
             return (int)Math.Round(Weight * proteinPerKg);
         }
 
+        /// <summary>Calculates daily fat needs based on goal.</summary>
+        /// <returns>The daily fat target in grams.</returns>
         public int CalculateFatNeeds()
         {
             int calories = CalculateCalorieNeeds();
-            if (calories <= 0) return 0;
+            if (calories <= 0)
+            {
+                return 0;
+            }
 
             double fatRatio = Goal.ToLower() switch
             {
@@ -191,6 +234,8 @@ namespace TeamNut.Models
             return (int)Math.Round(fatCalories / CaloriesPerGramFat);
         }
 
+        /// <summary>Calculates daily carbohydrate needs based on remaining calories.</summary>
+        /// <returns>The daily carbohydrate target in grams.</returns>
         public int CalculateCarbNeeds()
         {
             int calories = CalculateCalorieNeeds();
@@ -198,7 +243,9 @@ namespace TeamNut.Models
             int fatCalories = CalculateFatNeeds() * CaloriesPerGramFat;
 
             if (calories <= 0)
+            {
                 return 0;
+            }
 
             int carbCalories = calories - proteinCalories - fatCalories;
             return (int)Math.Round(carbCalories / (double)CaloriesPerGramCarbs);

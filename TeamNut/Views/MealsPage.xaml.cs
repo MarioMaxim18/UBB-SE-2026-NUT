@@ -1,13 +1,14 @@
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 using TeamNut.Models;
 using TeamNut.ViewModels;
 
 namespace TeamNut
 {
+    /// <summary>Page for browsing and searching meals.</summary>
     public sealed partial class MealsPage : Page
     {
         private MealSearchViewModel viewModel;
@@ -29,15 +30,16 @@ namespace TeamNut
         private const string DoubleLineBreak = "\n\n";
         private int pageSize = DefaultPageSize;
 
+        /// <summary>Initializes a new instance of the <see cref="MealsPage"/> class.</summary>
         public MealsPage()
         {
             InitializeComponent();
             viewModel = new MealSearchViewModel();
 
-            Loaded += (s, e) => btnSearch_Click(this, new RoutedEventArgs());
+            Loaded += (s, e) => BtnSearch_Click(this, new RoutedEventArgs());
         }
 
-        private async void btnSearch_Click(object sender, RoutedEventArgs e)
+        private async void BtnSearch_Click(object sender, RoutedEventArgs e)
         {
             var filter = new MealFilter
             {
@@ -60,7 +62,9 @@ namespace TeamNut
         private void LoadMeals()
         {
             if (allMeals == null)
+            {
                 return;
+            }
 
             var pagedMeals = allMeals
                 .Skip((currentPage - DefaultStartPage) * pageSize)
@@ -83,7 +87,9 @@ namespace TeamNut
         private async void Favorite_Click(object sender, RoutedEventArgs e)
         {
             if (sender is not Button btn || btn.DataContext is not Meal meal)
+            {
                 return;
+            }
 
             meal.IsFavorite = !meal.IsFavorite;
             btn.Content = meal.IsFavorite ? FavoriteOnSymbol : FavoriteOffSymbol;
@@ -97,10 +103,12 @@ namespace TeamNut
             }
         }
 
-        private async void listMeals_ItemClick(object sender, ItemClickEventArgs e)
+        private async void ListMeals_ItemClick(object sender, ItemClickEventArgs e)
         {
             if (e.ClickedItem is not Meal meal)
+            {
                 return;
+            }
 
             var ingredientsText =
                 await viewModel.GetMealIngredientsTextAsync(meal.Id);
@@ -170,13 +178,13 @@ namespace TeamNut
             }
         }
 
-        private void txtSearch_KeyDown(
+        private void TxtSearch_KeyDown(
             object sender,
             Microsoft.UI.Xaml.Input.KeyRoutedEventArgs e)
         {
             if (e.Key == Windows.System.VirtualKey.Enter)
             {
-                btnSearch_Click(this, new RoutedEventArgs());
+                BtnSearch_Click(this, new RoutedEventArgs());
             }
         }
     }

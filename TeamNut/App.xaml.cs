@@ -4,12 +4,16 @@ using TeamNut.Views.UserView;
 
 namespace TeamNut
 {
+    /// <summary>Application entry point and lifecycle host.</summary>
     public partial class App : Application
     {
-        internal Window? window;
+        /// <summary>The application's main window instance.</summary>
+        internal Window? AppWindow;
 
+        /// <summary>Gets the shared user view model.</summary>
         public static UserViewModel UserViewModel { get; } = new UserViewModel();
 
+        /// <summary>Initializes a new instance of the <see cref="App"/> class.</summary>
         public App()
         {
             this.UnhandledException += (sender, e) =>
@@ -20,11 +24,13 @@ namespace TeamNut
             InitializeComponent();
         }
 
+        /// <summary>Creates and activates the main window when the application launches.</summary>
+        /// <param name="args">Launch activation event arguments.</param>
         protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
         {
-            window = new MainWindow();
-            window.Content = new UserView();
-            window.Activate();
+            AppWindow = new MainWindow();
+            AppWindow.Content = new UserView();
+            AppWindow.Activate();
         }
     }
 }

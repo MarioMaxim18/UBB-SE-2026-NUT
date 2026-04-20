@@ -1,18 +1,19 @@
-using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
+using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using TeamNut.Models;
 using TeamNut.Services;
-using System;
 
 namespace TeamNut.ViewModels
 {
+    /// <summary>View model for managing the user's food ingredient inventory.</summary>
     public partial class InventoryViewModel : ObservableObject
     {
-        private readonly InventoryService _inventoryService;
-        private readonly int _currentUserId;
+        private readonly InventoryService inventoryService;
+        private readonly int currentUserId;
         private const double DefaultQuantityToAdd = 100;
         private const double MinQuantityAllowed = 0;
         private const string EmptyInventoryMessage = "Your pantry is empty. Start adding items!";
@@ -24,67 +25,94 @@ namespace TeamNut.ViewModels
         private const string AddItemErrorMessage = "Could not add item: {0}";
         private const string AddItemSuccessMessage = "Added {0}g of {1}.";
         private const StringComparison IngredientSearchComparison = StringComparison.OrdinalIgnoreCase;
-        private bool _isBusy;
-        private string _emptyListMessage = EmptyInventoryMessage;
-        private string _statusMessage = string.Empty;
-        private string _ingredientSearchText = string.Empty;
-        private Ingredient? _selectedIngredient;
-        private double _quantityToAdd = DefaultQuantityToAdd;
+        private bool isBusy;
+        private string emptyListMessage = EmptyInventoryMessage;
+        private string statusMessage = string.Empty;
+        private string ingredientSearchText = string.Empty;
+        private Ingredient? selectedIngredient;
+        private double quantityToAdd = DefaultQuantityToAdd;
+
+        /// <summary>Gets or sets a value indicating whether a background operation is running.</summary>
         public bool IsBusy
         {
-            get => _isBusy;
-            set => SetProperty(ref _isBusy, value);
-        } 
+            get => isBusy;
+            set => SetProperty(ref isBusy, value);
+        }
+
+        /// <summary>Gets or sets the message displayed when the inventory list is empty.</summary>
         public string EmptyListMessage
         {
-            get => _emptyListMessage;
-            set => SetProperty(ref _emptyListMessage, value);
+            get => emptyListMessage;
+            set => SetProperty(ref emptyListMessage, value);
         }
+
+        /// <summary>Gets or sets the status message shown to the user.</summary>
         public string StatusMessage
         {
-            get => _statusMessage;
-            set => SetProperty(ref _statusMessage, value);
+            get => statusMessage;
+            set => SetProperty(ref statusMessage, value);
         }
+
+        /// <summary>Gets or sets the ingredient search text for autocomplete filtering.</summary>
         public string IngredientSearchText
         {
-            get => _ingredientSearchText;
+            get => ingredientSearchText;
             set
             {
-                if (SetProperty(ref _ingredientSearchText, value))
+                if (SetProperty(ref ingredientSearchText, value))
                 {
                     UpdateFilteredIngredients();
                 }
             }
         }
+
+        /// <summary>Gets or sets the ingredient chosen by the user from suggestions.</summary>
         public Ingredient? SelectedIngredient
         {
-            get => _selectedIngredient;
-            set => SetProperty(ref _selectedIngredient, value);
+            get => selectedIngredient;
+            set => SetProperty(ref selectedIngredient, value);
         }
+
+        /// <summary>Gets or sets the quantity in grams to add to inventory.</summary>
         public double QuantityToAdd
         {
-            get => _quantityToAdd;
-            set => SetProperty(ref _quantityToAdd, value);
+            get => quantityToAdd;
+            set => SetProperty(ref quantityToAdd, value);
         }
-        public ObservableCollection<Inventory> Items { get; } = new();
-        public ObservableCollection<Ingredient> AvailableIngredients { get; } = new();
-        public ObservableCollection<Ingredient> FilteredIngredients { get; } = new();
+
+        /// <summary>Gets the current inventory items.</summary>
+        public ObservableCollection<Inventory> Items { get; } = new ObservableCollection<Inventory>();
+
+        /// <summary>Gets all available ingredients.</summary>
+        public ObservableCollection<Ingredient> AvailableIngredients { get; } = new ObservableCollection<Ingredient>();
+
+        /// <summary>Gets the filtered ingredients matching the search text.</summary>
+        public ObservableCollection<Ingredient> FilteredIngredients { get; } = new ObservableCollection<Ingredient>();
+
+        /// <summary>Initializes a new instance of the <see cref="InventoryViewModel"/> class.</summary>
+        /// <param name="userId">The identifier of the current user.</param>
         public InventoryViewModel(int userId)
         {
-            _inventoryService = new InventoryService();
-            _currentUserId = userId;
+            inventoryService = new InventoryService();
+            currentUserId = userId;
             _ = LoadInventoryAsync();
             _ = LoadIngredientsAsync();
         }
+
+        /// <summary>Loads inventory items for the current user.</summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         [RelayCommand]
         public async Task LoadInventoryAsync()
         {
-            if (IsBusy) return;
+            if (IsBusy)
+            {
+                return;
+            }
 
             try
             {
                 IsBusy = true;
-                var inventoryItems = await _inventoryService.GetUserInventory(_currentUserId);
+                var inventoryItems = await inventoryService.GetUserInventory(currentUserId);
 
                 Items.Clear();
                 foreach (var item in inventoryItems)
@@ -107,11 +135,14 @@ namespace TeamNut.ViewModels
         [RelayCommand]
         private async Task RemoveItemAsync(Inventory item)
         {
-            if (item == null) return;
+            if (item == null)
+            {
+                return;
+            }
 
             try
             {
-                await _inventoryService.RemoveItem(item.Id);
+                await inventoryService.RemoveItem(item.Id);
                 Items.Remove(item);
                 OnPropertyChanged(nameof(IsListEmpty));
             }
@@ -139,19 +170,17 @@ namespace TeamNut.ViewModels
             try
             {
                 int qty = (int)Math.Round(QuantityToAdd);
-                await _inventoryService.AddToPantry(
-                    _currentUserId,
+                await inventoryService.AddToPantry(
+                    currentUserId,
                     SelectedIngredient.FoodId,
-                    qty
-                );
+                    qty);
 
                 await LoadInventoryAsync();
 
                 StatusMessage = string.Format(
                     AddItemSuccessMessage,
                     qty,
-                    SelectedIngredient.Name
-                );
+                    SelectedIngredient.Name);
 
                 IngredientSearchText = string.Empty;
                 SelectedIngredient = null;
@@ -163,12 +192,14 @@ namespace TeamNut.ViewModels
             }
         }
 
+        /// <summary>Loads all available ingredients from the database.</summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         [RelayCommand]
         public async Task LoadIngredientsAsync()
         {
             try
             {
-                var ingredients = await _inventoryService.GetAllIngredients();
+                var ingredients = await inventoryService.GetAllIngredients();
                 AvailableIngredients.Clear();
 
                 foreach (var ingredient in ingredients)
@@ -201,6 +232,7 @@ namespace TeamNut.ViewModels
             }
         }
 
+        /// <summary>Gets a value indicating whether the inventory list is empty.</summary>
         public bool IsListEmpty => !Items.Any();
     }
 }

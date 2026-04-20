@@ -1,37 +1,54 @@
-using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using TeamNut.Models;
 using TeamNut.Services;
 
 namespace TeamNut.ViewModels
 {
+    /// <summary>View model for searching and filtering meals.</summary>
     public partial class MealSearchViewModel : ObservableObject
     {
-        private readonly MealService _mealService;
+        private readonly MealService mealService;
         private const string DefaultSearchTerm = "";
         private const string NoIngredientsFoundMessage = "No ingredients found.";
         private const string IngredientsLineSeparator = "\n";
-        public ObservableCollection<Meal> Meals { get; private set; } = new();
+
+        /// <summary>Gets the current collection of meals.</summary>
+        public ObservableCollection<Meal> Meals { get; private set; } = new ObservableCollection<Meal>();
+
+        /// <summary>Gets or sets the search term text.</summary>
         public string SearchTerm { get; set; } = DefaultSearchTerm;
+
+        /// <summary>Gets or sets the currently selected meal.</summary>
         public Meal? SelectedMeal { get; set; }
+
+        /// <summary>Initializes a new instance of the <see cref="MealSearchViewModel"/> class.</summary>
         public MealSearchViewModel()
         {
-            _mealService = new MealService();
+            mealService = new MealService();
             _ = LoadMealsAsync();
         }
+
+        /// <summary>Loads meals, optionally filtered by a search string.</summary>
+        /// <param name="filter">Optional text filter.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task LoadMealsAsync(string? filter = null)
         {
-            var list = await _mealService.GetMealsAsync(
-                new MealFilter { SearchTerm = filter }
-            );
+            var list = await mealService.GetMealsAsync(
+                new MealFilter { SearchTerm = filter ?? string.Empty });
             Meals = new ObservableCollection<Meal>(list);
             OnPropertyChanged(nameof(Meals));
         }
-        public async Task<System.Collections.Generic.List<Meal>> SearchMealsAsync(MealFilter filter)
+
+        /// <summary>Searches for meals using the given filter criteria.</summary>
+        /// <param name="filter">The filter to apply.</param>
+        /// <returns>A list of meals that match the filter.</returns>
+        public async Task<List<Meal>> SearchMealsAsync(MealFilter filter)
         {
-            var list = await _mealService.GetFilteredMealsAsync(filter);
+            var list = await mealService.GetFilteredMealsAsync(filter);
 
             Meals = new ObservableCollection<Meal>(list);
             OnPropertyChanged(nameof(Meals));
@@ -39,28 +56,38 @@ namespace TeamNut.ViewModels
             return list;
         }
 
+        /// <summary>Gets a formatted ingredient list text for the given meal.</summary>
+        /// <param name="mealId">The meal identifier.</param>
+        /// <returns>A newline-separated ingredient list, or a "not found" message.</returns>
         public async Task<string> GetMealIngredientsTextAsync(int mealId)
         {
-            var lines = await _mealService.GetMealIngredientLinesAsync(mealId);
+            var lines = await mealService.GetMealIngredientLinesAsync(mealId);
 
             return lines.Count > 0
                 ? string.Join(IngredientsLineSeparator, lines)
                 : NoIngredientsFoundMessage;
         }
 
+        /// <summary>Executes a search using the current <see cref="SearchTerm"/>.</summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         [RelayCommand]
         public async Task SearchAsync()
         {
             await LoadMealsAsync(SearchTerm);
         }
 
+        /// <summary>Toggles the favourite state of a meal.</summary>
+        /// <param name="meal">The meal to toggle.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         [RelayCommand]
         public async Task ToggleFavoriteAsync(Meal meal)
         {
             if (meal == null)
+            {
                 return;
+            }
 
-            await _mealService.ToggleFavoriteAsync(meal);
+            await mealService.ToggleFavoriteAsync(meal);
         }
     }
 }

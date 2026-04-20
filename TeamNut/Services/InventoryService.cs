@@ -1,31 +1,36 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using TeamNut.Models;
 using TeamNut.Repositories;
-using System.Linq;
 
 namespace TeamNut.Services
 {
+    /// <summary>Service for managing the user's food ingredient inventory.</summary>
     public class InventoryService
     {
-        private readonly InventoryRepository _inventoryRepository;
-        private readonly MealPlanRepository _mealPlanRepository;
-        private readonly IngredientRepository _ingredientRepository;
-        private readonly int IngredientsQuantity = 100;
+        private readonly InventoryRepository inventoryRepository;
+        private readonly MealPlanRepository mealPlanRepository;
+        private readonly IngredientRepository ingredientRepository;
+        private readonly int ingredientsQuantity = 100;
 
+        /// <summary>Initializes a new instance of the <see cref="InventoryService"/> class.</summary>
         public InventoryService()
         {
-            _inventoryRepository = new InventoryRepository();
-            _mealPlanRepository = new MealPlanRepository();
-            _ingredientRepository = new IngredientRepository();
+            inventoryRepository = new InventoryRepository();
+            mealPlanRepository = new MealPlanRepository();
+            ingredientRepository = new IngredientRepository();
         }
 
+        /// <summary>Deducts ingredients from inventory when a meal is consumed.</summary>
+        /// <param name="userId">The user identifier.</param>
+        /// <param name="mealId">The meal identifier.</param>
+        /// <returns><c>true</c> after consumption is processed.</returns>
         public async Task<bool> ConsumeMeal(int userId, int mealId)
         {
-            
-            var requiredIngredients = await _mealPlanRepository.GetIngredientsForMeal(mealId);
-            var inventoryItems = (await _inventoryRepository.GetAllByUserId(userId)).ToList();
+            var requiredIngredients = await mealPlanRepository.GetIngredientsForMeal(mealId);
+            var inventoryItems = (await inventoryRepository.GetAllByUserId(userId)).ToList();
 
             foreach (var req in requiredIngredients)
             {
@@ -38,48 +43,66 @@ namespace TeamNut.Services
 
                     if (stock.QuantityGrams <= 0)
                     {
-                        await _inventoryRepository.Delete(stock.Id);
+                        await inventoryRepository.Delete(stock.Id);
                     }
                     else
                     {
-                        await _inventoryRepository.Update(stock);
+                        await inventoryRepository.Update(stock);
                     }
                 }
             }
+
             return true;
         }
 
+        /// <summary>Adds an ingredient to the user's pantry inventory.</summary>
+        /// <param name="userId">The user identifier.</param>
+        /// <param name="ingredientId">The ingredient identifier.</param>
+        /// <param name="quantity">The quantity in grams.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task AddToPantry(int userId, int ingredientId, int quantity)
         {
             var newItem = new Inventory
             {
                 UserId = userId,
                 IngredientId = ingredientId,
-                QuantityGrams = quantity
+                QuantityGrams = quantity,
             };
 
-            await _inventoryRepository.Add(newItem);
+            await inventoryRepository.Add(newItem);
         }
 
+        /// <summary>Looks up or creates an ingredient by name and adds it to the pantry.</summary>
+        /// <param name="userId">The user identifier.</param>
+        /// <param name="ingredientName">The ingredient name.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task AddIngredientByNameToPantry(int userId, string ingredientName)
         {
-            int ingredientId = await _ingredientRepository.GetOrCreateIngredientIdByNameAsync(ingredientName);
-            await AddToPantry(userId, ingredientId, IngredientsQuantity);
+            int ingredientId = await ingredientRepository.GetOrCreateIngredientIdByNameAsync(ingredientName);
+            await AddToPantry(userId, ingredientId, ingredientsQuantity);
         }
 
+        /// <summary>Gets all inventory items for the given user.</summary>
+        /// <param name="userId">The user identifier.</param>
+        /// <returns>The user's inventory items.</returns>
         public async Task<IEnumerable<Inventory>> GetUserInventory(int userId)
         {
-            return await _inventoryRepository.GetAllByUserId(userId);
+            return await inventoryRepository.GetAllByUserId(userId);
         }
 
+        /// <summary>Removes an inventory item by its identifier.</summary>
+        /// <param name="inventoryId">The inventory item identifier.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task RemoveItem(int inventoryId)
         {
-            await _inventoryRepository.Delete(inventoryId);
+            await inventoryRepository.Delete(inventoryId);
         }
 
+        /// <summary>Gets all available ingredients.</summary>
+        /// <returns>All ingredients in the database.</returns>
         public async Task<IEnumerable<Ingredient>> GetAllIngredients()
         {
-            return await _ingredientRepository.GetAllAsync();
+            return await ingredientRepository.GetAllAsync();
         }
     }
 }

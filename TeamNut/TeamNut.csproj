@@ -16,8 +16,10 @@
     <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
     <WindowsPackageType>None</WindowsPackageType>
     <Nullable>enable</Nullable>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <CodeAnalysisRuleSet>SE.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
-
+  
   <ItemGroup>
     <None Remove="NutData.db" />
     <None Remove="Views\RemindersView\RemindersPage.xaml" />

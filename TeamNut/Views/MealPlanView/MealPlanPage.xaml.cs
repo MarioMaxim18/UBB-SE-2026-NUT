@@ -1,16 +1,18 @@
+using System;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using System;
 using TeamNut.ModelViews;
 using TeamNut.Models;
 using TeamNut.Services;
 
 namespace TeamNut.Views.MealPlanView
 {
+    /// <summary>Page for displaying and managing the user's daily meal plan.</summary>
     public sealed partial class MealPlanPage : Page
     {
+        /// <summary>Gets the view model.</summary>
         public MealPlanViewModel ViewModel { get; } = new MealPlanViewModel();
-        private UserService _userService;
+        private UserService userService;
 
         private const string ButtonOk = "OK";
         private const string ButtonSave = "Save";
@@ -36,7 +38,7 @@ namespace TeamNut.Views.MealPlanView
         private const string MsgNoMealPlanLoaded = "No meal plan is currently loaded. Please generate a meal plan first.";
         private const string MsgNoMealsGenerated = "No meals to save. Please generate a meal plan first.";
         private const string MsgPreferenceInfo = "Changes will be reflected in your next meal plan generation.";
-        private const string MealBullet = "‚Ä¢";
+        private const string MealBullet = "ù";
         private const string KcalUnit = "kcal";
         private const int WeightMin = 1;
         private const int WeightMax = 500;
@@ -53,11 +55,12 @@ namespace TeamNut.Views.MealPlanView
         private const int GoalMaintenance = 2;
         private const int GoalWellBeing = 3;
 
+        /// <summary>Initializes a new instance of the <see cref="MealPlanPage"/> class.</summary>
         public MealPlanPage()
         {
             InitializeComponent();
             DataContext = ViewModel;
-            _userService = new UserService();
+            userService = new UserService();
 
             ViewModel.PropertyChanged += (s, e) =>
             {
@@ -98,7 +101,7 @@ namespace TeamNut.Views.MealPlanView
                 return;
             }
 
-            var userData = await _userService.GetUserDataAsync(userId.Value);
+            var userData = await userService.GetUserDataAsync(userId.Value);
 
             if (userData == null)
             {
@@ -188,7 +191,9 @@ namespace TeamNut.Views.MealPlanView
             dialog.Content = panel;
 
             if (await dialog.ShowAsync() != ContentDialogResult.Primary)
+            {
                 return;
+            }
 
             if (weightBox.Value < WeightMin || heightBox.Value < HeightMin)
             {
@@ -199,7 +204,7 @@ namespace TeamNut.Views.MealPlanView
             userData.Weight = (int)weightBox.Value;
             userData.Height = (int)heightBox.Value;
             userData.Gender = genderCombo.SelectedIndex == IndexMale ? GenderMale : GenderFemale;
-            userData.Goal = goalCombo.SelectedItem.ToString().ToLower();
+            userData.Goal = goalCombo.SelectedItem?.ToString()?.ToLower() ?? "maintenance";
 
             userData.Bmi = userData.CalculateBmi();
             userData.CalorieNeeds = userData.CalculateCalorieNeeds();
@@ -209,7 +214,7 @@ namespace TeamNut.Views.MealPlanView
 
             try
             {
-                await _userService.UpdateUserDataAsync(userData);
+                await userService.UpdateUserDataAsync(userData);
 
                 await ShowSimpleDialog(TitleSettingsUpdated, MsgSettingsSaved);
                 StatusMessageText.Text = MsgSettingsStatus;
@@ -253,8 +258,39 @@ namespace TeamNut.Views.MealPlanView
             {
                 await ShowSimpleDialog(
                     TitleSaveFailed,
-                    $"Failed to save to daily log:\n\n{ex.Message}"
-                );
+                    $"Failed to save to daily log:\n\n{ex.Message}");
+            }
+        }
+
+        private async void AddMealToLogsButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is not Button { DataContext: MealViewModel meal })
+            {
+                return;
+            }
+
+            try
+            {
+                var mealPlanService = new MealPlanService();
+                await mealPlanService.SaveMealToDailyLogAsync(meal.Id, meal.Calories);
+                StatusMessageText.Text = $"{meal.Name} saved to daily log.";
+            }
+            catch (Exception ex)
+            {
+                await ShowSimpleDialog(TitleSaveFailed, $"Failed to save meal:\n\n{ex.Message}");
+            }
+        }
+
+        private async void RegenerateTestButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                StatusMessageText.Text = "Regenerating meal plan...";
+                await ViewModel.LoadOrGenerateTodaysMealPlanAsync();
+            }
+            catch (Exception ex)
+            {
+                await ShowSimpleDialog(TitleRegenerationFailed, ex.Message);
             }
         }
 
@@ -262,8 +298,7 @@ namespace TeamNut.Views.MealPlanView
         {
             await ShowSimpleDialog(
                 ViewModel.ErrorDialogTitle,
-                ViewModel.ErrorDialogMessage
-            );
+                ViewModel.ErrorDialogMessage);
 
             ViewModel.ShowErrorDialog = false;
         }
