@@ -24,7 +24,7 @@ namespace TeamNut.Services
             return await repository.GetAllByUserId(userId);
         }
 
-        public async Task<ShoppingItem> AddItemAsync(string itemName, int userId, double quantity = 0)
+        public async Task<ShoppingItem?> AddItemAsync(string itemName, int userId, double quantity = 0)
         {
             try
             {

@@ -11,7 +11,7 @@ namespace TeamNut.Repositories
     {
         private readonly string connectionString = DbConfig.ConnectionString;
 
-        public async Task<MealPlan> GetById(int id)
+        public async Task<MealPlan?> GetById(int id)
         {
             using var conn = new SqliteConnection(connectionString);
             const string sql = "SELECT * FROM MealPlan WHERE mealplan_id = @id";
@@ -27,7 +27,7 @@ namespace TeamNut.Repositories
             return null;
         }
 
-        public async Task<MealPlan> GetLatestMealPlan(int userId)
+        public async Task<MealPlan?> GetLatestMealPlan(int userId)
         {
             using var conn = new SqliteConnection(connectionString);
             const string sql = @"SELECT * FROM MealPlan
@@ -100,7 +100,7 @@ namespace TeamNut.Repositories
             await cmd.ExecuteNonQueryAsync();
         }
 
-        public async Task<MealPlan> GetTodaysMealPlan(int userId)
+        public async Task<MealPlan?> GetTodaysMealPlan(int userId)
         {
             using var conn = new SqliteConnection(connectionString);
             const string sql = @"SELECT * FROM MealPlan
@@ -336,7 +336,7 @@ namespace TeamNut.Repositories
                 meals.Add(new Meal
                 {
                     Id = Convert.ToInt32(reader["meal_id"]),
-                    Name = reader["name"].ToString(),
+                    Name = reader["name"]?.ToString() ?? string.Empty,
                     ImageUrl = reader["imageUrl"]?.ToString(),
                     IsKeto = Convert.ToBoolean(reader["isKeto"]),
                     IsVegan = Convert.ToBoolean(reader["isVegan"]),
@@ -391,7 +391,7 @@ namespace TeamNut.Repositories
                 ingredients.Add(new IngredientViewModel
                 {
                     IngredientId = ingredientId,
-                    Name = reader["name"].ToString(),
+                    Name = reader["name"]?.ToString() ?? string.Empty,
                     Quantity = quantity,
                     Calories = Math.Round(caloriesPer100g * quantity / 100, 1),
                     Protein = Math.Round(proteinPer100g * quantity / 100, 1),

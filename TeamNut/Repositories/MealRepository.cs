@@ -166,7 +166,7 @@ namespace TeamNut.Repositories
             return new Meal
             {
                 Id = (int)Convert.ToInt64(reader["meal_id"]),
-                Name = reader["name"].ToString(),
+                Name = reader["name"]?.ToString() ?? string.Empty,
                 ImageUrl = reader["imageUrl"]?.ToString(),
 
                 Calories = (int)Math.Round(Convert.ToDouble(reader["calories"])),

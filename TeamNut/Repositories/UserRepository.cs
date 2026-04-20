@@ -10,7 +10,7 @@ namespace TeamNut.Repositories
     {
         private readonly string connectionString = DbConfig.ConnectionString;
 
-        public async Task<User> GetById(int id)
+        public async Task<User?> GetById(int id)
         {
             using var conn = new SqliteConnection(connectionString);
             using var cmd = new SqliteCommand("SELECT id, username, password, role FROM Users WHERE id = @id", conn);
@@ -98,7 +98,7 @@ namespace TeamNut.Repositories
             await cmd.ExecuteNonQueryAsync();
         }
 
-        public async Task<User> GetByUsernameAndPassword(string username, string password)
+        public async Task<User?> GetByUsernameAndPassword(string username, string password)
         {
             using var conn = new SqliteConnection(connectionString);
             using var cmd = new SqliteCommand("SELECT id, username, password, role FROM Users WHERE username = @u AND password = @p", conn);
@@ -148,7 +148,7 @@ namespace TeamNut.Repositories
             return users;
         }
 
-        public async Task<UserData> GetUserDataByUserId(int userId)
+        public async Task<UserData?> GetUserDataByUserId(int userId)
         {
             using var conn = new SqliteConnection(connectionString);
             using var cmd = new SqliteCommand("SELECT id, user_id, weight, height, age, gender, goal, bmi, calorie_needs, protein_needs, carb_needs, fat_needs FROM UserData WHERE user_id = @userId", conn);

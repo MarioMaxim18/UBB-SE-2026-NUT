@@ -52,7 +52,7 @@ namespace TeamNut.Repositories
             return items;
         }
 
-        public async Task<ShoppingItem> GetById(int id)
+        public async Task<ShoppingItem?> GetById(int id)
         {
             using var conn = new SqliteConnection(_connectionString);
             await conn.OpenAsync();
@@ -75,7 +75,7 @@ namespace TeamNut.Repositories
             return null;
         }
 
-        public async Task<ShoppingItem> GetByUserAndIngredient(int userId, int ingredientId)
+        public async Task<ShoppingItem?> GetByUserAndIngredient(int userId, int ingredientId)
         {
             using var conn = new SqliteConnection(_connectionString);
             await conn.OpenAsync();
@@ -194,7 +194,7 @@ namespace TeamNut.Repositories
                 {
                     UserId = userId,
                     IngredientId = Convert.ToInt32(reader["ingredient_id"]),
-                    IngredientName = reader["ingredient_name"].ToString(),
+                    IngredientName = reader["ingredient_name"]?.ToString() ?? string.Empty,
                   
                     QuantityGrams = Convert.ToDouble(reader["quantity_needed"]),
                     IsChecked = false
@@ -214,7 +214,7 @@ namespace TeamNut.Repositories
                 UserId = Convert.ToInt32(reader["user_id"]),
                 IngredientId = Convert.ToInt32(reader["ingredient_id"]),
                 QuantityGrams = Convert.ToDouble(reader["quantity_grams"]),
-                IngredientName = reader["ingredient_name"].ToString(),
+                IngredientName = reader["ingredient_name"]?.ToString() ?? string.Empty,
                 IsChecked = Convert.ToBoolean(reader["is_checked"])
             };
         }

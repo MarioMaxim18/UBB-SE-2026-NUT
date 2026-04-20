@@ -52,7 +52,7 @@ namespace TeamNut.Services
             return data;
         }
 
-        public async Task<UserData> GetUserDataAsync(int userId)
+        public async Task<UserData?> GetUserDataAsync(int userId)
         {
             return await userRepository.GetUserDataByUserId(userId);
         }

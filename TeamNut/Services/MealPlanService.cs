@@ -162,7 +162,7 @@ namespace TeamNut.Services
             }
         }
 
-        public async Task<MealPlan> GetMealPlanByIdAsync(int mealPlanId)
+        public async Task<MealPlan?> GetMealPlanByIdAsync(int mealPlanId)
         {
             if (mealPlanId < MinValidId) return null;
 
@@ -176,7 +176,7 @@ namespace TeamNut.Services
             }
         }
 
-        public async Task<MealPlan> GetTodaysMealPlanAsync(int userId)
+        public async Task<MealPlan?> GetTodaysMealPlanAsync(int userId)
         {
             if (userId < MinValidId)
                 throw new ArgumentException(

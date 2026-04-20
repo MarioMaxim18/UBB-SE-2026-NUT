@@ -54,9 +54,9 @@ namespace TeamNut.ViewModels
             {
                 item.PropertyChanged += async (s, e) =>
                 {
-                    if (e.PropertyName == nameof(ShoppingItem.IsChecked))
+                    if (e.PropertyName == nameof(ShoppingItem.IsChecked) && s is ShoppingItem si)
                     {
-                        await _shoppingListService.UpdateItemAsync((ShoppingItem)s);
+                        await _shoppingListService.UpdateItemAsync(si);
                     }
                 };
 
@@ -87,9 +87,9 @@ namespace TeamNut.ViewModels
             {
                 addedItem.PropertyChanged += async (s, e) =>
                 {
-                    if (e.PropertyName == nameof(ShoppingItem.IsChecked))
+                    if (e.PropertyName == nameof(ShoppingItem.IsChecked) && s is ShoppingItem si)
                     {
-                        bool updated = await _shoppingListService.UpdateItemAsync((ShoppingItem)s);
+                        bool updated = await _shoppingListService.UpdateItemAsync(si);
                         if (!updated)
                             ShowStatus(ErrorUpdateChecked, true);
                     }

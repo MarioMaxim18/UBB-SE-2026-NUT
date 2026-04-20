@@ -76,7 +76,7 @@ namespace TeamNut.Repositories
             while (await reader.ReadAsync())
             {
                 var item = MapReaderToInventory(reader);
-                item.IngredientName = reader["name"].ToString();
+                item.IngredientName = reader["name"]?.ToString() ?? string.Empty;
                 items.Add(item);
             }
             return items;

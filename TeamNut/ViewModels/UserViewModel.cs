@@ -116,7 +116,7 @@ namespace TeamNut.ViewModels
                 }
 
                 CurrentUserData.UserId = registeredUser.Id;
-                await _userService.AddUserDataAsync(CurrentUserData);
+                await userService.AddUserDataAsync(CurrentUserData);
 
                 UserSession.Login(
                     registeredUser.Id,
