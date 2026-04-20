@@ -9,7 +9,12 @@ namespace TeamNut.Repositories
 {
     public class ShoppingListRepository : IShoppingListRepository
     {
-        private readonly string _connectionString = DbConfig.ConnectionString;
+        private readonly string _connectionString;
+
+        public ShoppingListRepository(IDbConfig dbConfig)
+        {
+            _connectionString = dbConfig.ConnectionString;
+        }
 
         public async Task Add(ShoppingItem item)
         {
