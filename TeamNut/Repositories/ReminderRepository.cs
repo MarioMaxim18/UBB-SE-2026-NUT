@@ -113,8 +113,8 @@ namespace TeamNut.Repositories
                 Name = reader["name"]?.ToString() ?? string.Empty,
                 HasSound = Convert.ToBoolean(reader["has_sound"]),
                 Time = TimeSpan.Parse(reader["time"]?.ToString() ?? "00:00:00"),
-                ReminderDate = reader["reminder_date"]?.ToString(),
-                Frequency = reader["frequency"]?.ToString(),
+                ReminderDate = reader["reminder_date"]?.ToString() ?? string.Empty,
+                Frequency = reader["frequency"]?.ToString() ?? string.Empty,
             };
         }
 

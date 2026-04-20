@@ -1,15 +1,19 @@
-using System;
-using System.Threading.Tasks;
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-using TeamNut.ViewModels;
-using TeamNut.Models;
+// <copyright file="ShoppingListPage.xaml.cs" company="TeamNut">
+// Copyright (c) TeamNut. All rights reserved.
+// </copyright>
 
 namespace TeamNut.Views.ShoppingListView
 {
+    using System;
+    using System.Threading.Tasks;
+    using Microsoft.UI.Xaml;
+    using Microsoft.UI.Xaml.Controls;
+    using TeamNut.Models;
+    using TeamNut.ViewModels;
+
+    /// <summary>Page for managing the shopping list.</summary>
     public sealed partial class ShoppingListPage : Page
     {
-        public ShoppingListViewModel ViewModel { get; } = new ShoppingListViewModel();
         private const string RootPageName = "RootPage";
         private const int MinSearchLength = 3;
         private const string NoMatchingIngredientsText = "no matching ingredients found";
@@ -20,21 +24,26 @@ namespace TeamNut.Views.ShoppingListView
         private const string MsgConfirmPantryTransfer = "Are you sure you want to remove this item and add it to your pantry?";
         private const string MsgConfirmDeletion = "Are you sure you want to remove this item from the shopping list?";
 
+        /// <summary>Gets the view model.</summary>
+        public ShoppingListViewModel ViewModel { get; } = new ShoppingListViewModel();
+
+        /// <summary>Initializes a new instance of the <see cref="ShoppingListPage"/> class.</summary>
         public ShoppingListPage()
         {
-            InitializeComponent();
-            Name = RootPageName;
+            this.InitializeComponent();
+            this.Name = RootPageName;
         }
 
+        /// <summary>Handles the Add button click.</summary>
         private async void AddButton_Click(object sender, RoutedEventArgs e)
         {
-            var text = IngredientSearchBox.Text;
+            var text = this.IngredientSearchBox.Text;
 
             if (!string.IsNullOrWhiteSpace(text) && text != NoMatchingIngredientsText)
             {
-                await ViewModel.AddItem(text).ConfigureAwait(true);
-                IngredientSearchBox.Text = string.Empty;
-                IngredientSearchBox.ItemsSource = null;
+                await this.ViewModel.AddItem(text).ConfigureAwait(true);
+                this.IngredientSearchBox.Text = string.Empty;
+                this.IngredientSearchBox.ItemsSource = null;
             }
         }
 
@@ -49,12 +58,12 @@ namespace TeamNut.Views.ShoppingListView
 
             if (sender.Text.Length >= MinSearchLength)
             {
-                var results = await ViewModel.SearchIngredientsAsync(sender.Text);
+                var results = await this.ViewModel.SearchIngredientsAsync(sender.Text);
 
                 sender.ItemsSource = results.Count == 0
                     ? new System.Collections.Generic.List<string>
                     {
-                        NoMatchingIngredientsText
+                        NoMatchingIngredientsText,
                     }
                     : System.Linq.Enumerable.ToList(
                         System.Linq.Enumerable.Select(results, r => r.Value));
@@ -93,12 +102,12 @@ namespace TeamNut.Views.ShoppingListView
                 Content = MsgConfirmPantryTransfer,
                 PrimaryButtonText = ButtonYes,
                 CloseButtonText = ButtonCancel,
-                XamlRoot = XamlRoot
+                XamlRoot = this.XamlRoot,
             };
 
             if (await dialog.ShowAsync() == ContentDialogResult.Primary)
             {
-                ViewModel.MoveToPantryCommand.Execute(item);
+                this.ViewModel.MoveToPantryCommand.Execute(item);
             }
         }
 
@@ -115,12 +124,12 @@ namespace TeamNut.Views.ShoppingListView
                 Content = MsgConfirmDeletion,
                 PrimaryButtonText = ButtonYes,
                 CloseButtonText = ButtonCancel,
-                XamlRoot = XamlRoot
+                XamlRoot = this.XamlRoot,
             };
 
             if (await dialog.ShowAsync() == ContentDialogResult.Primary)
             {
-                ViewModel.RemoveItemCommand.Execute(item);
+                this.ViewModel.RemoveItemCommand.Execute(item);
             }
         }
     }

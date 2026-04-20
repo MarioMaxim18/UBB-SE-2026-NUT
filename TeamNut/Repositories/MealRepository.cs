@@ -178,7 +178,7 @@ namespace TeamNut.Repositories
             {
                 Id = (int)Convert.ToInt64(reader["meal_id"]),
                 Name = reader["name"]?.ToString() ?? string.Empty,
-                ImageUrl = reader["imageUrl"]?.ToString(),
+                ImageUrl = reader["imageUrl"]?.ToString() ?? string.Empty,
 
                 Calories = (int)Math.Round(Convert.ToDouble(reader["calories"])),
                 Protein = (int)Math.Round(Convert.ToDouble(reader["protein"])),
@@ -192,7 +192,7 @@ namespace TeamNut.Repositories
                 IsGlutenFree = Convert.ToInt64(reader["isGlutenFree"]) == 1,
                 IsFavorite = Convert.ToInt64(reader["isFavorite"]) == 1,
 
-                Description = reader["description"]?.ToString()
+                Description = reader["description"]?.ToString() ?? string.Empty,
             };
         }
         public async Task<List<string>> GetIngredientLinesForMealAsync(int mealId)
