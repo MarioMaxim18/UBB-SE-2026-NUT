@@ -99,12 +99,20 @@ namespace TeamNut.Views.RemindersView
                     freqCombo.Items.Add(FrequencyWeekly);
                     freqCombo.Items.Add(FrequencyMonthly);
 
-                    freqCombo.SelectedIndex =
-                        string.IsNullOrWhiteSpace(reminder.Frequency)
-                            ? 0
-                            : Math.Max(
-                                freqCombo.Items.IndexOf(reminder.Frequency),
-                                0);
+                    int freqIndex = 0;
+                    if (!string.IsNullOrWhiteSpace(reminder.Frequency))
+                    {
+                        for (int fi = 0; fi < freqCombo.Items.Count; fi++)
+                        {
+                            if (string.Equals(freqCombo.Items[fi]?.ToString(), reminder.Frequency, StringComparison.OrdinalIgnoreCase))
+                            {
+                                freqIndex = fi;
+                                break;
+                            }
+                        }
+                    }
+
+                    freqCombo.SelectedIndex = freqIndex;
 
                     panel.Children.Add(new TextBlock { Text = LabelName });
                     panel.Children.Add(nameBox);
