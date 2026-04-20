@@ -11,7 +11,13 @@ namespace TeamNut.Services
         private readonly DailyLogRepository _repository;
         private readonly UserRepository _userRepository;
         private readonly MealService _mealService;
-
+        private const int DaysInWeek = 7;
+        private const int OneDay = 1;
+        private const DayOfWeek StartOfWeek = DayOfWeek.Monday;
+        private const double DefaultBurnedCalories = 500d;
+        private const string EmptySearchTerm = "";
+        private const string ErrorUserNotLoggedIn = "User is not logged in.";
+        
         public DailyLogService()
         {
             _repository = new DailyLogRepository();
@@ -22,7 +28,7 @@ namespace TeamNut.Services
         private int GetUserId()
         {
             return UserSession.UserId
-                ?? throw new InvalidOperationException("User is not logged in.");
+                ?? throw new InvalidOperationException(ErrorUserNotLoggedIn);
         }
 
         public async Task<bool> HasAnyLogsAsync()
@@ -34,8 +40,10 @@ namespace TeamNut.Services
         {
             var userId = GetUserId();
             var start = DateTime.Today;
-            var end = start.AddDays(1);
-            return await _repository.GetNutritionTotalsForRange(userId, start, end);
+            var end = start.AddDays(OneDay);
+
+            return await _repository
+                .GetNutritionTotalsForRange(userId, start, end);
         }
 
         public async Task<DailyLog> GetCurrentWeekTotalsAsync()
@@ -43,36 +51,46 @@ namespace TeamNut.Services
             var userId = GetUserId();
             var today = DateTime.Today;
 
-            int diff = (7 + (today.DayOfWeek - DayOfWeek.Monday)) % 7;
-            var startOfWeek = today.AddDays(-diff);
-            var endOfWeek = startOfWeek.AddDays(7);
+            int diff =
+                (DaysInWeek + (today.DayOfWeek - StartOfWeek)) % DaysInWeek;
 
-            return await _repository.GetNutritionTotalsForRange(userId, startOfWeek, endOfWeek);
+            var startOfWeek = today.AddDays(-diff);
+            var endOfWeek = startOfWeek.AddDays(DaysInWeek);
+
+            return await _repository
+                .GetNutritionTotalsForRange(
+                    userId,
+                    startOfWeek,
+                    endOfWeek);
         }
 
         public async Task<UserData> GetCurrentUserNutritionTargetsAsync()
         {
-            return await _userRepository.GetUserDataByUserId(GetUserId());
+            return await _userRepository
+                .GetUserDataByUserId(GetUserId());
         }
 
         public Task<double> GetTodayBurnedCaloriesAsync()
         {
-            return Task.FromResult(500d);
+            // Placeholder – replace with wearable / activity integration
+            return Task.FromResult(DefaultBurnedCalories);
         }
 
         public async Task<List<Meal>> SearchMealsAsync(string? searchTerm)
         {
             var filter = new MealFilter
             {
-                SearchTerm = searchTerm ?? string.Empty
+                SearchTerm = searchTerm ?? EmptySearchTerm
             };
 
-            return await _mealService.GetFilteredMealsAsync(filter);
+            return await _mealService
+                .GetFilteredMealsAsync(filter);
         }
 
         public async Task<List<Meal>> GetMealsForAutocompleteAsync()
         {
-            return await _mealService.GetFilteredMealsAsync(new MealFilter());
+            return await _mealService
+                .GetFilteredMealsAsync(new MealFilter());
         }
 
         public async Task LogMealAsync(Meal meal)
@@ -82,13 +100,14 @@ namespace TeamNut.Services
                 throw new ArgumentNullException(nameof(meal));
             }
 
-            await _repository.Add(new DailyLog
-            {
-                UserId = GetUserId(),
-                MealId = meal.Id,
-                Calories = meal.Calories,
-                LoggedAt = DateTime.Now
-            });
+            await _repository.Add(
+                new DailyLog
+                {
+                    UserId = GetUserId(),
+                    MealId = meal.Id,
+                    Calories = meal.Calories,
+                    LoggedAt = DateTime.Now
+                });
         }
     }
 }

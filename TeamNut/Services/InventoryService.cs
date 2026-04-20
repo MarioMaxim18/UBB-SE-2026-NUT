@@ -12,6 +12,7 @@ namespace TeamNut.Services
         private readonly InventoryRepository _inventoryRepository;
         private readonly MealPlanRepository _mealPlanRepository;
         private readonly IngredientRepository _ingredientRepository;
+        private readonly int IngredientsQuantity = 100;
 
         public InventoryService()
         {
@@ -63,7 +64,7 @@ namespace TeamNut.Services
         public async Task AddIngredientByNameToPantry(int userId, string ingredientName)
         {
             int ingredientId = await _ingredientRepository.GetOrCreateIngredientIdByNameAsync(ingredientName);
-            await AddToPantry(userId, ingredientId, 100);
+            await AddToPantry(userId, ingredientId, IngredientsQuantity);
         }
 
         public async Task<IEnumerable<Inventory>> GetUserInventory(int userId)
