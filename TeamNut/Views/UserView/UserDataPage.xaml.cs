@@ -29,7 +29,7 @@ namespace TeamNut.Views.UserView
             ViewModel.SaveDataSuccess -= ViewModel_SaveDataSuccess;
         }
 
-        private void ViewModel_SaveDataSuccess(object sender, EventArgs e)
+        private void ViewModel_SaveDataSuccess(object? sender, EventArgs e)
         {
             if (this.Frame != null)
             {

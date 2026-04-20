@@ -31,13 +31,13 @@ namespace TeamNut.ViewModels
         public partial string StatusMessage { get; set; } = string.Empty;
         [ObservableProperty]
         public partial DateTimeOffset SelectedDate { get; set; } = DateTimeOffset.Now;
-        public event EventHandler RegistrationValid;
-        public event EventHandler LoginSuccess;
-        public event EventHandler SaveDataSuccess;
-        private readonly UserService _userService;
+        public event EventHandler? RegistrationValid;
+        public event EventHandler? LoginSuccess;
+        public event EventHandler? SaveDataSuccess;
+        private readonly UserService userService;
         public UserViewModel()
         {
-            _userService = new UserService();
+            userService = new UserService();
         }
 
         [RelayCommand]
@@ -56,7 +56,7 @@ namespace TeamNut.ViewModels
                 return;
             }
 
-            if (await _userService.CheckIfUsernameExistsAsync(CurrentUser.Username))
+            if (await userService.CheckIfUsernameExistsAsync(CurrentUser.Username))
             {
                 StatusMessage = ErrorUsernameExists;
                 return;
@@ -68,7 +68,7 @@ namespace TeamNut.ViewModels
             }
             else
             {
-                var registeredUser = await _userService.RegisterUserAsync(CurrentUser);
+                var registeredUser = await userService.RegisterUserAsync(CurrentUser);
                 if (registeredUser != null)
                 {
                     UserSession.Login(
@@ -108,7 +108,7 @@ namespace TeamNut.ViewModels
                 CurrentUserData.FatNeeds = CurrentUserData.CalculateFatNeeds();
                 CurrentUserData.CarbNeeds = CurrentUserData.CalculateCarbNeeds();
 
-                var registeredUser = await _userService.RegisterUserAsync(CurrentUser);
+                var registeredUser = await userService.RegisterUserAsync(CurrentUser);
                 if (registeredUser == null)
                 {
                     StatusMessage = ErrorRegistrationFailed;
@@ -145,7 +145,7 @@ namespace TeamNut.ViewModels
 
             try
             {
-                var user = await _userService.LoginAsync(
+                var user = await userService.LoginAsync(
                     CurrentUser.Username,
                     CurrentUser.Password);
 

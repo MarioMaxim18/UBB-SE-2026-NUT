@@ -29,7 +29,7 @@ namespace TeamNut.Views.UserView
             ViewModel.LoginSuccess -= ViewModel_LoginSuccess;
         }
 
-        private void ViewModel_LoginSuccess(object sender, EventArgs e)
+        private void ViewModel_LoginSuccess(object? sender, EventArgs e)
         {
             if (this.Frame != null)
             {

@@ -29,7 +29,7 @@ namespace TeamNut.Views.UserView
             ViewModel.LoginSuccess -= ViewModel_LoginSuccess;
         }
 
-        private void ViewModel_LoginSuccess(object sender, EventArgs e)
+        private void ViewModel_LoginSuccess(object? sender, EventArgs e)
         {
             if (this.Frame != null)
             {
@@ -51,9 +51,9 @@ namespace TeamNut.Views.UserView
                 this.Frame.Navigate(typeof(LoginPage));
             }
         }
-        private void ViewModel_RegistrationValid(object sender, EventArgs e)
+        private void ViewModel_RegistrationValid(object? sender, EventArgs e)
         {
-            this.Frame.Navigate(typeof(UserDataPage), ViewModel.CurrentUser);
+            this.Frame?.Navigate(typeof(UserDataPage), ViewModel.CurrentUser);
         }
     }
 }

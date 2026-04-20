@@ -93,10 +93,10 @@ namespace TeamNut.ModelViews
         }
 
         [ObservableProperty] public partial string TotalNutritionSummary { get; set; }
-        [ObservableProperty] private string goalDescription;
+        [ObservableProperty] private string goalDescription = string.Empty;
         [ObservableProperty] private bool showErrorDialog;
-        [ObservableProperty] private string errorDialogTitle;
-        [ObservableProperty] private string errorDialogMessage;
+        [ObservableProperty] private string errorDialogTitle = string.Empty;
+        [ObservableProperty] private string errorDialogMessage = string.Empty;
 
         public MealPlanViewModel()
         {

@@ -8,10 +8,6 @@ namespace TeamNut.Views
 {
     public sealed partial class MainPage : Page
     {
-        private bool mealsLoaded;
-        private bool chatLoaded;
-        private bool shoppingListLoaded;
-        private bool remindersLoaded;
         private readonly Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
         private readonly DispatcherTimer _reminderTimer;
         private readonly System.Collections.Generic.HashSet<int> _shownReminders = new();
@@ -202,9 +198,9 @@ namespace TeamNut.Views
             UserSession.Logout();
 
             if (Application.Current is App app &&
-                app._window != null)
+                app.window != null)
             {
-                app._window.Content =
+                app.window.Content =
                     new TeamNut.Views.UserView.UserView();
             }
         }

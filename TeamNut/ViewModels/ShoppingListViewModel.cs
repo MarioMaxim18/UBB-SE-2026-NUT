@@ -26,7 +26,7 @@ namespace TeamNut.ViewModels
         [ObservableProperty]
         private ObservableCollection<ShoppingItem> items = new();
         [ObservableProperty]
-        private string statusMessage;
+        private string statusMessage = string.Empty;
         [ObservableProperty]
         private bool isStatusVisible;
         [ObservableProperty]
