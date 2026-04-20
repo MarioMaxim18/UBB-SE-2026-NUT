@@ -181,7 +181,21 @@ namespace TeamNut.Views.MealPlanView
                 userData.Weight = (int)weightBox.Value;
                 userData.Height = (int)heightBox.Value;
                 userData.Gender = genderCombo.SelectedIndex == 0 ? "male" : "female";
-                userData.Goal = goalCombo.SelectedItem.ToString().ToLower();
+                var goalText = goalCombo.SelectedItem?.ToString();
+                if (string.IsNullOrWhiteSpace(goalText))
+                {
+                    var goalDialog = new ContentDialog
+                    {
+                        Title = "Invalid Input",
+                        Content = "Please select a goal.",
+                        CloseButtonText = "OK",
+                        XamlRoot = this.XamlRoot
+                    };
+                    _ = await goalDialog.ShowAsync();
+                    return;
+                }
+
+                userData.Goal = goalText.ToLowerInvariant();
 
                 userData.Bmi = userData.CalculateBmi();
                 userData.CalorieNeeds = userData.CalculateCalorieNeeds();

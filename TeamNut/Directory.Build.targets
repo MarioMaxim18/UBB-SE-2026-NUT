@@ -1,0 +1,7 @@
+<Project>
+  <!-- dotnet CLI only: skip apphost when CreateAppHost fails (HostModel / SDK mismatch). Visual Studio keeps normal apphost for F5. -->
+  <PropertyGroup Condition="'$(BuildingInsideVisualStudio)' != 'true'">
+    <SelfContained>false</SelfContained>
+    <UseAppHost>false</UseAppHost>
+  </PropertyGroup>
+</Project>

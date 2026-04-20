@@ -148,7 +148,7 @@ namespace TeamNut.ViewModels
             }
             catch (Exception ex)
             {
-                StatusMessage = "Database Connection Failed! Start SSMS and check your server. Error: " + ex.Message;
+                StatusMessage = "Database Connection Failed! Check your SQLite database file. Error: " + ex.Message;
             }
         }
     }

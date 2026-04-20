@@ -136,8 +136,8 @@ namespace TeamNut.Services
 
                     if (totalNeeded > 0)
                     {
-                        await AddItemAsync(needed.IngredientName, userId, totalNeeded);
-                        itemsAddedCount++;
+                        var added = await AddItemAsync(needed.IngredientName, userId, totalNeeded);
+                        if (added != null) itemsAddedCount++;
                     }
                 }
 

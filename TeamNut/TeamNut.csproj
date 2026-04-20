@@ -8,8 +8,7 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <Platforms>x86;x64;ARM64</Platforms>
     <RuntimeIdentifiers>win-x86;win-x64;win-arm64</RuntimeIdentifiers>
-    <!-- Set a single RuntimeIdentifier for packaging/publish to avoid the "architecture neutral" error -->
-    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <!-- Do not set a global RuntimeIdentifier: it forces self-contained inference and breaks dotnet CLI apphost on some installs. Pick platform in VS or pass -r win-x64 when publishing. -->
     <PublishProfile>win-$(Platform).pubxml</PublishProfile>
     <UseWinUI>true</UseWinUI>
     <WinUISDKReferences>false</WinUISDKReferences>
@@ -27,10 +26,6 @@
     <None Remove="Views\UserView\UserDataPage.xaml" />
 	<None Remove="Views\MainPage.xaml" />
 	<None Remove="Views\CalorieLoggingView\CalorieLoggingPage.xaml" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Include="obj\x64\Debug\net8.0-windows10.0.19041.0\win-x64\App.g.i.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -117,4 +112,5 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+
 </Project>
