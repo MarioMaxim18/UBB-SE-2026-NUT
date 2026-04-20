@@ -203,40 +203,6 @@ namespace TeamNut.Repositories
             return items;
         }
 
-        /*
-        public async Task<List<ShoppingItem>> GetIngredientsNeededFromMealPlan(int userId)
-        {
-            var items = new List<ShoppingItem>();
-            using var conn = new SqliteConnection(_connectionString);
-            await conn.OpenAsync();
-
-            string query = @"
-                SELECT mi.food_id as ingredient_id, i.name as ingredient_name, SUM(mi.quantity) as quantity_grams
-                FROM MealPlan mp
-                JOIN MealPlanMeal mpm ON mp.mealplan_id = mpm.mealPlanId
-                JOIN MealsIngredients mi ON mpm.mealId = mi.meal_id
-                JOIN Ingredients i ON mi.food_id = i.food_id
-                WHERE mp.user_id = @userId 
-                  AND mp.created_at >= CAST(GETDATE() AS DATE)
-                GROUP BY mi.food_id, i.name";
-
-            using var cmd = new SqliteCommand(query, conn);
-            cmd.Parameters.AddWithValue("@userId", userId);
-
-            using var reader = await cmd.ExecuteReaderAsync();
-            while (await reader.ReadAsync())
-            {
-                items.Add(new ShoppingItem
-                {
-                    UserId = userId,
-                    IngredientId = Convert.ToInt32(reader["ingredient_id"]),
-                    IngredientName = reader["ingredient_name"].ToString(),
-                    QuantityGrams = Convert.ToDouble(reader["quantity_grams"])
-                });
-            }
-            return items;
-        }*/
-
         private ShoppingItem MapReaderToItem(SqliteDataReader reader)
         {
             return new ShoppingItem
