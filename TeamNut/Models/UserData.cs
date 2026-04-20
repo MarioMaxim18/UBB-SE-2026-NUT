@@ -102,7 +102,7 @@ namespace TeamNut.Models
             return age;
         }
 
-        public int CalculateBmi()
+        public double CalculateBmi()
         {
             if (Height <= 0 || Weight <= 0)
                 return 0;

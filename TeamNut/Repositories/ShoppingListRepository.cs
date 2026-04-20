@@ -16,7 +16,8 @@ namespace TeamNut.Repositories
             await conn.OpenAsync();
 
             string query = @"INSERT INTO ShoppingItems (user_id, ingredient_id, quantity_grams, is_checked)
-                             VALUES (@userId, @ingredientId, @quantityGrams, @isChecked)";
+                             VALUES (@userId, @ingredientId, @quantityGrams, @isChecked);
+                             SELECT last_insert_rowid();";
 
             using var cmd = new SqliteCommand(query, conn);
             cmd.Parameters.AddWithValue("@userId", item.UserId);
@@ -24,7 +25,9 @@ namespace TeamNut.Repositories
             cmd.Parameters.AddWithValue("@quantityGrams", item.QuantityGrams);
             cmd.Parameters.AddWithValue("@isChecked", item.IsChecked ? 1 : 0);
 
-            await cmd.ExecuteNonQueryAsync();
+            var result = await cmd.ExecuteScalarAsync();
+            if (result != null)
+                item.Id = Convert.ToInt32(result);
         }
 
         public async Task<IEnumerable<ShoppingItem>> GetAll()

@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using TeamNut.ViewModels;
@@ -25,13 +26,13 @@ namespace TeamNut.Views.ShoppingListView
             Name = RootPageName;
         }
 
-        private void AddButton_Click(object sender, RoutedEventArgs e)
+        private async void AddButton_Click(object sender, RoutedEventArgs e)
         {
             var text = IngredientSearchBox.Text;
 
             if (!string.IsNullOrWhiteSpace(text) && text != NoMatchingIngredientsText)
             {
-                ViewModel.AddItem(text);
+                await ViewModel.AddItem(text).ConfigureAwait(true);
                 IngredientSearchBox.Text = string.Empty;
                 IngredientSearchBox.ItemsSource = null;
             }

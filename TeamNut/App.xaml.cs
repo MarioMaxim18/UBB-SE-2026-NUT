@@ -3,7 +3,6 @@ using Microsoft.UI.Xaml.Controls;
 using TeamNut.ViewModels;
 using TeamNut.Views;
 using TeamNut.Views.UserView;
-using System.Diagnostics;
 
 namespace TeamNut
 {
@@ -21,30 +20,6 @@ namespace TeamNut
             };
 
             InitializeComponent();
-
-            EnsureLocalDbStarted();
-        }
-
-        private void EnsureLocalDbStarted()
-        {
-            try
-            {
-                var startInfo = new ProcessStartInfo
-                {
-                    FileName = "sqllocaldb",
-                    Arguments = "start MSSQLLocalDB",
-                    UseShellExecute = false,
-                    CreateNoWindow = true,
-                    RedirectStandardOutput = true,
-                    RedirectStandardError = true
-                };
-
-                using var process = Process.Start(startInfo);
-                process?.WaitForExit();
-            }
-            catch
-            {
-            }
         }
 
         protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)

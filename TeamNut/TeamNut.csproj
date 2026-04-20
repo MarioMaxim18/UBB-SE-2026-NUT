@@ -8,11 +8,12 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <Platforms>x86;x64;ARM64</Platforms>
     <RuntimeIdentifiers>win-x86;win-x64;win-arm64</RuntimeIdentifiers>
-    <!-- Set a single RuntimeIdentifier for packaging/publish to avoid the "architecture neutral" error -->
-    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <!-- Do not set a global RuntimeIdentifier: it forces self-contained inference and breaks dotnet CLI apphost on some installs. Pick platform in VS or pass -r win-x64 when publishing. -->
     <PublishProfile>win-$(Platform).pubxml</PublishProfile>
     <UseWinUI>true</UseWinUI>
     <WinUISDKReferences>false</WinUISDKReferences>
+    <!-- Use installed Windows App Runtime instead of self-contained (matches VibeCoders-style setup, avoids apphost/self-contained coupling on dotnet CLI) -->
+    <WindowsAppSDKSelfContained>false</WindowsAppSDKSelfContained>
     <EnableMsixTooling>true</EnableMsixTooling>
     <Nullable>enable</Nullable>
   </PropertyGroup>
@@ -111,4 +112,5 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+
 </Project>
