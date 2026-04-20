@@ -91,6 +91,7 @@ namespace TeamNut.Services
 
             double tdee = bmr * ActivityMultiplier;
 
+            goal = goal ?? string.Empty;
             double adjustedCalories = goal.ToLower() switch
             {
                 GoalBulk => tdee + BulkCalorieDelta,
@@ -110,6 +111,7 @@ namespace TeamNut.Services
                 return 0;
             }
 
+            goal = goal ?? string.Empty;
             double proteinPerKg = goal.ToLower() switch
             {
                 GoalBulk => ProteinBulk,
@@ -129,6 +131,7 @@ namespace TeamNut.Services
                 return 0;
             }
 
+            goal = goal ?? string.Empty;
             double fatRatio = goal.ToLower() switch
             {
                 GoalBulk or GoalCut => FatBulkCut,
@@ -151,7 +154,7 @@ namespace TeamNut.Services
                 return 0;
             }
 
-            int carbCalories = calorieNeeds - proteinCalories - fatCalories;
+            int carbCalories = Math.Max(0, calorieNeeds - proteinCalories - fatCalories);
             return (int)Math.Round(carbCalories / (double)CaloriesPerGramCarbs);
         }
 

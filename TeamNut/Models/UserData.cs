@@ -220,7 +220,7 @@ namespace TeamNut.Models
                 return 0;
             }
 
-            int carbCalories = calories - proteinCalories - fatCalories;
+            int carbCalories = Math.Max(0, calories - proteinCalories - fatCalories);
             return (int)Math.Round(carbCalories / (double)CaloriesPerGramCarbs);
         }
     }
