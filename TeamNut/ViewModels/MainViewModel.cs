@@ -2,10 +2,16 @@
 using System.Threading.Tasks;
 using TeamNut.Models;
 using TeamNut.Services;
+using TeamNut.Services.Interfaces;
 
 public partial class MainViewModel : ObservableObject
 {
-    private readonly ReminderService _reminderService = new();
+    private readonly IReminderService _reminderService;
+
+    public MainViewModel(IReminderService reminderService)
+    {
+        _reminderService = reminderService;
+    }
 
     [ObservableProperty]
     private string _nextReminderText = "Loading...";

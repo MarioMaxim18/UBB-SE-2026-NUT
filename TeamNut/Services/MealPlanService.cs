@@ -12,11 +12,13 @@ namespace TeamNut.Services
     {
         private readonly IMealPlanRepository _mealPlanRepository;
         private readonly IUserRepository _userRepository;
+        private readonly IReminderService _reminderService;
 
-        public MealPlanService(IMealPlanRepository mealPlanRepository, IUserRepository userRepository)
+        public MealPlanService(IMealPlanRepository mealPlanRepository, IUserRepository userRepository, IReminderService reminderService)
         {
             _mealPlanRepository = mealPlanRepository;
             _userRepository = userRepository;
+            _reminderService = reminderService;
         }
 
         public async Task<int> GeneratePersonalizedMealPlanAsync(int userId)
@@ -32,9 +34,9 @@ namespace TeamNut.Services
 
                 try
                 {
-                    var reminderService = new ReminderService();
+                   
                     var todays = DateTime.Today.ToString("yyyy-MM-dd");
-                    var existing = (await reminderService.GetUserReminders(userId));
+                    var existing = (await _reminderService.GetUserReminders(userId));
                     bool anyToday = false;
                     foreach (var r in existing)
                     {
@@ -66,11 +68,11 @@ namespace TeamNut.Services
                         var lunch = new Reminder { UserId = userId, Name = lunchName, ReminderDate = todays, Time = new TimeSpan(13, 0, 0), HasSound = false, Frequency = "Once" };
                         var dinner = new Reminder { UserId = userId, Name = dinnerName, ReminderDate = todays, Time = new TimeSpan(17, 0, 0), HasSound = false, Frequency = "Once" };
 
-                        await reminderService.SaveReminder(breakfast);
-                        await reminderService.SaveReminder(lunch);
-                        await reminderService.SaveReminder(dinner);
+                        await _reminderService.SaveReminder(breakfast);
+                        await _reminderService.SaveReminder(lunch);
+                        await _reminderService.SaveReminder(dinner);
 
-                        ReminderService.NotifyRemindersChangedForUser(userId);
+                        _reminderService.NotifyRemindersChangedForUser(userId);
                     }
                 }
                 catch { }

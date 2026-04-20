@@ -68,6 +68,10 @@ namespace TeamNut
             services.AddTransient<IMealService, MealService>();
             services.AddTransient<MealSearchViewModel>();
 
+            services.AddTransient<IReminderRepository, ReminderRepository>();
+            services.AddSingleton<IReminderService, ReminderService>();
+            services.AddTransient<RemindersViewModel>();
+
 
             return services.BuildServiceProvider();
         }

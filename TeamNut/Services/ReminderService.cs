@@ -3,18 +3,20 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using TeamNut.Models;
 using TeamNut.Repositories;
+using TeamNut.Repositories.Interfaces;
+using TeamNut.Services.Interfaces;
 
 namespace TeamNut.Services
 {
-    public class ReminderService
+    public class ReminderService : IReminderService
     {
-        private readonly ReminderRepository _reminderRepository;
-        public static event EventHandler<int>? RemindersChanged;
+        private readonly IReminderRepository _reminderRepository;
+        public event EventHandler<int>? RemindersChanged;
 
-        public ReminderService()
+        public ReminderService(IReminderRepository reminderRepository)
         {
-            _reminderRepository = new ReminderRepository();
-            
+            _reminderRepository = reminderRepository;
+
         }
 
         public async Task<Reminder?> GetNextReminder(int userId)
@@ -27,10 +29,10 @@ namespace TeamNut.Services
             return await _reminderRepository.GetById(id);
         }
 
-        
+
         public async Task<string> SaveReminder(Reminder reminder)
         {
-            
+
             if ((reminder.UserId == 0 || reminder.UserId == default) && TeamNut.Models.UserSession.UserId != null)
             {
                 reminder.UserId = TeamNut.Models.UserSession.UserId ?? reminder.UserId;
@@ -45,19 +47,19 @@ namespace TeamNut.Services
                 await _reminderRepository.Add(reminder);
             else
                 await _reminderRepository.Update(reminder);
-                try
-                {
-                    RemindersChanged?.Invoke(this, reminder.UserId);
-                }
-                catch { }
+            try
+            {
+                RemindersChanged?.Invoke(this, reminder.UserId);
+            }
+            catch { }
 
             return "Success";
 
-            
-          
+
+
         }
 
-        
+
         public async Task ConfirmConsumption(int userId, int mealId)
         {
 
@@ -66,10 +68,10 @@ namespace TeamNut.Services
 
         public async Task<IEnumerable<Reminder>> GetUserReminders(int userId)
         {
-            
+
             return await _reminderRepository.GetAllByUserId(userId);
         }
-        
+
 
         public async Task DeleteReminder(int id)
         {
@@ -85,7 +87,7 @@ namespace TeamNut.Services
             catch { }
         }
 
-        public static void NotifyRemindersChangedForUser(int userId)
+        public void NotifyRemindersChangedForUser(int userId)
         {
             try
             {

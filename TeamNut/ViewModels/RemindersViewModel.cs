@@ -6,13 +6,14 @@ using System.Linq;
 using System.Threading.Tasks;
 using TeamNut.Models;
 using TeamNut.Services;
+using TeamNut.Services.Interfaces;
 using Windows.System;
 using System;
 namespace TeamNut.ViewModels
 {
     public partial class RemindersViewModel : ObservableObject
     {
-        private readonly ReminderService _reminderService;
+        private readonly IReminderService _reminderService;
         private readonly Microsoft.UI.Dispatching.DispatcherQueue? _dispatcher;
 
         
@@ -21,12 +22,12 @@ namespace TeamNut.ViewModels
         [ObservableProperty]
         private bool _isBusy;
 
-        public RemindersViewModel()
+        public RemindersViewModel(IReminderService reminderService)
         {
-            _reminderService = new ReminderService();
+            _reminderService = reminderService;
            
             _dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
-            ReminderService.RemindersChanged += OnRemindersChanged;
+            _reminderService.RemindersChanged += OnRemindersChanged;
         }
 
         private async void OnRemindersChanged(object? sender, int userId)
@@ -58,7 +59,7 @@ namespace TeamNut.ViewModels
                 Reminders.Remove(reminder);
             }
 
-            ReminderService.NotifyRemindersChangedForUser(UserSession.UserId ?? 0);
+            _reminderService.NotifyRemindersChangedForUser(UserSession.UserId ?? 0);
         }
 
         

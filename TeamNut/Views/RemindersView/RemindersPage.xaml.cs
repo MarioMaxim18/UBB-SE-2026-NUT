@@ -1,17 +1,20 @@
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
-using TeamNut.ViewModels;
 using System;
+using TeamNut.ViewModels;
 
 namespace TeamNut.Views.RemindersView
 {
     public sealed partial class RemindersPage : Page
     {
-        public TeamNut.ViewModels.RemindersViewModel ViewModel { get; } = new();
+        public TeamNut.ViewModels.RemindersViewModel ViewModel { get; }
 
         public RemindersPage()
         {
             this.InitializeComponent();
+
+            ViewModel = App.Services.GetService<RemindersViewModel>();
 
             this.DataContext = ViewModel;
 
