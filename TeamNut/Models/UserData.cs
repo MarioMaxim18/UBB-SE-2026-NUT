@@ -73,11 +73,20 @@ namespace TeamNut.Models
         [RegularExpression(RegexGoal, ErrorMessage = ErrorGoalInvalid)]
         public partial string Goal { get; set; } = string.Empty;
 
-        [ObservableProperty] public partial int Bmi { get; set; }
-        [ObservableProperty] public partial int CalorieNeeds { get; set; }
-        [ObservableProperty] public partial int ProteinNeeds { get; set; }
-        [ObservableProperty] public partial int CarbNeeds { get; set; }
-        [ObservableProperty] public partial int FatNeeds { get; set; }
+        [ObservableProperty]
+        public partial double Bmi { get; set; }
+
+        [ObservableProperty]
+        public partial int CalorieNeeds { get; set; }
+
+        [ObservableProperty]
+        public partial int ProteinNeeds { get; set; }
+
+        [ObservableProperty]
+        public partial int CarbNeeds { get; set; }
+
+        [ObservableProperty]
+        public partial int FatNeeds { get; set; }
 
         public List<string> GetValidationErrors()
         {
