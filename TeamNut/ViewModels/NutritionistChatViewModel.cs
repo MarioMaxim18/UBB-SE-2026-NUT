@@ -50,10 +50,14 @@ namespace TeamNut.ViewModels
         public partial Conversation? SelectedConversation { get; set; }
 
         [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(IsEmptyPlaceholderVisible))]
         public partial bool HasMessages { get; set; }
 
         [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(IsEmptyPlaceholderVisible))]
         public partial bool IsNutritionistUser { get; set; }
+
+        public bool IsEmptyPlaceholderVisible => !IsNutritionistUser && !HasMessages;
 
         public NutritionistChatViewModel(IChatService cchatService)
         {

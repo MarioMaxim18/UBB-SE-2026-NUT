@@ -65,7 +65,7 @@
                     </ItemsControl>
                 </ScrollViewer>
 
-                <StackPanel Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="{Binding IsNutritionistUser, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Inverse}">
+                <StackPanel Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="{Binding IsEmptyPlaceholderVisible, Converter={StaticResource BoolToVisibilityConverter}}">
                     <TextBlock Text="start a conversation with our professional nutritionist" Opacity="0.6" />
                 </StackPanel>
             </Grid>
