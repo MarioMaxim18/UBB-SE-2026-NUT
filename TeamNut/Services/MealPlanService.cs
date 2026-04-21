@@ -3,14 +3,16 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using TeamNut.Models;
 using TeamNut.Repositories;
+using TeamNut.Repositories.Interfaces;
+using TeamNut.Services.Interfaces;
 
 namespace TeamNut.Services
 {
-    /// <summary>Service for generating and retrieving meal plans.</summary>
-    public class MealPlanService
+    public class MealPlanService : IMealPlanService
     {
-        private readonly MealPlanRepository mealPlanRepository;
-        private readonly UserRepository userRepository;
+        private readonly IMealPlanRepository mealPlanRepository;
+        private readonly IUserRepository userRepository;
+        private readonly IReminderService reminderService;
         private const int MinValidId = 1;
         private const string DateFormatIso = "yyyy-MM-dd";
         private static readonly TimeSpan BreakfastTime = new TimeSpan(8, 0, 0);
@@ -39,11 +41,11 @@ namespace TeamNut.Services
         private const string ErrInvalidUserIdForPlan = "Invalid user ID.";
         private const string ErrUserMustBeLoggedIn = "User must be logged in to save daily logs.";
 
-        /// <summary>Initializes a new instance of the <see cref="MealPlanService"/> class.</summary>
-        public MealPlanService()
+        public MealPlanService(IMealPlanRepository mmealPlanRepository, IUserRepository uuserRepository, IReminderService rreminderService)
         {
-            mealPlanRepository = new MealPlanRepository();
-            userRepository = new UserRepository();
+            mealPlanRepository = mmealPlanRepository;
+            userRepository = uuserRepository;
+            reminderService = rreminderService;
         }
 
         /// <summary>Generates a personalized daily meal plan for the given user.</summary>
@@ -64,7 +66,6 @@ namespace TeamNut.Services
 
                 try
                 {
-                    var reminderService = new ReminderService();
                     var today = DateTime.Today.ToString(DateFormatIso);
                     var existing =
                         await reminderService.GetUserReminders(userId);
@@ -139,7 +140,7 @@ namespace TeamNut.Services
                                 Frequency = ReminderFrequencyOnce
                             });
 
-                        ReminderService
+                        reminderService
                             .NotifyRemindersChangedForUser(userId);
                     }
                 }
@@ -253,7 +254,7 @@ namespace TeamNut.Services
         /// <summary>Calculates total nutrition for a list of meals.</summary>
         /// <param name="meals">The meals to sum.</param>
         /// <returns>A tuple of (calories, protein, carbs, fat).</returns>
-        public (int calories, int protein, int carbs, int fat)
+        public (int totalCalories, int totalProtein, int totalCarbs, int totalFat)
             CalculateTotalNutrition(List<Meal> meals)
         {
             if (meals == null || meals.Count == 0)
@@ -271,7 +272,7 @@ namespace TeamNut.Services
                 fat += meal.Fat;
             }
 
-            return (calories, protein, carbs, fat);
+            return (totalCalories: calories, totalProtein: protein, totalCarbs: carbs, totalFat: fat);
         }
 
         /// <summary>Validates that a meal plan's totals are within tolerance of the targets.</summary>

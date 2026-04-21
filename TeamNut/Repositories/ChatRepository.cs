@@ -3,12 +3,18 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Data.Sqlite;
 using TeamNut.Models;
+using TeamNut.Repositories.Interfaces;
 
 namespace TeamNut.Repositories
 {
-    internal class ChatRepository
+    internal class ChatRepository : IChatRepository
     {
-        private readonly string connectionString = DbConfig.ConnectionString;
+        private readonly string connectionString;
+
+        public ChatRepository(IDbConfig dbConfig)
+        {
+            connectionString = dbConfig.ConnectionString;
+        }
 
         public async Task<IEnumerable<Conversation>> GetAllConversationsAsync()
         {

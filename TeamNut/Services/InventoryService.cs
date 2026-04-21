@@ -4,23 +4,23 @@ using System.Linq;
 using System.Threading.Tasks;
 using TeamNut.Models;
 using TeamNut.Repositories;
+using TeamNut.Repositories.Interfaces;
+using TeamNut.Services.Interfaces;
 
 namespace TeamNut.Services
 {
-    /// <summary>Service for managing the user's food ingredient inventory.</summary>
-    public class InventoryService
+    public class InventoryService : IInventoryService
     {
-        private readonly InventoryRepository inventoryRepository;
-        private readonly MealPlanRepository mealPlanRepository;
-        private readonly IngredientRepository ingredientRepository;
+        private readonly IInventoryRepository inventoryRepository;
+        private readonly IMealPlanRepository mealPlanRepository;
+        private readonly IIngredientRepository ingredientRepository;
         private readonly int ingredientsQuantity = 100;
 
-        /// <summary>Initializes a new instance of the <see cref="InventoryService"/> class.</summary>
-        public InventoryService()
+        public InventoryService(IIngredientRepository iingredientRepository, IInventoryRepository iinventoryRepository, IMealPlanRepository mmealPlanRepository)
         {
-            inventoryRepository = new InventoryRepository();
-            mealPlanRepository = new MealPlanRepository();
-            ingredientRepository = new IngredientRepository();
+            inventoryRepository = iinventoryRepository;
+            mealPlanRepository = mmealPlanRepository;
+            ingredientRepository = iingredientRepository;
         }
 
         /// <summary>Deducts ingredients from inventory when a meal is consumed.</summary>

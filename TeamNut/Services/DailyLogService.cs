@@ -2,16 +2,16 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using TeamNut.Models;
-using TeamNut.Repositories;
+using TeamNut.Repositories.Interfaces;
+using TeamNut.Services.Interfaces;
 
 namespace TeamNut.Services
 {
-    /// <summary>Service for logging meals and retrieving nutrition totals.</summary>
-    public class DailyLogService
+    public class DailyLogService : IDailyLogService
     {
-        private readonly DailyLogRepository repository;
-        private readonly UserRepository userRepository;
-        private readonly MealService mealService;
+        private readonly IDailyLogRepository repository;
+        private readonly IUserRepository userRepository;
+        private readonly IMealService mealService;
         private const int DaysInWeek = 7;
         private const int OneDay = 1;
         private const DayOfWeek StartOfWeek = DayOfWeek.Monday;
@@ -20,11 +20,11 @@ namespace TeamNut.Services
         private const string ErrorUserNotLoggedIn = "User is not logged in.";
 
         /// <summary>Initializes a new instance of the <see cref="DailyLogService"/> class.</summary>
-        public DailyLogService()
+        public DailyLogService(IDailyLogRepository dailyLogRepo, IUserRepository userRepo, IMealService mmealService)
         {
-            repository = new DailyLogRepository();
-            userRepository = new UserRepository();
-            mealService = new MealService();
+            repository = dailyLogRepo;
+            userRepository = userRepo;
+            mealService = mmealService;
         }
 
         private int GetUserId()

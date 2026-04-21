@@ -6,12 +6,18 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Data.Sqlite;
 using TeamNut.Models;
+using TeamNut.Repositories.Interfaces;
 
 namespace TeamNut.Repositories
 {
-    internal class MealRepository : IRepository<Meal>
+    internal class MealRepository : IMealRepository
     {
-        private readonly string connectionString = DbConfig.ConnectionString;
+        private readonly string connectionString;
+
+        public MealRepository(IDbConfig dbConfig)
+        {
+            connectionString = dbConfig.ConnectionString;
+        }
 
         public List<Meal> GetMeals()
         {

@@ -3,6 +3,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using TeamNut.Models;
 using TeamNut.ViewModels;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace TeamNut.Views.NutritionistChat
 {
@@ -10,12 +11,13 @@ namespace TeamNut.Views.NutritionistChat
     public sealed partial class NutritionistChatPage : Page
     {
         /// <summary>Gets the view model.</summary>
-        public NutritionistChatViewModel ViewModel { get; } = new NutritionistChatViewModel();
+        public NutritionistChatViewModel ViewModel { get; }
 
         /// <summary>Initializes a new instance of the <see cref="NutritionistChatPage"/> class.</summary>
         public NutritionistChatPage()
         {
             this.InitializeComponent();
+            ViewModel = App.Services.GetService<NutritionistChatViewModel>();
             this.DataContext = ViewModel;
         }
 

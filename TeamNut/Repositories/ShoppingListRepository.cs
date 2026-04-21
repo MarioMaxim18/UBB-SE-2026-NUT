@@ -3,13 +3,18 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Data.Sqlite;
 using TeamNut.Models;
+using TeamNut.Repositories.Interfaces;
 
 namespace TeamNut.Repositories
 {
-    /// <summary>Repository for shopping list data persistence.</summary>
-    public class ShoppingListRepository : IRepository<ShoppingItem>
+    public class ShoppingListRepository : IShoppingListRepository
     {
-        private readonly string connectionString = DbConfig.ConnectionString;
+        private readonly string connectionString;
+
+        public ShoppingListRepository(IDbConfig dbConfig)
+        {
+            connectionString = dbConfig.ConnectionString;
+        }
 
         /// <summary>Inserts a new shopping item.</summary>
         /// <param name="item">The item to insert.</param>

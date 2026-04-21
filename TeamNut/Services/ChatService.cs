@@ -1,19 +1,16 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using TeamNut.Models;
-using TeamNut.Repositories;
+using TeamNut.Repositories.Interfaces;
 
 namespace TeamNut.Services
 {
-    /// <summary>Service for nutritionist chat conversations and messages.</summary>
-    public class ChatService
+    public class ChatService : IChatService
     {
-        private readonly ChatRepository repo;
-
-        /// <summary>Initializes a new instance of the <see cref="ChatService"/> class.</summary>
-        public ChatService()
+        private readonly IChatRepository repo;
+        public ChatService(IChatRepository rrepo)
         {
-            repo = new ChatRepository();
+            repo = rrepo;
         }
 
         /// <summary>Gets all conversations.</summary>

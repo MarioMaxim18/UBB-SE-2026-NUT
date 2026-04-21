@@ -2,13 +2,18 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.Data.Sqlite;
 using TeamNut.Models;
+using TeamNut.Repositories.Interfaces;
 
 namespace TeamNut.Repositories
 {
-    /// <summary>Repository for daily meal log persistence and aggregation queries.</summary>
-    public class DailyLogRepository
+    public class DailyLogRepository : IDailyLogRepository
     {
-        private readonly string connectionString = DbConfig.ConnectionString;
+        private readonly string connectionString;
+
+        public DailyLogRepository(IDbConfig dbConfig)
+        {
+            connectionString = dbConfig.ConnectionString;
+        }
 
         /// <summary>Inserts a new daily log entry.</summary>
         /// <param name="log">The log entry to insert.</param>

@@ -7,6 +7,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using TeamNut.Models;
 using TeamNut.Services;
+using TeamNut.Services.Interfaces;
 using TeamNut.Views.MealPlanView;
 
 namespace TeamNut.ModelViews
@@ -14,7 +15,7 @@ namespace TeamNut.ModelViews
     /// <summary>View model for the meal plan page.</summary>
     public partial class MealPlanViewModel : ObservableObject
     {
-        private readonly MealPlanService mealPlanService;
+        private readonly IMealPlanService mealPlanService;
         private const int InvalidId = 0;
         private const string StatusLoadingMealPlan = "Loading your meal plan...";
         private const string StatusLoadingTodayMealPlan = "Loading your meal plan for today...";
@@ -133,8 +134,7 @@ namespace TeamNut.ModelViews
         [ObservableProperty]
         public partial string ErrorDialogMessage { get; set; }
 
-        /// <summary>Initializes a new instance of the <see cref="MealPlanViewModel"/> class.</summary>
-        public MealPlanViewModel()
+        public MealPlanViewModel(IMealPlanService mmealPlanService)
         {
             GeneratedMeals = new ObservableCollection<MealViewModel>();
             StatusMessage = string.Empty;
@@ -142,7 +142,7 @@ namespace TeamNut.ModelViews
             GoalDescription = string.Empty;
             ErrorDialogTitle = string.Empty;
             ErrorDialogMessage = string.Empty;
-            mealPlanService = new MealPlanService();
+            mealPlanService = mmealPlanService;
         }
 
         [RelayCommand]

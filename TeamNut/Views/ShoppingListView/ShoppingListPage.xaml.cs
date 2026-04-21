@@ -10,6 +10,7 @@ namespace TeamNut.Views.ShoppingListView
     using Microsoft.UI.Xaml.Controls;
     using TeamNut.Models;
     using TeamNut.ViewModels;
+    using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>Page for managing the shopping list.</summary>
     public sealed partial class ShoppingListPage : Page
@@ -25,12 +26,13 @@ namespace TeamNut.Views.ShoppingListView
         private const string MsgConfirmDeletion = "Are you sure you want to remove this item from the shopping list?";
 
         /// <summary>Gets the view model.</summary>
-        public ShoppingListViewModel ViewModel { get; } = new ShoppingListViewModel();
+        public ShoppingListViewModel ViewModel { get; }
 
         /// <summary>Initializes a new instance of the <see cref="ShoppingListPage"/> class.</summary>
         public ShoppingListPage()
         {
             this.InitializeComponent();
+            ViewModel = App.Services.GetService<ShoppingListViewModel>();
             this.Name = RootPageName;
         }
 

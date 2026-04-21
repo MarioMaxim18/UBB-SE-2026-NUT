@@ -8,6 +8,8 @@ namespace TeamNut.Views.RemindersView
     using Microsoft.UI.Xaml;
     using Microsoft.UI.Xaml.Controls;
     using Microsoft.UI.Xaml.Navigation;
+    using Microsoft.Extensions.DependencyInjection;
+    using TeamNut.ViewModels;
 
     /// <summary>Page for managing reminders.</summary>
     public sealed partial class RemindersPage : Page
@@ -39,13 +41,13 @@ namespace TeamNut.Views.RemindersView
         private static readonly Thickness FrequencyComboMargin = new Thickness(0, 4, 0, 0);
 
         /// <summary>Gets the view model.</summary>
-        public TeamNut.ViewModels.RemindersViewModel ViewModel { get; } = new TeamNut.ViewModels.RemindersViewModel();
+        public TeamNut.ViewModels.RemindersViewModel ViewModel { get; }
 
         /// <summary>Initializes a new instance of the <see cref="RemindersPage"/> class.</summary>
         public RemindersPage()
         {
             this.InitializeComponent();
-            this.DataContext = this.ViewModel;
+            ViewModel = App.Services.GetService<RemindersViewModel>();
 
             this.Loaded += async (_, _) => await this.ViewModel.LoadReminders();
 

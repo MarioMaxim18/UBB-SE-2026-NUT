@@ -4,12 +4,18 @@ using System.Threading.Tasks;
 using Microsoft.Data.Sqlite;
 using TeamNut.Models;
 using TeamNut.Views.MealPlanView;
+using TeamNut.Repositories.Interfaces;
 
 namespace TeamNut.Repositories
 {
-    internal class MealPlanRepository : IRepository<MealPlan>
+    internal class MealPlanRepository : IMealPlanRepository
     {
-        private readonly string connectionString = DbConfig.ConnectionString;
+        private readonly string connectionString;
+
+        public MealPlanRepository(IDbConfig dbConfig)
+        {
+            connectionString = dbConfig.ConnectionString;
+        }
 
         public async Task<MealPlan?> GetById(int id)
         {

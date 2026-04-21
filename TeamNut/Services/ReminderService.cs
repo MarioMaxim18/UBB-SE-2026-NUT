@@ -3,16 +3,15 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using TeamNut.Models;
 using TeamNut.Repositories;
+using TeamNut.Repositories.Interfaces;
+using TeamNut.Services.Interfaces;
 
 namespace TeamNut.Services
 {
-    /// <summary>Service for creating, retrieving, and deleting health reminders.</summary>
-    public class ReminderService
+    public class ReminderService : IReminderService
     {
-        private readonly ReminderRepository reminderRepository;
-
-        /// <summary>Raised when reminders are added, updated, or deleted for a user.</summary>
-        public static event EventHandler<int>? RemindersChanged;
+        private readonly IReminderRepository reminderRepository;
+        public event EventHandler<int>? RemindersChanged;
 
         private const int MaxReminderNameLength = 50;
         private const int InvalidUserId = 0;
@@ -21,9 +20,9 @@ namespace TeamNut.Services
         private const string ConfirmConsumptionLogFormat = "User {0} confirmed meal {1}. Updating logs...";
 
         /// <summary>Initializes a new instance of the <see cref="ReminderService"/> class.</summary>
-        public ReminderService()
+        public ReminderService(IReminderRepository rreminderRepository)
         {
-            reminderRepository = new ReminderRepository();
+            reminderRepository = rreminderRepository;
         }
 
         /// <summary>Gets the next upcoming reminder for the given user.</summary>
@@ -128,7 +127,7 @@ namespace TeamNut.Services
 
         /// <summary>Raises the <see cref="RemindersChanged"/> event for the given user.</summary>
         /// <param name="userId">The user whose reminders changed.</param>
-        public static void NotifyRemindersChangedForUser(int userId)
+        public void NotifyRemindersChangedForUser(int userId)
         {
             try
             {

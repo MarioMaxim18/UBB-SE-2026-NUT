@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
 using TeamNut.Models;
@@ -9,12 +10,13 @@ namespace TeamNut.Views.InventoryView
     public sealed partial class InventoryPage : Page
     {
         /// <summary>Gets the view model.</summary>
-        public InventoryViewModel ViewModel { get; } = new InventoryViewModel(Models.UserSession.UserId ?? 0);
+        public InventoryViewModel ViewModel { get; }
 
         /// <summary>Initializes a new instance of the <see cref="InventoryPage"/> class.</summary>
         public InventoryPage()
         {
             this.InitializeComponent();
+            ViewModel = App.Services.GetRequiredService<InventoryViewModel>();
             this.DataContext = ViewModel;
         }
 

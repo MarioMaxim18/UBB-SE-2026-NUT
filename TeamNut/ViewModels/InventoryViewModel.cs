@@ -6,13 +6,13 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using TeamNut.Models;
 using TeamNut.Services;
-
+using TeamNut.Services.Interfaces;
 namespace TeamNut.ViewModels
 {
     /// <summary>View model for managing the user's food ingredient inventory.</summary>
     public partial class InventoryViewModel : ObservableObject
     {
-        private readonly InventoryService inventoryService;
+        private readonly IInventoryService inventoryService;
         private readonly int currentUserId;
         private const double DefaultQuantityToAdd = 100;
         private const double MinQuantityAllowed = 0;
@@ -89,12 +89,11 @@ namespace TeamNut.ViewModels
         /// <summary>Gets the filtered ingredients matching the search text.</summary>
         public ObservableCollection<Ingredient> FilteredIngredients { get; } = new ObservableCollection<Ingredient>();
 
-        /// <summary>Initializes a new instance of the <see cref="InventoryViewModel"/> class.</summary>
-        /// <param name="userId">The identifier of the current user.</param>
-        public InventoryViewModel(int userId)
+        public InventoryViewModel(IInventoryService iinventoryService)
         {
-            inventoryService = new InventoryService();
-            currentUserId = userId;
+            inventoryService = iinventoryService;
+            currentUserId = Models.UserSession.UserId ?? 0;
+
             _ = LoadInventoryAsync();
             _ = LoadIngredientsAsync();
         }

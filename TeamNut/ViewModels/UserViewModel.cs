@@ -6,6 +6,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using TeamNut.Models;
 using TeamNut.Services;
+using TeamNut.Services.Interfaces;
 
 namespace TeamNut.ViewModels
 {
@@ -47,16 +48,15 @@ namespace TeamNut.ViewModels
 
         /// <summary>Raised when login succeeds.</summary>
         public event EventHandler? LoginSuccess;
+        private readonly IUserService userService;
 
         /// <summary>Raised when health data is saved successfully.</summary>
         public event EventHandler? SaveDataSuccess;
 
-        private readonly UserService userService;
-
         /// <summary>Initializes a new instance of the <see cref="UserViewModel"/> class.</summary>
-        public UserViewModel()
+        public UserViewModel(IUserService uuserService)
         {
-            userService = new UserService();
+            userService = uuserService;
         }
 
         [RelayCommand]

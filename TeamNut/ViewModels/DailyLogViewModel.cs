@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using TeamNut.Models;
-using TeamNut.Services;
+using TeamNut.Services.Interfaces;
 
 namespace TeamNut.ViewModels
 {
@@ -38,7 +38,7 @@ namespace TeamNut.ViewModels
             public const StringComparison CaseInsensitiveComparison = StringComparison.OrdinalIgnoreCase;
         }
 
-        private readonly DailyLogService service;
+        private readonly IDailyLogService service;
 
         private bool hasData;
         private string statusMessage = Constants.Empty;
@@ -69,9 +69,9 @@ namespace TeamNut.ViewModels
         private string logMealStatusMessage = Constants.Empty;
 
         /// <summary>Initializes a new instance of the <see cref="DailyLogViewModel"/> class.</summary>
-        public DailyLogViewModel()
+        public DailyLogViewModel(IDailyLogService dailyLogService)
         {
-            service = new DailyLogService();
+            service = dailyLogService;
             _ = LoadMealsForAutocompleteAsync();
         }
 

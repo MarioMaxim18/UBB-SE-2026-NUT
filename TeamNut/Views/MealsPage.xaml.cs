@@ -5,13 +5,14 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using TeamNut.Models;
 using TeamNut.ViewModels;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace TeamNut
 {
     /// <summary>Page for browsing and searching meals.</summary>
     public sealed partial class MealsPage : Page
     {
-        private MealSearchViewModel viewModel;
+        private MealSearchViewModel ViewModel { get; }
         private int currentPage = DefaultStartPage;
         private List<Meal> allMeals = new List<Meal>();
         private const int DefaultStartPage = 1;
@@ -34,7 +35,7 @@ namespace TeamNut
         public MealsPage()
         {
             InitializeComponent();
-            viewModel = new MealSearchViewModel();
+            ViewModel = App.Services.GetService<MealSearchViewModel>();
 
             Loaded += (s, e) => BtnSearch_Click(this, new RoutedEventArgs());
         }
@@ -52,7 +53,7 @@ namespace TeamNut
                 IsFavoriteOnly = chkFavorites?.IsChecked == true
             };
 
-            var results = await viewModel.SearchMealsAsync(filter);
+            var results = await ViewModel.SearchMealsAsync(filter);
 
             allMeals = results.ToList();
             currentPage = DefaultStartPage;
@@ -94,7 +95,7 @@ namespace TeamNut
             meal.IsFavorite = !meal.IsFavorite;
             btn.Content = meal.IsFavorite ? FavoriteOnSymbol : FavoriteOffSymbol;
 
-            await viewModel.ToggleFavoriteAsync(meal);
+            await ViewModel.ToggleFavoriteAsync(meal);
 
             if (chkFavorites?.IsChecked == true && !meal.IsFavorite)
             {
@@ -111,7 +112,7 @@ namespace TeamNut
             }
 
             var ingredientsText =
-                await viewModel.GetMealIngredientsTextAsync(meal.Id);
+                await ViewModel.GetMealIngredientsTextAsync(meal.Id);
 
             var panel = new StackPanel { Spacing = DetailsPanelSpacing };
 

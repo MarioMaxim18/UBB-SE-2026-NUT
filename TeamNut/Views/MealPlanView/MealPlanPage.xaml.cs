@@ -1,9 +1,12 @@
 using System;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using TeamNut.ModelViews;
 using TeamNut.Models;
-using TeamNut.Services;
+using TeamNut.ModelViews;
+using TeamNut.Services.Interfaces;
+using TeamNut.ViewModels;
 
 namespace TeamNut.Views.MealPlanView
 {
@@ -11,8 +14,8 @@ namespace TeamNut.Views.MealPlanView
     public sealed partial class MealPlanPage : Page
     {
         /// <summary>Gets the view model.</summary>
-        public MealPlanViewModel ViewModel { get; } = new MealPlanViewModel();
-        private UserService userService;
+        public MealPlanViewModel ViewModel { get; }
+        private IUserService userService;
 
         private const string ButtonOk = "OK";
         private const string ButtonSave = "Save";
@@ -58,9 +61,10 @@ namespace TeamNut.Views.MealPlanView
         /// <summary>Initializes a new instance of the <see cref="MealPlanPage"/> class.</summary>
         public MealPlanPage()
         {
-            InitializeComponent();
-            DataContext = ViewModel;
-            userService = new UserService();
+            this.InitializeComponent();
+            ViewModel = App.Services.GetRequiredService<MealPlanViewModel>();
+            this.DataContext = ViewModel;
+            userService = App.Services.GetRequiredService<IUserService>();
 
             ViewModel.PropertyChanged += (s, e) =>
             {
@@ -271,7 +275,7 @@ namespace TeamNut.Views.MealPlanView
 
             try
             {
-                var mealPlanService = new MealPlanService();
+                var mealPlanService = App.Services.GetRequiredService<IMealPlanService>();
                 await mealPlanService.SaveMealToDailyLogAsync(meal.Id, meal.Calories);
                 StatusMessageText.Text = $"{meal.Name} saved to daily log.";
             }

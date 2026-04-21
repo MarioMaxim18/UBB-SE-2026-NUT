@@ -3,6 +3,7 @@ using System.Linq;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
 using TeamNut.ViewModels;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace TeamNut.Views.UserView
 {
@@ -10,12 +11,13 @@ namespace TeamNut.Views.UserView
     public sealed partial class UserDataPage : Page
     {
         /// <summary>Gets the shared user view model.</summary>
-        public UserViewModel ViewModel => App.UserViewModel;
+        public UserViewModel ViewModel { get; }
 
         /// <summary>Initializes a new instance of the <see cref="UserDataPage"/> class.</summary>
         public UserDataPage()
         {
             InitializeComponent();
+            ViewModel = App.Services.GetRequiredService<UserViewModel>();
             this.DataContext = ViewModel;
         }
 

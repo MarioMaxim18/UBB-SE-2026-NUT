@@ -6,13 +6,14 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using TeamNut.Models;
 using TeamNut.Services;
+using TeamNut.Services.Interfaces;
 
 namespace TeamNut.ViewModels
 {
     /// <summary>View model for managing the user's shopping list.</summary>
     public partial class ShoppingListViewModel : ObservableObject
     {
-        private readonly ShoppingListService shoppingListService;
+        private readonly IShoppingListService shoppingListService;
         private const double DefaultPendingQuantity = 100;
         private const int StatusDisplayDurationMs = 3000;
         private const string StatusAddSuccessFormat = "Updated '{0}' successfully!";
@@ -46,13 +47,12 @@ namespace TeamNut.ViewModels
         [ObservableProperty]
         public partial double PendingQuantity { get; set; }
 
-        /// <summary>Initializes a new instance of the <see cref="ShoppingListViewModel"/> class.</summary>
-        public ShoppingListViewModel()
+        public ShoppingListViewModel(IShoppingListService sshoppingListService)
         {
             Items = new ObservableCollection<ShoppingItem>();
             StatusMessage = string.Empty;
             PendingQuantity = DefaultPendingQuantity;
-            shoppingListService = new ShoppingListService();
+            shoppingListService = sshoppingListService;
             _ = LoadItemsAsync();
         }
 

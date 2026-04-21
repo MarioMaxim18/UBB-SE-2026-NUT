@@ -5,13 +5,14 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using TeamNut.Models;
 using TeamNut.Services;
+using TeamNut.Services.Interfaces;
 
 namespace TeamNut.ViewModels
 {
     /// <summary>View model for searching and filtering meals.</summary>
     public partial class MealSearchViewModel : ObservableObject
     {
-        private readonly MealService mealService;
+        private readonly IMealService mealService;
         private const string DefaultSearchTerm = "";
         private const string NoIngredientsFoundMessage = "No ingredients found.";
         private const string IngredientsLineSeparator = "\n";
@@ -25,10 +26,9 @@ namespace TeamNut.ViewModels
         /// <summary>Gets or sets the currently selected meal.</summary>
         public Meal? SelectedMeal { get; set; }
 
-        /// <summary>Initializes a new instance of the <see cref="MealSearchViewModel"/> class.</summary>
-        public MealSearchViewModel()
+        public MealSearchViewModel(IMealService mmealService)
         {
-            mealService = new MealService();
+            mealService = mmealService;
             _ = LoadMealsAsync();
         }
 

@@ -15,7 +15,7 @@ namespace TeamNut.ViewModels
     /// <summary>View model for the nutritionist chat feature.</summary>
     public partial class NutritionistChatViewModel : ObservableObject
     {
-        private readonly ChatService chatService;
+        private readonly IChatService chatService;
         private CancellationTokenSource? autoRefreshCts;
         private int? currentConversationId;
         private const int MaxMessageLength = 1000;
@@ -65,15 +65,14 @@ namespace TeamNut.ViewModels
         [ObservableProperty]
         public partial bool IsNutritionistUser { get; set; }
 
-        /// <summary>Initializes a new instance of the <see cref="NutritionistChatViewModel"/> class.</summary>
-        public NutritionistChatViewModel()
+        public NutritionistChatViewModel(IChatService cchatService)
         {
             Conversations = new ObservableCollection<Conversation>();
             Messages = new ObservableCollection<Message>();
             InputText = string.Empty;
             StatusMessage = string.Empty;
 
-            chatService = new ChatService();
+            chatService = cchatService;
 
             IsNutritionistUser = UserSession.Role == NutritionistRole;
 

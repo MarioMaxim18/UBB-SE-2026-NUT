@@ -3,18 +3,17 @@ using System.Linq;
 using System.Threading.Tasks;
 using TeamNut.Models;
 using TeamNut.Repositories;
+using TeamNut.Repositories.Interfaces;
+using TeamNut.Services.Interfaces;
 
 namespace TeamNut.Services
 {
-    /// <summary>Service for user registration, login, and profile management.</summary>
-    public class UserService
+    public class UserService : IUserService
     {
-        private readonly UserRepository userRepository;
-
-        /// <summary>Initializes a new instance of the <see cref="UserService"/> class.</summary>
-        public UserService()
+        private readonly IUserRepository userRepository;
+        public UserService(IUserRepository uuserRepository)
         {
-            userRepository = new UserRepository();
+            userRepository = uuserRepository;
         }
 
         /// <summary>Checks whether a username is already taken.</summary>

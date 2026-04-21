@@ -2,23 +2,22 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using TeamNut.Models;
-using TeamNut.Repositories;
+using TeamNut.Repositories.Interfaces;
+using TeamNut.Services.Interfaces;
 
 namespace TeamNut.Services
 {
-    /// <summary>Service for managing the user's shopping list.</summary>
-    public class ShoppingListService
+    public class ShoppingListService : IShoppingListService
     {
-        private readonly ShoppingListRepository repository;
-        private readonly IngredientRepository ingredientRepository;
-        private readonly InventoryRepository inventoryRepository;
+        private readonly IShoppingListRepository repository;
+        private readonly IIngredientRepository ingredientRepository;
+        private readonly IInventoryRepository inventoryRepository;
 
-        /// <summary>Initializes a new instance of the <see cref="ShoppingListService"/> class.</summary>
-        public ShoppingListService()
+        public ShoppingListService(IShoppingListRepository sshoppingListRepository, IIngredientRepository iingredientRepository, IInventoryRepository iinventoryRepository)
         {
-            repository = new ShoppingListRepository();
-            ingredientRepository = new IngredientRepository();
-            inventoryRepository = new InventoryRepository();
+            repository = sshoppingListRepository;
+            ingredientRepository = iingredientRepository;
+            inventoryRepository = iinventoryRepository;
         }
 
         /// <summary>Gets all shopping items for the given user.</summary>

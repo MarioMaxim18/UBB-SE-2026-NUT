@@ -2,16 +2,22 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using TeamNut.Models;
 using TeamNut.Services;
+using TeamNut.Services.Interfaces;
 
 /// <summary>View model for the main page header area.</summary>
 public partial class MainViewModel : ObservableObject
 {
-    private readonly ReminderService reminderService = new ReminderService();
     private const int InvalidUserId = 0;
     private const string LoadingReminderText = "Loading...";
     private const string NoUpcomingMealsText = "No upcoming meals";
     private const string ReminderDisplayFormat = "{0} at {1}";
     private const string ReminderTimeFormat = @"hh\:mm";
+    private readonly IReminderService reminderService;
+
+    public MainViewModel(IReminderService rreminderService)
+    {
+        reminderService = rreminderService;
+    }
 
     /// <summary>Gets or sets the text for the next upcoming reminder.</summary>
     [ObservableProperty]

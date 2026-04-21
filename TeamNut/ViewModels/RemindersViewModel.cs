@@ -7,13 +7,13 @@ using CommunityToolkit.Mvvm.Input;
 using Microsoft.UI.Dispatching;
 using TeamNut.Models;
 using TeamNut.Services;
-
+using TeamNut.Services.Interfaces;
 namespace TeamNut.ViewModels
 {
     /// <summary>View model for managing health reminders.</summary>
     public partial class RemindersViewModel : ObservableObject
     {
-        private readonly ReminderService reminderService;
+        private readonly IReminderService reminderService;
         private readonly DispatcherQueue? dispatcher;
         private const int InvalidUserId = 0;
         private const string SaveSuccessResult = "Success";
@@ -35,13 +35,11 @@ namespace TeamNut.ViewModels
         [ObservableProperty]
         public partial Reminder? NextReminder { get; set; }
 
-        /// <summary>Initializes a new instance of the <see cref="RemindersViewModel"/> class.</summary>
-        public RemindersViewModel()
+        public RemindersViewModel(IReminderService rreminderService)
         {
-            reminderService = new ReminderService();
+            reminderService = rreminderService;
             dispatcher = DispatcherQueue.GetForCurrentThread();
-
-            ReminderService.RemindersChanged += OnRemindersChanged;
+            reminderService.RemindersChanged += OnRemindersChanged;
         }
 
         private async void OnRemindersChanged(object? sender, int userId)
@@ -69,7 +67,7 @@ namespace TeamNut.ViewModels
 
             EnqueueUI(() => Reminders.Remove(reminder));
 
-            ReminderService.NotifyRemindersChangedForUser(
+            reminderService.NotifyRemindersChangedForUser(
                 UserSession.UserId ?? InvalidUserId);
         }
 

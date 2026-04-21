@@ -1,4 +1,5 @@
 using System;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
@@ -10,12 +11,13 @@ namespace TeamNut.Views.UserView
     public sealed partial class RegisterPage : Page
     {
         /// <summary>Gets the shared user view model.</summary>
-        public UserViewModel ViewModel => App.UserViewModel;
+        public UserViewModel ViewModel { get; }
 
         /// <summary>Initializes a new instance of the <see cref="RegisterPage"/> class.</summary>
         public RegisterPage()
         {
             InitializeComponent();
+            ViewModel = App.Services.GetRequiredService<UserViewModel>();
             this.DataContext = ViewModel;
             ViewModel.RegistrationValid += ViewModel_RegistrationValid;
         }

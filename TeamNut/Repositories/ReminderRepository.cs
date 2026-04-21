@@ -3,12 +3,19 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Data.Sqlite;
 using TeamNut.Models;
+using TeamNut;
+using TeamNut.Repositories.Interfaces;
 
 namespace TeamNut.Repositories
 {
-    internal class ReminderRepository : IRepository<Reminder>
+    internal class ReminderRepository : IReminderRepository
     {
-        private readonly string connectionString = DbConfig.ConnectionString;
+        private readonly string connectionString;
+
+        public ReminderRepository(IDbConfig dbConfig)
+        {
+            connectionString = dbConfig.ConnectionString;
+        }
 
         public async Task<Reminder?> GetById(int id)
         {

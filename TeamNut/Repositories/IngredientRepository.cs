@@ -3,12 +3,18 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Data.Sqlite;
 using TeamNut.Models;
+using TeamNut.Repositories.Interfaces;
 
 namespace TeamNut.Repositories
 {
-    internal class IngredientRepository
+    internal class IngredientRepository : IIngredientRepository
     {
-        private readonly string connectionString = DbConfig.ConnectionString;
+        private readonly string connectionString;
+
+        public IngredientRepository(IDbConfig dbConfig)
+        {
+            connectionString = dbConfig.ConnectionString;
+        }
 
         public async Task<int> GetOrCreateIngredientIdAsync(string name)
         {

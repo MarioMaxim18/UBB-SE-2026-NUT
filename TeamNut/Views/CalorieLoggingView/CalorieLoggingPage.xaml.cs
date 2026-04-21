@@ -2,41 +2,42 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using TeamNut.Models;
 using TeamNut.ViewModels;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace TeamNut.Views.CalorieLoggingView
 {
     /// <summary>Page for logging daily calorie intake.</summary>
     public sealed partial class CalorieLoggingPage : Page
     {
-        private readonly DailyLogViewModel viewModel;
+        private DailyLogViewModel ViewModel { get; }
 
         /// <summary>Initializes a new instance of the <see cref="CalorieLoggingPage"/> class.</summary>
         public CalorieLoggingPage()
         {
             this.InitializeComponent();
 
-            viewModel = new DailyLogViewModel();
-            this.DataContext = viewModel;
+            ViewModel = App.Services.GetService<DailyLogViewModel>();
+            this.DataContext = ViewModel;
 
             LoadData();
         }
 
         private async void LoadData()
         {
-            await viewModel.LoadAsync();
+            await ViewModel.LoadAsync();
         }
 
         private void MealSuggestBox_SuggestionChosen(AutoSuggestBox sender, AutoSuggestBoxSuggestionChosenEventArgs args)
         {
             if (args.SelectedItem is Meal meal)
             {
-                viewModel.SelectedMeal = meal;
+                ViewModel.SelectedMeal = meal;
             }
         }
 
         private async void LogMeal_Click(object sender, RoutedEventArgs e)
         {
-            await viewModel.LogSelectedMealAsync();
+            await ViewModel.LogSelectedMealAsync();
         }
     }
 }
