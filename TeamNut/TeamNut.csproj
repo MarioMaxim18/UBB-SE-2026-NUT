@@ -8,27 +8,39 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <Platforms>x86;x64;ARM64</Platforms>
     <RuntimeIdentifiers>win-x86;win-x64;win-arm64</RuntimeIdentifiers>
-    <!-- Do not set a global RuntimeIdentifier: it forces self-contained inference and breaks dotnet CLI apphost on some installs. Pick platform in VS or pass -r win-x64 when publishing. -->
     <PublishProfile>win-$(Platform).pubxml</PublishProfile>
     <UseWinUI>true</UseWinUI>
+    <EnableMsixTooling>true</EnableMsixTooling>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
     <WinUISDKReferences>false</WinUISDKReferences>
-    <!-- Use installed Windows App Runtime instead of self-contained (matches VibeCoders-style setup, avoids apphost/self-contained coupling on dotnet CLI) -->
-    <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
-    <WindowsPackageType>None</WindowsPackageType>
     <Nullable>enable</Nullable>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <NoWarn>$(NoWarn);CS1591</NoWarn>
     <CodeAnalysisRuleSet>SE.ruleset</CodeAnalysisRuleSet>
+    <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
+    <WindowsPackageType>None</WindowsPackageType>
   </PropertyGroup>
-  
+
+  <!-- Platform-specific settings -->
+  <PropertyGroup Condition="'$(Platform)' == 'x64'">
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Platform)' == 'x86'">
+    <RuntimeIdentifier>win-x86</RuntimeIdentifier>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Platform)' == 'ARM64'">
+    <RuntimeIdentifier>win-arm64</RuntimeIdentifier>
+  </PropertyGroup>
+
   <ItemGroup>
     <None Remove="NutData.db" />
     <None Remove="Views\RemindersView\RemindersPage.xaml" />
     <None Remove="Views\UserView\LoginPage.xaml" />
     <None Remove="Views\UserView\RegisterPage.xaml" />
     <None Remove="Views\UserView\UserDataPage.xaml" />
-	<None Remove="Views\MainPage.xaml" />
-	<None Remove="Views\CalorieLoggingView\CalorieLoggingPage.xaml" />
+    <None Remove="Views\MainPage.xaml" />
+    <None Remove="Views\CalorieLoggingView\CalorieLoggingPage.xaml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -52,6 +64,7 @@
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
     <PackageReference Include="Microsoft.Data.Sqlite" Version="10.0.5" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.6" />
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.7705" />
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.8.260317003" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
@@ -60,7 +73,6 @@
     </PackageReference>
   </ItemGroup>
 
-  <!-- 🔥 PARTE CORRIGIDA (SEM CONFLITO) -->
   <ItemGroup>
     <None Update="MealsPage.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -71,24 +83,15 @@
     <Page Update="Views\MainPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
-  <Page Update="Views\CalorieLoggingView\CalorieLoggingPage.xaml">
-		<Generator>MSBuild:Compile</Generator>
-	</Page>
-  </ItemGroup>
-
-  <ItemGroup>
+    <Page Update="Views\CalorieLoggingView\CalorieLoggingPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Update="Views\UserView\UserDataPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
-  </ItemGroup>
-
-  <ItemGroup>
     <Page Update="Views\UserView\LoginPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
-  </ItemGroup>
-
-  <ItemGroup>
     <Page Update="Views\UserView\RegisterPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -119,5 +122,4 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-
 </Project>
