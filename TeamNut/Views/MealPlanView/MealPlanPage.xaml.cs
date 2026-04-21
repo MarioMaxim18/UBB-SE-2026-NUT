@@ -13,7 +13,6 @@ namespace TeamNut.Views.MealPlanView
     /// <summary>Page for displaying and managing the user's daily meal plan.</summary>
     public sealed partial class MealPlanPage : Page
     {
-        /// <summary>Gets the view model.</summary>
         public MealPlanViewModel ViewModel { get; }
         private IUserService userService;
 
@@ -58,7 +57,6 @@ namespace TeamNut.Views.MealPlanView
         private const int GoalMaintenance = 2;
         private const int GoalWellBeing = 3;
 
-        /// <summary>Initializes a new instance of the <see cref="MealPlanPage"/> class.</summary>
         public MealPlanPage()
         {
             this.InitializeComponent();

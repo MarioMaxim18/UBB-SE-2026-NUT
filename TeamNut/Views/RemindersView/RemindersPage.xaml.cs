@@ -40,10 +40,8 @@ namespace TeamNut.Views.RemindersView
 
         private static readonly Thickness FrequencyComboMargin = new Thickness(0, 4, 0, 0);
 
-        /// <summary>Gets the view model.</summary>
         public TeamNut.ViewModels.RemindersViewModel ViewModel { get; }
 
-        /// <summary>Initializes a new instance of the <see cref="RemindersPage"/> class.</summary>
         public RemindersPage()
         {
             this.InitializeComponent();
@@ -201,8 +199,6 @@ namespace TeamNut.Views.RemindersView
             };
         }
 
-        /// <summary>Called when navigated to this page.</summary>
-        /// <param name="e">Navigation event arguments.</param>
         protected override async void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);

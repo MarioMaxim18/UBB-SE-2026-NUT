@@ -10,10 +10,8 @@ namespace TeamNut.Views.UserView
     /// <summary>Page for user login.</summary>
     public sealed partial class LoginPage : Page
     {
-        /// <summary>Gets the shared user view model.</summary>
         public UserViewModel ViewModel { get; }
 
-        /// <summary>Initializes a new instance of the <see cref="LoginPage"/> class.</summary>
         public LoginPage()
         {
             InitializeComponent();
@@ -21,8 +19,6 @@ namespace TeamNut.Views.UserView
             this.DataContext = ViewModel;
         }
 
-        /// <summary>Subscribes to login events when navigated to.</summary>
-        /// <param name="e">Navigation event arguments.</param>
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
@@ -30,8 +26,6 @@ namespace TeamNut.Views.UserView
             ViewModel.LoginSuccess += ViewModel_LoginSuccess;
         }
 
-        /// <summary>Unsubscribes from login events when navigated away.</summary>
-        /// <param name="e">Navigation event arguments.</param>
         protected override void OnNavigatedFrom(NavigationEventArgs e)
         {
             base.OnNavigatedFrom(e);
@@ -46,9 +40,6 @@ namespace TeamNut.Views.UserView
             }
         }
 
-        /// <summary>Navigates to the register page.</summary>
-        /// <param name="sender">The event sender.</param>
-        /// <param name="e">Routed event arguments.</param>
         public void ToRegister_Click(object sender, RoutedEventArgs e)
         {
             if (this.Frame != null)

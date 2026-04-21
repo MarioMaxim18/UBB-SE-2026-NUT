@@ -18,10 +18,8 @@ namespace TeamNut.Views
         private readonly System.Collections.Generic.HashSet<int> shownReminders = new System.Collections.Generic.HashSet<int>();
         private readonly IReminderService reminderService;
 
-        /// <summary>Gets the main page view model.</summary>
         public MainViewModel ViewModel { get; }
 
-        /// <summary>Gets the reminders view model used for the reminder overlay.</summary>
         public TeamNut.ViewModels.RemindersViewModel RemindersViewModel { get; }
         private static readonly TimeSpan ReminderPollInterval = TimeSpan.FromSeconds(30);
         private static readonly TimeSpan ReminderTriggerWindow = TimeSpan.FromSeconds(30);
@@ -43,7 +41,6 @@ namespace TeamNut.Views
         private const string SoundOffText = "Off";
         private const int DetailsPanelSpacing = 8;
 
-        /// <summary>Initializes a new instance of the <see cref="MainPage"/> class.</summary>
         public MainPage()
         {
             InitializeComponent();

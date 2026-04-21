@@ -25,10 +25,8 @@ namespace TeamNut.Views.ShoppingListView
         private const string MsgConfirmPantryTransfer = "Are you sure you want to remove this item and add it to your pantry?";
         private const string MsgConfirmDeletion = "Are you sure you want to remove this item from the shopping list?";
 
-        /// <summary>Gets the view model.</summary>
         public ShoppingListViewModel ViewModel { get; }
 
-        /// <summary>Initializes a new instance of the <see cref="ShoppingListPage"/> class.</summary>
         public ShoppingListPage()
         {
             this.InitializeComponent();
@@ -36,7 +34,6 @@ namespace TeamNut.Views.ShoppingListView
             this.Name = RootPageName;
         }
 
-        /// <summary>Handles the Add button click.</summary>
         private async void AddButton_Click(object sender, RoutedEventArgs e)
         {
             var text = this.IngredientSearchBox.Text;

@@ -27,23 +27,18 @@ namespace TeamNut.ViewModels
         private const string ErrorDeleteItem = "Failed to delete item from database.";
         private const string ErrorGenerateList = "Error analyzing Meal Plan for ingredients.";
 
-        /// <summary>Gets or sets the collection of shopping list items.</summary>
         [ObservableProperty]
         public partial ObservableCollection<ShoppingItem> Items { get; set; }
 
-        /// <summary>Gets or sets the status message shown to the user.</summary>
         [ObservableProperty]
         public partial string StatusMessage { get; set; }
 
-        /// <summary>Gets or sets a value indicating whether the status message is visible.</summary>
         [ObservableProperty]
         public partial bool IsStatusVisible { get; set; }
 
-        /// <summary>Gets or sets a value indicating whether the status represents an error.</summary>
         [ObservableProperty]
         public partial bool IsError { get; set; }
 
-        /// <summary>Gets or sets the quantity in grams for the next item to add.</summary>
         [ObservableProperty]
         public partial double PendingQuantity { get; set; }
 
@@ -56,8 +51,6 @@ namespace TeamNut.ViewModels
             _ = LoadItemsAsync();
         }
 
-        /// <summary>Loads shopping list items for the current user.</summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task LoadItemsAsync()
         {
             if (UserSession.UserId == null)
@@ -85,9 +78,6 @@ namespace TeamNut.ViewModels
             }
         }
 
-        /// <summary>Adds a named ingredient to the shopping list.</summary>
-        /// <param name="itemName">The ingredient name to add.</param>
-        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         [RelayCommand]
         public async Task AddItem(string itemName)
         {
@@ -137,9 +127,6 @@ namespace TeamNut.ViewModels
             PendingQuantity = DefaultPendingQuantity;
         }
 
-        /// <summary>Moves a shopping item to the inventory (pantry).</summary>
-        /// <param name="item">The shopping item to move.</param>
-        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         [RelayCommand]
         public async Task MoveToPantry(ShoppingItem item)
         {
@@ -163,9 +150,6 @@ namespace TeamNut.ViewModels
             }
         }
 
-        /// <summary>Removes an item from the shopping list.</summary>
-        /// <param name="item">The item to remove.</param>
-        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         [RelayCommand]
         public async Task RemoveItem(ShoppingItem item)
         {
@@ -187,8 +171,6 @@ namespace TeamNut.ViewModels
             }
         }
 
-        /// <summary>Generates a shopping list from the user's current meal plan.</summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         [RelayCommand]
         public async Task GenerateList()
         {
@@ -218,9 +200,6 @@ namespace TeamNut.ViewModels
             }
         }
 
-        /// <summary>Searches for ingredients matching the given query.</summary>
-        /// <param name="query">The search text.</param>
-        /// <returns>A list of ingredient id/name pairs matching the query.</returns>
         public async Task<List<KeyValuePair<int, string>>> SearchIngredientsAsync(string query)
         {
             return await shoppingListService.SearchIngredientsAsync(query);
