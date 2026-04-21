@@ -60,7 +60,7 @@ namespace TeamNut.ViewModels
                 : RoleUser;
 
             List<string> errors = CurrentUser.ValidateAndReturnErrors();
-            if (errors.Any())
+            if (errors.Count > 0)
             {
                 StatusMessage = string.Join(Environment.NewLine, errors);
                 return;
@@ -99,7 +99,7 @@ namespace TeamNut.ViewModels
             try
             {
                 List<string> errors = CurrentUserData.GetValidationErrors();
-                if (errors.Any())
+                if (errors.Count > 0)
                 {
                     StatusMessage = string.Join(Environment.NewLine, errors);
                     return;

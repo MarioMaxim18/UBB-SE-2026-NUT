@@ -23,7 +23,7 @@ namespace TeamNut
     }
 
     /// <summary>Converts a boolean or role string to a <see cref="Visibility"/> value.</summary>
-    public class BoolToVisibilityConverter : IValueConverter
+    public partial class BoolToVisibilityConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {
@@ -70,7 +70,7 @@ namespace TeamNut
     }
 
     /// <summary>Converts a boolean to a <see cref="FontWeight"/>.</summary>
-    public class BoolToFontWeightConverter : IValueConverter
+    public partial class BoolToFontWeightConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {
@@ -84,7 +84,7 @@ namespace TeamNut
     }
 
     /// <summary>Inverts a boolean value.</summary>
-    public class InverseBoolConverter : IValueConverter
+    public partial class InverseBoolConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string language)
             => value is bool b ? !b : true;
@@ -94,7 +94,7 @@ namespace TeamNut
     }
 
     /// <summary>Converts an empty string to a <see cref="Visibility"/> value.</summary>
-    public class EmptyStringToVisibilityConverter : IValueConverter
+    public partial class EmptyStringToVisibilityConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {
@@ -112,7 +112,7 @@ namespace TeamNut
     }
 
     /// <summary>Converts a role string to a <see cref="HorizontalAlignment"/>.</summary>
-    public class RoleToHorizontalAlignmentConverter : IValueConverter
+    public partial class RoleToHorizontalAlignmentConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {
@@ -131,7 +131,7 @@ namespace TeamNut
     }
 
     /// <summary>Converts an integer equal to zero to a <see cref="Visibility"/> value.</summary>
-    public class IntZeroToVisibilityConverter : IValueConverter
+    public partial class IntZeroToVisibilityConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {
@@ -159,7 +159,7 @@ namespace TeamNut
     }
 
     /// <summary>Converts a role string to a background brush colour.</summary>
-    public class RoleToBackgroundConverter : IValueConverter
+    public partial class RoleToBackgroundConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {
@@ -180,7 +180,7 @@ namespace TeamNut
     }
 
     /// <summary>Highlights conversations that have unanswered messages (nutritionist view only).</summary>
-    public class UnansweredToHighlightConverter : IValueConverter
+    public partial class UnansweredToHighlightConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {
@@ -214,7 +214,7 @@ namespace TeamNut
     }
 
     /// <summary>Converts an integer greater than zero to a <see cref="Visibility"/> value.</summary>
-    public class IntGreaterThanZeroToVisibilityConverter : IValueConverter
+    public partial class IntGreaterThanZeroToVisibilityConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {

@@ -9,7 +9,7 @@ using TeamNut.Services.Interfaces;
 namespace TeamNut.ViewModels
 {
     /// <summary>View model for the daily calorie log page.</summary>
-    public class DailyLogViewModel : ObservableObject
+    public partial class DailyLogViewModel : ObservableObject
     {
         private static class Constants
         {
