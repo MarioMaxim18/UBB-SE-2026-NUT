@@ -16,19 +16,20 @@ namespace TeamNut.Views.UserView
             InitializeComponent();
             ViewModel = App.Services.GetRequiredService<UserViewModel>();
             this.DataContext = ViewModel;
-            ViewModel.RegistrationValid += ViewModel_RegistrationValid;
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
             ViewModel.LoginSuccess += ViewModel_LoginSuccess;
+            ViewModel.RegistrationValid += ViewModel_RegistrationValid;
         }
 
         protected override void OnNavigatedFrom(NavigationEventArgs e)
         {
             base.OnNavigatedFrom(e);
             ViewModel.LoginSuccess -= ViewModel_LoginSuccess;
+            ViewModel.RegistrationValid -= ViewModel_RegistrationValid;
         }
 
         private void ViewModel_LoginSuccess(object? sender, EventArgs e)
