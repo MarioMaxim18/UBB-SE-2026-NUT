@@ -17,11 +17,7 @@ namespace TeamNut.Services
                 return new List<string> { "User cannot be null" };
             }
 
-            user.ValidateAllProperties();
-            return user.GetErrors()
-                .Select(e => e.ErrorMessage!)
-                .Where(msg => msg != null)
-                .ToList();
+            return user.ValidateAndReturnErrors();
         }
 
         public List<string> ValidateUserData(UserData userData)
