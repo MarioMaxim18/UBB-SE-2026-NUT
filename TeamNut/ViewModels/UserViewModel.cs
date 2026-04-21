@@ -150,6 +150,7 @@ namespace TeamNut.ViewModels
 
                 if (user != null)
                 {
+                    CurrentUser = user;
                     LoginSuccess?.Invoke(this, EventArgs.Empty);
                 }
                 else
