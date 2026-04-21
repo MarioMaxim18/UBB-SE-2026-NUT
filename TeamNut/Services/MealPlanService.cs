@@ -141,8 +141,10 @@ namespace TeamNut.Services
                             .NotifyRemindersChangedForUser(userId);
                     }
                 }
-                catch
+                catch (Exception ex)
                 {
+                    System.Diagnostics.Debug.WriteLine(
+                        $"Failed to create meal reminders for user {userId}: {ex}");
                 }
 
                 if (mealPlanId < MinValidId)
