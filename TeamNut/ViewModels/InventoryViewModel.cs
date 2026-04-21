@@ -9,10 +9,10 @@ using TeamNut.Services;
 using TeamNut.Services.Interfaces;
 namespace TeamNut.ViewModels
 {
-    /// <summary>View model for managing the user's food ingredient inventory.</summary>
     public partial class InventoryViewModel : ObservableObject
     {
         private readonly IInventoryService inventoryService;
+        private readonly IFilteringService filteringService;
         private readonly int currentUserId;
         private const double DefaultQuantityToAdd = 100;
         private const double MinQuantityAllowed = 0;
@@ -24,7 +24,6 @@ namespace TeamNut.ViewModels
         private const string DeleteItemErrorMessage = "Could not delete item: {0}";
         private const string AddItemErrorMessage = "Could not add item: {0}";
         private const string AddItemSuccessMessage = "Added {0}g of {1}.";
-        private const StringComparison IngredientSearchComparison = StringComparison.OrdinalIgnoreCase;
         private bool isBusy;
         private string emptyListMessage = EmptyInventoryMessage;
         private string statusMessage = string.Empty;
@@ -80,9 +79,12 @@ namespace TeamNut.ViewModels
 
         public ObservableCollection<Ingredient> FilteredIngredients { get; } = new ObservableCollection<Ingredient>();
 
-        public InventoryViewModel(IInventoryService iinventoryService)
+        public InventoryViewModel(
+            IInventoryService iinventoryService,
+            IFilteringService ffilteringService)
         {
             inventoryService = iinventoryService;
+            filteringService = ffilteringService;
             currentUserId = Models.UserSession.UserId ?? 0;
 
             _ = LoadInventoryAsync();
@@ -207,10 +209,7 @@ namespace TeamNut.ViewModels
 
             var query = IngredientSearchText?.Trim() ?? string.Empty;
 
-            var filtered = string.IsNullOrWhiteSpace(query)
-                ? AvailableIngredients
-                : AvailableIngredients.Where(i =>
-                    i.Name.Contains(query, IngredientSearchComparison));
+            var filtered = filteringService.FilterIngredients(AvailableIngredients, query);
 
             foreach (var ingredient in filtered)
             {

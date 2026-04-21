@@ -6,7 +6,6 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace TeamNut.Views.CalorieLoggingView
 {
-    /// <summary>Page for logging daily calorie intake.</summary>
     public sealed partial class CalorieLoggingPage : Page
     {
         private DailyLogViewModel ViewModel { get; }

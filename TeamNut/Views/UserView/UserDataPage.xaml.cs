@@ -3,19 +3,21 @@ using System.Linq;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
 using TeamNut.ViewModels;
+using TeamNut.Services.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace TeamNut.Views.UserView
 {
-    /// <summary>Page for entering physical health data during registration.</summary>
     public sealed partial class UserDataPage : Page
     {
         public UserViewModel ViewModel { get; }
+        private readonly IValidationService validationService;
 
         public UserDataPage()
         {
             InitializeComponent();
             ViewModel = App.Services.GetRequiredService<UserViewModel>();
+            validationService = App.Services.GetRequiredService<IValidationService>();
             this.DataContext = ViewModel;
         }
 
@@ -42,7 +44,7 @@ namespace TeamNut.Views.UserView
 
         private void NumberInput_BeforeTextChanging(TextBox sender, TextBoxBeforeTextChangingEventArgs args)
         {
-            args.Cancel = args.NewText.Any(c => !char.IsDigit(c));
+            args.Cancel = !validationService.IsNumericOnly(args.NewText);
         }
     }
 }

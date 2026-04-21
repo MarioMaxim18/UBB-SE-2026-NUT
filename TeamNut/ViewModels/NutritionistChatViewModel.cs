@@ -12,7 +12,6 @@ using TeamNut.Services;
 
 namespace TeamNut.ViewModels
 {
-    /// <summary>View model for the nutritionist chat feature.</summary>
     public partial class NutritionistChatViewModel : ObservableObject
     {
         private readonly IChatService chatService;
@@ -183,7 +182,6 @@ namespace TeamNut.ViewModels
             }
             catch (TaskCanceledException)
             {
-                // expected on cancellation
             }
         }
 

@@ -9,14 +9,9 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace TeamNut
 {
-    /// <summary>Page for browsing and searching meals.</summary>
     public sealed partial class MealsPage : Page
     {
         private MealSearchViewModel ViewModel { get; }
-        private int currentPage = DefaultStartPage;
-        private List<Meal> allMeals = new List<Meal>();
-        private const int DefaultStartPage = 1;
-        private const int DefaultPageSize = 5;
         private const string FavoriteOnSymbol = "★";
         private const string FavoriteOffSymbol = "☆";
         private const string ButtonClose = "Close";
@@ -29,12 +24,12 @@ namespace TeamNut
         private const int MealImageHeight = 150;
         private const string LineBreak = "\n";
         private const string DoubleLineBreak = "\n\n";
-        private int pageSize = DefaultPageSize;
 
         public MealsPage()
         {
             InitializeComponent();
             ViewModel = App.Services.GetService<MealSearchViewModel>();
+            DataContext = ViewModel;
 
             Loaded += (s, e) => BtnSearch_Click(this, new RoutedEventArgs());
         }
@@ -53,35 +48,7 @@ namespace TeamNut
             };
 
             var results = await ViewModel.SearchMealsAsync(filter);
-
-            allMeals = results.ToList();
-            currentPage = DefaultStartPage;
-            LoadMeals();
-        }
-
-        private void LoadMeals()
-        {
-            if (allMeals == null)
-            {
-                return;
-            }
-
-            var pagedMeals = allMeals
-                .Skip((currentPage - DefaultStartPage) * pageSize)
-                .Take(pageSize)
-                .ToList();
-
-            listMeals.ItemsSource = null;
-            listMeals.ItemsSource = pagedMeals;
-
-            int totalPages = Math.Max(
-                DefaultStartPage,
-                (int)Math.Ceiling((double)allMeals.Count / pageSize));
-
-            txtPage.Text = $"{currentPage} / {totalPages}";
-
-            btnPrev.IsEnabled = currentPage > DefaultStartPage;
-            btnNext.IsEnabled = currentPage < totalPages;
+            ViewModel.SetAllMeals(results);
         }
 
         private async void Favorite_Click(object sender, RoutedEventArgs e)
@@ -98,8 +65,7 @@ namespace TeamNut
 
             if (chkFavorites?.IsChecked == true && !meal.IsFavorite)
             {
-                allMeals.Remove(meal);
-                LoadMeals();
+                BtnSearch_Click(this, new RoutedEventArgs());
             }
         }
 
@@ -159,23 +125,12 @@ namespace TeamNut
 
         private void Prev_Click(object sender, RoutedEventArgs e)
         {
-            if (currentPage > DefaultStartPage)
-            {
-                currentPage--;
-                LoadMeals();
-            }
+            ViewModel.GoToPreviousPage();
         }
 
         private void Next_Click(object sender, RoutedEventArgs e)
         {
-            int totalPages =
-                (int)Math.Ceiling((double)allMeals.Count / pageSize);
-
-            if (currentPage < totalPages)
-            {
-                currentPage++;
-                LoadMeals();
-            }
+            ViewModel.GoToNextPage();
         }
 
         private void TxtSearch_KeyDown(

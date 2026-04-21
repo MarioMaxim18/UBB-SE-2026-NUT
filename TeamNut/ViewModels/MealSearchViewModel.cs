@@ -9,13 +9,14 @@ using TeamNut.Services.Interfaces;
 
 namespace TeamNut.ViewModels
 {
-    /// <summary>View model for searching and filtering meals.</summary>
     public partial class MealSearchViewModel : ObservableObject
     {
         private readonly IMealService mealService;
+        private readonly IPaginationService paginationService;
         private const string DefaultSearchTerm = "";
         private const string NoIngredientsFoundMessage = "No ingredients found.";
         private const string IngredientsLineSeparator = "\n";
+        private const int DefaultPageSize = 5;
 
         public ObservableCollection<Meal> Meals { get; private set; } = new ObservableCollection<Meal>();
 
@@ -23,10 +24,65 @@ namespace TeamNut.ViewModels
 
         public Meal? SelectedMeal { get; set; }
 
-        public MealSearchViewModel(IMealService mmealService)
+        private List<Meal> allMeals = new List<Meal>();
+        private int currentPage = 1;
+        private int pageSize = DefaultPageSize;
+
+        [ObservableProperty]
+        public partial string PageText { get; set; } = "1 / 1";
+
+        [ObservableProperty]
+        public partial bool CanGoToPreviousPage { get; set; }
+
+        [ObservableProperty]
+        public partial bool CanGoToNextPage { get; set; }
+
+        public MealSearchViewModel(
+            IMealService mmealService,
+            IPaginationService ppaginationService)
         {
             mealService = mmealService;
+            paginationService = ppaginationService;
             _ = LoadMealsAsync();
+        }
+
+        public void SetAllMeals(List<Meal> meals)
+        {
+            allMeals = meals;
+            currentPage = 1;
+            UpdatePagedMeals();
+        }
+
+        public void GoToNextPage()
+        {
+            int totalPages = paginationService.GetTotalPages(allMeals.Count, pageSize);
+            if (currentPage < totalPages)
+            {
+                currentPage++;
+                UpdatePagedMeals();
+            }
+        }
+
+        public void GoToPreviousPage()
+        {
+            if (currentPage > 1)
+            {
+                currentPage--;
+                UpdatePagedMeals();
+            }
+        }
+
+        private void UpdatePagedMeals()
+        {
+            var pagedMeals = paginationService.GetPage(allMeals, currentPage, pageSize);
+            int totalPages = paginationService.GetTotalPages(allMeals.Count, pageSize);
+
+            Meals = new ObservableCollection<Meal>(pagedMeals);
+            OnPropertyChanged(nameof(Meals));
+
+            PageText = $"{currentPage} / {totalPages}";
+            CanGoToPreviousPage = currentPage > 1;
+            CanGoToNextPage = currentPage < totalPages;
         }
 
         public async Task LoadMealsAsync(string? filter = null)

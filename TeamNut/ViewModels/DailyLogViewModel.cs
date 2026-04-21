@@ -8,7 +8,6 @@ using TeamNut.Services.Interfaces;
 
 namespace TeamNut.ViewModels
 {
-    /// <summary>View model for the daily calorie log page.</summary>
     public partial class DailyLogViewModel : ObservableObject
     {
         private static class Constants
@@ -19,15 +18,10 @@ namespace TeamNut.ViewModels
             public const double DefaultDailyFatsGoal = 70;
 
             public const int DaysPerWeek = 7;
-            public const double PercentMultiplier = 100.0;
 
             public const string CaloriesUnit = "kcal";
             public const string GramsUnit = "g";
 
-            public const string NumberFormatNoDecimals = "F0";
-            public const string MetricFormatWithGoal = "{0:F0} / {1:F0} {2} ({3:F0}%)";
-            public const string MetricFormatNoGoal = "{0:F0} {1}";
-            public const string BurnedCaloriesFormat = "{0:F0} kcal";
             public const string LoggedMealFormat = "Logged {0}.";
 
             public const string NoMealSelectedMessage = "Select a meal first.";
@@ -35,10 +29,11 @@ namespace TeamNut.ViewModels
             public const string NoDataMessage = "You need to have had atleast one consumed meal.";
 
             public const string Empty = "";
-            public const StringComparison CaseInsensitiveComparison = StringComparison.OrdinalIgnoreCase;
         }
 
         private readonly IDailyLogService service;
+        private readonly IFormattingService formattingService;
+        private readonly IFilteringService filteringService;
 
         private bool hasData;
         private string statusMessage = Constants.Empty;
@@ -68,9 +63,14 @@ namespace TeamNut.ViewModels
         private Meal? selectedMeal;
         private string logMealStatusMessage = Constants.Empty;
 
-        public DailyLogViewModel(IDailyLogService dailyLogService)
+        public DailyLogViewModel(
+            IDailyLogService dailyLogService,
+            IFormattingService fformattingService,
+            IFilteringService ffilteringService)
         {
             service = dailyLogService;
+            formattingService = fformattingService;
+            filteringService = ffilteringService;
             _ = LoadMealsForAutocompleteAsync();
         }
 
@@ -183,11 +183,7 @@ namespace TeamNut.ViewModels
             filteredMeals.Clear();
             var query = MealSearchText?.Trim() ?? Constants.Empty;
 
-            var filtered = string.IsNullOrWhiteSpace(query)
-                ? availableMeals
-                : new ObservableCollection<Meal>(
-                    availableMeals.Where(m =>
-                        m.Name.Contains(query, Constants.CaseInsensitiveComparison)));
+            var filtered = filteringService.FilterMeals(availableMeals, query);
 
             foreach (var meal in filtered)
             {
@@ -223,29 +219,18 @@ namespace TeamNut.ViewModels
             DailyTotals = await service.GetTodayTotalsAsync();
             WeeklyTotals = await service.GetCurrentWeekTotalsAsync();
 
-            dailyCaloriesText = BuildMetricText(DailyTotals.Calories, DailyCaloriesGoal, Constants.CaloriesUnit);
-            dailyProteinText = BuildMetricText(DailyTotals.Protein, DailyProteinGoal, Constants.GramsUnit);
-            dailyCarbsText = BuildMetricText(DailyTotals.Carbs, DailyCarbsGoal, Constants.GramsUnit);
-            dailyFatsText = BuildMetricText(DailyTotals.Fats, DailyFatsGoal, Constants.GramsUnit);
+            dailyCaloriesText = formattingService.FormatMetricWithGoal(DailyTotals.Calories, DailyCaloriesGoal, Constants.CaloriesUnit);
+            dailyProteinText = formattingService.FormatMetricWithGoal(DailyTotals.Protein, DailyProteinGoal, Constants.GramsUnit);
+            dailyCarbsText = formattingService.FormatMetricWithGoal(DailyTotals.Carbs, DailyCarbsGoal, Constants.GramsUnit);
+            dailyFatsText = formattingService.FormatMetricWithGoal(DailyTotals.Fats, DailyFatsGoal, Constants.GramsUnit);
 
             var burnedCalories = await service.GetTodayBurnedCaloriesAsync();
-            dailyBurnedCaloriesText = string.Format(Constants.BurnedCaloriesFormat, burnedCalories);
+            dailyBurnedCaloriesText = formattingService.FormatBurnedCalories(burnedCalories);
 
-            weeklyCaloriesText = BuildMetricText(WeeklyTotals.Calories, WeeklyCaloriesGoal, Constants.CaloriesUnit);
-            weeklyProteinText = BuildMetricText(WeeklyTotals.Protein, WeeklyProteinGoal, Constants.GramsUnit);
-            weeklyCarbsText = BuildMetricText(WeeklyTotals.Carbs, WeeklyCarbsGoal, Constants.GramsUnit);
-            weeklyFatsText = BuildMetricText(WeeklyTotals.Fats, WeeklyFatsGoal, Constants.GramsUnit);
-        }
-
-        private static string BuildMetricText(double total, double goal, string unit)
-        {
-            if (goal <= 0)
-            {
-                return string.Format(Constants.MetricFormatNoGoal, total, unit);
-            }
-
-            var pct = (total / goal) * Constants.PercentMultiplier;
-            return string.Format(Constants.MetricFormatWithGoal, total, goal, unit, pct);
+            weeklyCaloriesText = formattingService.FormatMetricWithGoal(WeeklyTotals.Calories, WeeklyCaloriesGoal, Constants.CaloriesUnit);
+            weeklyProteinText = formattingService.FormatMetricWithGoal(WeeklyTotals.Protein, WeeklyProteinGoal, Constants.GramsUnit);
+            weeklyCarbsText = formattingService.FormatMetricWithGoal(WeeklyTotals.Carbs, WeeklyCarbsGoal, Constants.GramsUnit);
+            weeklyFatsText = formattingService.FormatMetricWithGoal(WeeklyTotals.Fats, WeeklyFatsGoal, Constants.GramsUnit);
         }
     }
 }

@@ -4,7 +4,6 @@ using TeamNut.Models;
 using TeamNut.Services;
 using TeamNut.Services.Interfaces;
 
-/// <summary>View model for the main page header area.</summary>
 public partial class MainViewModel : ObservableObject
 {
     private const int InvalidUserId = 0;

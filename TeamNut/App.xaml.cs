@@ -38,6 +38,12 @@ namespace TeamNut
 
             services.AddSingleton<IDbConfig, DbConfig>();
 
+            services.AddSingleton<IValidationService, ValidationService>();
+            services.AddSingleton<INutritionCalculationService, NutritionCalculationService>();
+            services.AddSingleton<IFilteringService, FilteringService>();
+            services.AddSingleton<IPaginationService, PaginationService>();
+            services.AddSingleton<IFormattingService, FormattingService>();
+
             services.AddTransient<IChatRepository, ChatRepository>();
             services.AddTransient<IChatService, ChatService>();
             services.AddTransient<NutritionistChatViewModel>();

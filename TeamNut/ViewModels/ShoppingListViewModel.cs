@@ -10,7 +10,6 @@ using TeamNut.Services.Interfaces;
 
 namespace TeamNut.ViewModels
 {
-    /// <summary>View model for managing the user's shopping list.</summary>
     public partial class ShoppingListViewModel : ObservableObject
     {
         private readonly IShoppingListService shoppingListService;

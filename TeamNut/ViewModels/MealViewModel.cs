@@ -3,7 +3,6 @@ using TeamNut.Models;
 
 namespace TeamNut.Views.MealPlanView
 {
-    /// <summary>Represents a meal entry within a generated meal plan.</summary>
     public class MealViewModel
     {
         public int Id { get; set; }
@@ -58,7 +57,6 @@ namespace TeamNut.Views.MealPlanView
         }
     }
 
-    /// <summary>Represents an ingredient within a meal view model.</summary>
     public class IngredientViewModel
     {
         public int IngredientId { get; set; }

@@ -65,7 +65,6 @@ namespace TeamNut.Services
             }
             catch
             {
-                // swallow event errors
             }
 
             return ResultSuccess;
@@ -101,7 +100,6 @@ namespace TeamNut.Services
             }
             catch
             {
-                // swallow delete errors
             }
         }
 
@@ -113,7 +111,6 @@ namespace TeamNut.Services
             }
             catch
             {
-                // swallow notify errors
             }
         }
     }

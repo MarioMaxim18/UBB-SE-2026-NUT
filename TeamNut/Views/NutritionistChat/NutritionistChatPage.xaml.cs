@@ -7,7 +7,6 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace TeamNut.Views.NutritionistChat
 {
-    /// <summary>Page for the nutritionist chat feature.</summary>
     public sealed partial class NutritionistChatPage : Page
     {
         public NutritionistChatViewModel ViewModel { get; }

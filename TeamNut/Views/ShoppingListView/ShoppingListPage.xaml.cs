@@ -1,7 +1,3 @@
-// <copyright file="ShoppingListPage.xaml.cs" company="TeamNut">
-// Copyright (c) TeamNut. All rights reserved.
-// </copyright>
-
 namespace TeamNut.Views.ShoppingListView
 {
     using System;
@@ -12,7 +8,6 @@ namespace TeamNut.Views.ShoppingListView
     using TeamNut.ViewModels;
     using Microsoft.Extensions.DependencyInjection;
 
-    /// <summary>Page for managing the shopping list.</summary>
     public sealed partial class ShoppingListPage : Page
     {
         private const string RootPageName = "RootPage";

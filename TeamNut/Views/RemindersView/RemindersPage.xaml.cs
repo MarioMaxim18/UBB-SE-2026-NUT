@@ -1,7 +1,3 @@
-// <copyright file="RemindersPage.xaml.cs" company="TeamNut">
-// Copyright (c) TeamNut. All rights reserved.
-// </copyright>
-
 namespace TeamNut.Views.RemindersView
 {
     using System;
@@ -10,8 +6,8 @@ namespace TeamNut.Views.RemindersView
     using Microsoft.UI.Xaml.Navigation;
     using Microsoft.Extensions.DependencyInjection;
     using TeamNut.ViewModels;
+    using TeamNut.Services.Interfaces;
 
-    /// <summary>Page for managing reminders.</summary>
     public sealed partial class RemindersPage : Page
     {
         private const int DialogStackSpacing = 8;
@@ -41,11 +37,13 @@ namespace TeamNut.Views.RemindersView
         private static readonly Thickness FrequencyComboMargin = new Thickness(0, 4, 0, 0);
 
         public TeamNut.ViewModels.RemindersViewModel ViewModel { get; }
+        private readonly IValidationService validationService;
 
         public RemindersPage()
         {
             this.InitializeComponent();
             ViewModel = App.Services.GetService<RemindersViewModel>();
+            validationService = App.Services.GetRequiredService<IValidationService>();
 
             this.Loaded += async (_, _) => await this.ViewModel.LoadReminders();
 
@@ -122,12 +120,7 @@ namespace TeamNut.Views.RemindersView
                     bool ValidateInputs()
                     {
                         var name = nameBox.Text ?? string.Empty;
-                        if (string.IsNullOrWhiteSpace(name))
-                        {
-                            return false;
-                        }
-
-                        if (name.Length > MaxReminderNameLength)
+                        if (!validationService.IsValidReminderName(name, MaxReminderNameLength))
                         {
                             return false;
                         }

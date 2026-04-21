@@ -11,9 +11,14 @@ namespace TeamNut.Services
     public class UserService : IUserService
     {
         private readonly IUserRepository userRepository;
-        public UserService(IUserRepository uuserRepository)
+        private readonly INutritionCalculationService nutritionCalculationService;
+
+        public UserService(
+            IUserRepository uuserRepository,
+            INutritionCalculationService nnutritionCalculationService)
         {
             userRepository = uuserRepository;
+            nutritionCalculationService = nnutritionCalculationService;
         }
 
         public async Task<bool> CheckIfUsernameExistsAsync(string username)
@@ -46,9 +51,9 @@ namespace TeamNut.Services
             return user;
         }
 
-        public async Task<UserData> AddUserDataAsync(UserData data)
+        public async Task<UserData> AddUserDataAsync(UserData data, DateTimeOffset? birthDate)
         {
-            ApplyCalculatedNutrition(data);
+            nutritionCalculationService.ApplyCalculations(data, birthDate);
             await userRepository.AddUserData(data);
             return data;
         }
@@ -60,22 +65,8 @@ namespace TeamNut.Services
 
         public async Task UpdateUserDataAsync(UserData data)
         {
-            ApplyCalculatedNutrition(data);
+            nutritionCalculationService.ApplyCalculations(data);
             await userRepository.UpdateUserData(data);
-        }
-
-        private static void ApplyCalculatedNutrition(UserData data)
-        {
-            if (data == null)
-            {
-                return;
-            }
-
-            data.Bmi = data.CalculateBmi();
-            data.CalorieNeeds = data.CalculateCalorieNeeds();
-            data.ProteinNeeds = data.CalculateProteinNeeds();
-            data.FatNeeds = data.CalculateFatNeeds();
-            data.CarbNeeds = data.CalculateCarbNeeds();
         }
     }
 }

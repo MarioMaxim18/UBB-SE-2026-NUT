@@ -7,7 +7,6 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace TeamNut.Views.UserView
 {
-    /// <summary>Page for user login.</summary>
     public sealed partial class LoginPage : Page
     {
         public UserViewModel ViewModel { get; }

@@ -2,7 +2,6 @@ using Microsoft.UI.Xaml.Controls;
 
 namespace TeamNut.Views.UserView
 {
-    /// <summary>Host control that navigates between login, register, and user-data pages.</summary>
     public sealed partial class UserView : UserControl
     {
         public UserView()

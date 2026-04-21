@@ -12,7 +12,6 @@ using TeamNut.Views.MealPlanView;
 
 namespace TeamNut.ModelViews
 {
-    /// <summary>View model for the meal plan page.</summary>
     public partial class MealPlanViewModel : ObservableObject
     {
         private readonly IMealPlanService mealPlanService;

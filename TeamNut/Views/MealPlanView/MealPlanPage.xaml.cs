@@ -10,7 +10,6 @@ using TeamNut.ViewModels;
 
 namespace TeamNut.Views.MealPlanView
 {
-    /// <summary>Page for displaying and managing the user's daily meal plan.</summary>
     public sealed partial class MealPlanPage : Page
     {
         public MealPlanViewModel ViewModel { get; }
@@ -207,12 +206,6 @@ namespace TeamNut.Views.MealPlanView
             userData.Height = (int)heightBox.Value;
             userData.Gender = genderCombo.SelectedIndex == IndexMale ? GenderMale : GenderFemale;
             userData.Goal = goalCombo.SelectedItem?.ToString()?.ToLower() ?? "maintenance";
-
-            userData.Bmi = userData.CalculateBmi();
-            userData.CalorieNeeds = userData.CalculateCalorieNeeds();
-            userData.ProteinNeeds = userData.CalculateProteinNeeds();
-            userData.CarbNeeds = userData.CalculateCarbNeeds();
-            userData.FatNeeds = userData.CalculateFatNeeds();
 
             try
             {

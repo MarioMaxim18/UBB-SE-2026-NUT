@@ -10,7 +10,6 @@ using TeamNut.Services;
 using TeamNut.Services.Interfaces;
 namespace TeamNut.ViewModels
 {
-    /// <summary>View model for managing health reminders.</summary>
     public partial class RemindersViewModel : ObservableObject
     {
         private readonly IReminderService reminderService;

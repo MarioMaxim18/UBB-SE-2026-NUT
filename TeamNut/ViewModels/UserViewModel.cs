@@ -10,7 +10,6 @@ using TeamNut.Services.Interfaces;
 
 namespace TeamNut.ViewModels
 {
-    /// <summary>View model for user registration, login, and profile data.</summary>
     public partial class UserViewModel : ObservableObject
     {
         private const string RoleNutritionist = "Nutritionist";
@@ -39,15 +38,21 @@ namespace TeamNut.ViewModels
         public partial DateTimeOffset SelectedDate { get; set; } = DateTimeOffset.Now;
 
         public event EventHandler? RegistrationValid;
-
         public event EventHandler? LoginSuccess;
-        private readonly IUserService userService;
-
         public event EventHandler? SaveDataSuccess;
 
-        public UserViewModel(IUserService uuserService)
+        private readonly IUserService userService;
+        private readonly IValidationService validationService;
+        private readonly INutritionCalculationService nutritionCalculationService;
+
+        public UserViewModel(
+            IUserService uuserService,
+            IValidationService vvalidationService,
+            INutritionCalculationService nnutritionCalculationService)
         {
             userService = uuserService;
+            validationService = vvalidationService;
+            nutritionCalculationService = nnutritionCalculationService;
         }
 
         [RelayCommand]
@@ -59,7 +64,7 @@ namespace TeamNut.ViewModels
                 ? RoleNutritionist
                 : RoleUser;
 
-            List<string> errors = CurrentUser.ValidateAndReturnErrors();
+            List<string> errors = validationService.ValidateUser(CurrentUser);
             if (errors.Count > 0)
             {
                 StatusMessage = string.Join(Environment.NewLine, errors);
@@ -81,11 +86,6 @@ namespace TeamNut.ViewModels
                 var registeredUser = await userService.RegisterUserAsync(CurrentUser);
                 if (registeredUser != null)
                 {
-                    UserSession.Login(
-                        registeredUser.Id,
-                        registeredUser.Username,
-                        registeredUser.Role);
-
                     LoginSuccess?.Invoke(this, EventArgs.Empty);
                 }
             }
@@ -98,25 +98,19 @@ namespace TeamNut.ViewModels
 
             try
             {
-                List<string> errors = CurrentUserData.GetValidationErrors();
+                List<string> errors = validationService.ValidateUserData(CurrentUserData);
                 if (errors.Count > 0)
                 {
                     StatusMessage = string.Join(Environment.NewLine, errors);
                     return;
                 }
 
-                CurrentUserData.Age = CurrentUserData.CalculateAge(SelectedDate);
-                if (CurrentUserData.Age <= 0)
+                int age = nutritionCalculationService.CalculateAge(SelectedDate);
+                if (age <= 0)
                 {
                     StatusMessage = ErrorInvalidBirthdate;
                     return;
                 }
-
-                CurrentUserData.Bmi = CurrentUserData.CalculateBmi();
-                CurrentUserData.CalorieNeeds = CurrentUserData.CalculateCalorieNeeds();
-                CurrentUserData.ProteinNeeds = CurrentUserData.CalculateProteinNeeds();
-                CurrentUserData.FatNeeds = CurrentUserData.CalculateFatNeeds();
-                CurrentUserData.CarbNeeds = CurrentUserData.CalculateCarbNeeds();
 
                 var registeredUser = await userService.RegisterUserAsync(CurrentUser);
                 if (registeredUser == null)
@@ -126,12 +120,7 @@ namespace TeamNut.ViewModels
                 }
 
                 CurrentUserData.UserId = registeredUser.Id;
-                await userService.AddUserDataAsync(CurrentUserData);
-
-                UserSession.Login(
-                    registeredUser.Id,
-                    registeredUser.Username,
-                    registeredUser.Role);
+                await userService.AddUserDataAsync(CurrentUserData, SelectedDate);
 
                 SaveDataSuccess?.Invoke(this, EventArgs.Empty);
             }
@@ -161,11 +150,6 @@ namespace TeamNut.ViewModels
 
                 if (user != null)
                 {
-                    UserSession.Login(
-                        user.Id,
-                        user.Username,
-                        user.Role);
-
                     LoginSuccess?.Invoke(this, EventArgs.Empty);
                 }
                 else
