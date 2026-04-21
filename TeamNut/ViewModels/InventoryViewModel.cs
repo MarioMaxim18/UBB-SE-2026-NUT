@@ -32,28 +32,24 @@ namespace TeamNut.ViewModels
         private Ingredient? selectedIngredient;
         private double quantityToAdd = DefaultQuantityToAdd;
 
-        /// <summary>Gets or sets a value indicating whether a background operation is running.</summary>
         public bool IsBusy
         {
             get => isBusy;
             set => SetProperty(ref isBusy, value);
         }
 
-        /// <summary>Gets or sets the message displayed when the inventory list is empty.</summary>
         public string EmptyListMessage
         {
             get => emptyListMessage;
             set => SetProperty(ref emptyListMessage, value);
         }
 
-        /// <summary>Gets or sets the status message shown to the user.</summary>
         public string StatusMessage
         {
             get => statusMessage;
             set => SetProperty(ref statusMessage, value);
         }
 
-        /// <summary>Gets or sets the ingredient search text for autocomplete filtering.</summary>
         public string IngredientSearchText
         {
             get => ingredientSearchText;
@@ -66,27 +62,22 @@ namespace TeamNut.ViewModels
             }
         }
 
-        /// <summary>Gets or sets the ingredient chosen by the user from suggestions.</summary>
         public Ingredient? SelectedIngredient
         {
             get => selectedIngredient;
             set => SetProperty(ref selectedIngredient, value);
         }
 
-        /// <summary>Gets or sets the quantity in grams to add to inventory.</summary>
         public double QuantityToAdd
         {
             get => quantityToAdd;
             set => SetProperty(ref quantityToAdd, value);
         }
 
-        /// <summary>Gets the current inventory items.</summary>
         public ObservableCollection<Inventory> Items { get; } = new ObservableCollection<Inventory>();
 
-        /// <summary>Gets all available ingredients.</summary>
         public ObservableCollection<Ingredient> AvailableIngredients { get; } = new ObservableCollection<Ingredient>();
 
-        /// <summary>Gets the filtered ingredients matching the search text.</summary>
         public ObservableCollection<Ingredient> FilteredIngredients { get; } = new ObservableCollection<Ingredient>();
 
         public InventoryViewModel(IInventoryService iinventoryService)
@@ -98,8 +89,6 @@ namespace TeamNut.ViewModels
             _ = LoadIngredientsAsync();
         }
 
-        /// <summary>Loads inventory items for the current user.</summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         [RelayCommand]
         public async Task LoadInventoryAsync()
         {
@@ -191,8 +180,6 @@ namespace TeamNut.ViewModels
             }
         }
 
-        /// <summary>Loads all available ingredients from the database.</summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         [RelayCommand]
         public async Task LoadIngredientsAsync()
         {
@@ -231,7 +218,6 @@ namespace TeamNut.ViewModels
             }
         }
 
-        /// <summary>Gets a value indicating whether the inventory list is empty.</summary>
         public bool IsListEmpty => !Items.Any();
     }
 }

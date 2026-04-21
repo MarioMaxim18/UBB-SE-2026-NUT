@@ -17,12 +17,10 @@ namespace TeamNut
     /// <summary>Application entry point and lifecycle host.</summary>
     public partial class App : Application
     {
-        /// <summary>The application's main window instance.</summary>
         internal Window? AppWindow;
 
         public static IServiceProvider Services { get; private set; }
 
-        /// <summary>Initializes a new instance of the <see cref="App"/> class.</summary>
         public App()
         {
             this.UnhandledException += (sender, e) =>
@@ -78,8 +76,6 @@ namespace TeamNut
             return services.BuildServiceProvider();
         }
 
-        /// <summary>Creates and activates the main window when the application launches.</summary>
-        /// <param name="args">Launch activation event arguments.</param>
         protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
         {
             AppWindow = new MainWindow();

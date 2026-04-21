@@ -48,9 +48,6 @@ namespace TeamNut.Services
             reminderService = rreminderService;
         }
 
-        /// <summary>Generates a personalized daily meal plan for the given user.</summary>
-        /// <param name="userId">The user identifier.</param>
-        /// <returns>The identifier of the newly created meal plan.</returns>
         public async Task<int> GeneratePersonalizedMealPlanAsync(int userId)
         {
             if (userId < MinValidId)
@@ -162,9 +159,6 @@ namespace TeamNut.Services
             }
         }
 
-        /// <summary>Gets the meals contained in the given meal plan.</summary>
-        /// <param name="mealPlanId">The meal plan identifier.</param>
-        /// <returns>A list of meals for that plan.</returns>
         public async Task<List<Meal>> GetMealsForMealPlanAsync(int mealPlanId)
         {
             if (mealPlanId < MinValidId)
@@ -185,9 +179,6 @@ namespace TeamNut.Services
             }
         }
 
-        /// <summary>Gets a meal plan by its identifier.</summary>
-        /// <param name="mealPlanId">The meal plan identifier.</param>
-        /// <returns>The <see cref="MealPlan"/>, or <c>null</c> if invalid or not found.</returns>
         public async Task<MealPlan?> GetMealPlanByIdAsync(int mealPlanId)
         {
             if (mealPlanId < MinValidId)
@@ -205,9 +196,6 @@ namespace TeamNut.Services
             }
         }
 
-        /// <summary>Gets today's meal plan for the user, generating one if it doesn't exist.</summary>
-        /// <param name="userId">The user identifier.</param>
-        /// <returns>Today's <see cref="MealPlan"/>.</returns>
         public async Task<MealPlan?> GetTodaysMealPlanAsync(int userId)
         {
             if (userId < MinValidId)
@@ -236,8 +224,6 @@ namespace TeamNut.Services
             }
         }
 
-        /// <summary>Gets all meal plans.</summary>
-        /// <returns>All meal plans in the system.</returns>
         public async Task<IEnumerable<MealPlan>> GetAllMealPlansAsync()
         {
             try
@@ -251,9 +237,6 @@ namespace TeamNut.Services
             }
         }
 
-        /// <summary>Calculates total nutrition for a list of meals.</summary>
-        /// <param name="meals">The meals to sum.</param>
-        /// <returns>A tuple of (calories, protein, carbs, fat).</returns>
         public (int totalCalories, int totalProtein, int totalCarbs, int totalFat)
             CalculateTotalNutrition(List<Meal> meals)
         {
@@ -275,14 +258,6 @@ namespace TeamNut.Services
             return (totalCalories: calories, totalProtein: protein, totalCarbs: carbs, totalFat: fat);
         }
 
-        /// <summary>Validates that a meal plan's totals are within tolerance of the targets.</summary>
-        /// <param name="meals">The meals to validate.</param>
-        /// <param name="targetCalories">Target calorie count.</param>
-        /// <param name="targetProtein">Target protein grams.</param>
-        /// <param name="targetCarbs">Target carbohydrate grams.</param>
-        /// <param name="targetFat">Target fat grams.</param>
-        /// <param name="tolerance">Allowed fractional deviation (default 10%).</param>
-        /// <returns><c>true</c> if all totals are within tolerance.</returns>
         public bool ValidateMealPlan(
             List<Meal> meals,
             int targetCalories,
@@ -301,10 +276,6 @@ namespace TeamNut.Services
                 Math.Abs(f - targetFat) <= targetFat * tolerance;
         }
 
-        /// <summary>Returns a human-readable calorie adjustment description for the given goal.</summary>
-        /// <param name="goal">The user's goal string.</param>
-        /// <param name="baseTdee">The user's base total daily energy expenditure.</param>
-        /// <returns>A description of the calorie adjustment.</returns>
         public string GetCalorieAdjustmentDescription(
             string goal,
             int baseTdee)
@@ -327,9 +298,6 @@ namespace TeamNut.Services
             };
         }
 
-        /// <summary>Returns an emoji representing the user's goal.</summary>
-        /// <param name="goal">The user's goal string.</param>
-        /// <returns>An emoji string for the goal.</returns>
         public string GetGoalEmoji(string goal)
         {
             return goal?.ToLower() switch
@@ -342,9 +310,6 @@ namespace TeamNut.Services
             };
         }
 
-        /// <summary>Gets the goal string for the given user.</summary>
-        /// <param name="userId">The user identifier.</param>
-        /// <returns>The goal string, defaulting to "maintenance".</returns>
         public async Task<string> GetUserGoalAsync(int userId)
         {
             try
@@ -361,9 +326,6 @@ namespace TeamNut.Services
             }
         }
 
-        /// <summary>Saves all meals from a meal plan to the current user's daily log.</summary>
-        /// <param name="mealPlanId">The meal plan identifier.</param>
-        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task SaveMealsToDailyLogAsync(int mealPlanId)
         {
             if (!UserSession.UserId.HasValue)
@@ -378,10 +340,6 @@ namespace TeamNut.Services
                 meals);
         }
 
-        /// <summary>Saves a single meal to the current user's daily log.</summary>
-        /// <param name="mealId">The meal identifier.</param>
-        /// <param name="calories">The calorie value to log.</param>
-        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task SaveMealToDailyLogAsync(
             int mealId,
             int calories)

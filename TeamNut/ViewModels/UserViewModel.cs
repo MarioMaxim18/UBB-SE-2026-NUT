@@ -23,37 +23,28 @@ namespace TeamNut.ViewModels
         private const string ErrorDatabaseConnectionFormat = "Database Connection Failed! Start SSMS and check your server. Error: {0}";
         private const string ErrorSavingDataFormat = "An error occurred while saving: {0}";
 
-        /// <summary>Gets or sets the current user being registered or logged in.</summary>
         [ObservableProperty]
         public partial User CurrentUser { get; set; } = new User();
 
-        /// <summary>Gets or sets the health profile data for the current user.</summary>
         [ObservableProperty]
         public partial UserData CurrentUserData { get; set; } = new UserData();
 
-        /// <summary>Gets or sets a value indicating whether the nutritionist role is selected.</summary>
         [ObservableProperty]
         public partial bool IsNutritionistChecked { get; set; }
 
-        /// <summary>Gets or sets the status message shown to the user.</summary>
         [ObservableProperty]
         public partial string StatusMessage { get; set; } = string.Empty;
 
-        /// <summary>Gets or sets the selected birth date.</summary>
         [ObservableProperty]
         public partial DateTimeOffset SelectedDate { get; set; } = DateTimeOffset.Now;
 
-        /// <summary>Raised when registration data is valid and the user should proceed to enter health data.</summary>
         public event EventHandler? RegistrationValid;
 
-        /// <summary>Raised when login succeeds.</summary>
         public event EventHandler? LoginSuccess;
         private readonly IUserService userService;
 
-        /// <summary>Raised when health data is saved successfully.</summary>
         public event EventHandler? SaveDataSuccess;
 
-        /// <summary>Initializes a new instance of the <see cref="UserViewModel"/> class.</summary>
         public UserViewModel(IUserService uuserService)
         {
             userService = uuserService;
@@ -69,7 +60,7 @@ namespace TeamNut.ViewModels
                 : RoleUser;
 
             List<string> errors = CurrentUser.ValidateAndReturnErrors();
-            if (errors.Any())
+            if (errors.Count > 0)
             {
                 StatusMessage = string.Join(Environment.NewLine, errors);
                 return;
@@ -108,7 +99,7 @@ namespace TeamNut.ViewModels
             try
             {
                 List<string> errors = CurrentUserData.GetValidationErrors();
-                if (errors.Any())
+                if (errors.Count > 0)
                 {
                     StatusMessage = string.Join(Environment.NewLine, errors);
                     return;
