@@ -60,6 +60,15 @@ namespace TeamNut.Views
             };
             reminderTimer.Tick += ReminderTimer_Tick;
             reminderTimer.Start();
+
+            this.Unloaded += MainPage_Unloaded;
+        }
+
+        private void MainPage_Unloaded(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+        {
+            reminderTimer.Stop();
+            reminderTimer.Tick -= ReminderTimer_Tick;
+            reminderService.RemindersChanged -= OnRemindersChanged;
         }
 
         private async void ReminderTimer_Tick(object? sender, object? e)
