@@ -10,8 +10,9 @@ using TeamNut.Services;
 using TeamNut.Services.Interfaces;
 namespace TeamNut.ViewModels
 {
-    public partial class RemindersViewModel : ObservableObject
+    public partial class RemindersViewModel : ObservableObject, IDisposable
     {
+        private bool disposed;
         private readonly IReminderService reminderService;
         private readonly DispatcherQueue? dispatcher;
         private const int InvalidUserId = 0;
@@ -165,6 +166,15 @@ namespace TeamNut.ViewModels
             else
             {
                 action();
+            }
+        }
+
+        public void Dispose()
+        {
+            if (!disposed)
+            {
+                reminderService.RemindersChanged -= OnRemindersChanged;
+                disposed = true;
             }
         }
     }
