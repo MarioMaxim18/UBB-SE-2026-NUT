@@ -183,7 +183,7 @@
                                         FontSize="24"
                                         Foreground="Gold"
                                         HorizontalAlignment="Center"
-                                        Visibility="{Binding IsFavorite}"/>
+                                        Visibility="{Binding FavoriteVisibility}"/>
 
                                     <Button
                                         Content="Add to Logs"

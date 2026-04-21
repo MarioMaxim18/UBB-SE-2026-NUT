@@ -160,6 +160,33 @@ namespace TeamNut.ModelViews
             }
         }
 
+        public async Task ForceRegenerateMealPlanAsync()
+        {
+            IsBusy = true;
+            StatusMessage = StatusRegeneratingTest;
+            GeneratedMeals.Clear();
+            TotalNutritionSummary = string.Empty;
+            GoalDescription = string.Empty;
+
+            try
+            {
+                int? userId = UserSession.UserId;
+
+                if (userId == null || userId <= InvalidId)
+                {
+                    StatusMessage = StatusLoginRequired;
+                    HasMeals = false;
+                    return;
+                }
+
+                await GenerateNewMealPlanAsync(userId.Value);
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
+
         public async Task LoadOrGenerateTodaysMealPlanAsync()
         {
             IsBusy = true;
