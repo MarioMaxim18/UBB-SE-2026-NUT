@@ -106,6 +106,7 @@ namespace TeamNut.Repositories
             cmd.Parameters.AddWithValue("@time", entity.Time.ToString());
             cmd.Parameters.AddWithValue("@date", entity.ReminderDate);
             cmd.Parameters.AddWithValue("@freq", entity.Frequency ?? string.Empty);
+            cmd.Parameters.AddWithValue("@uid", entity.UserId);
 
             await conn.OpenAsync();
             await cmd.ExecuteNonQueryAsync();
