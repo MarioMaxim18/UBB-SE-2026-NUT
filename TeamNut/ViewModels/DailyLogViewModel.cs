@@ -68,82 +68,68 @@ namespace TeamNut.ViewModels
         private Meal? selectedMeal;
         private string logMealStatusMessage = Constants.Empty;
 
-        /// <summary>Initializes a new instance of the <see cref="DailyLogViewModel"/> class.</summary>
         public DailyLogViewModel()
         {
             service = new DailyLogService();
             _ = LoadMealsForAutocompleteAsync();
         }
 
-        /// <summary>Gets or sets a value indicating whether the view has data to display.</summary>
         public bool HasData
         {
             get => hasData;
             set => SetProperty(ref hasData, value);
         }
 
-        /// <summary>Gets or sets the status message shown to the user.</summary>
         public string StatusMessage
         {
             get => statusMessage;
             set => SetProperty(ref statusMessage, value);
         }
 
-        /// <summary>Gets or sets today's nutrition totals.</summary>
         public DailyLog DailyTotals
         {
             get => dailyTotals;
             set => SetProperty(ref dailyTotals, value);
         }
 
-        /// <summary>Gets or sets this week's nutrition totals.</summary>
         public DailyLog WeeklyTotals
         {
             get => weeklyTotals;
             set => SetProperty(ref weeklyTotals, value);
         }
 
-        /// <summary>Gets or sets the daily calorie goal.</summary>
         public double DailyCaloriesGoal
         {
             get => dailyCaloriesGoal;
             set => SetProperty(ref dailyCaloriesGoal, value);
         }
 
-        /// <summary>Gets or sets the daily protein goal in grams.</summary>
         public double DailyProteinGoal
         {
             get => dailyProteinGoal;
             set => SetProperty(ref dailyProteinGoal, value);
         }
 
-        /// <summary>Gets or sets the daily carbohydrate goal in grams.</summary>
         public double DailyCarbsGoal
         {
             get => dailyCarbsGoal;
             set => SetProperty(ref dailyCarbsGoal, value);
         }
 
-        /// <summary>Gets or sets the daily fat goal in grams.</summary>
         public double DailyFatsGoal
         {
             get => dailyFatsGoal;
             set => SetProperty(ref dailyFatsGoal, value);
         }
 
-        /// <summary>Gets the weekly calorie goal.</summary>
         public double WeeklyCaloriesGoal => DailyCaloriesGoal * Constants.DaysPerWeek;
 
-        /// <summary>Gets the weekly protein goal in grams.</summary>
         public double WeeklyProteinGoal => DailyProteinGoal * Constants.DaysPerWeek;
 
-        /// <summary>Gets the weekly carbohydrate goal in grams.</summary>
         public double WeeklyCarbsGoal => DailyCarbsGoal * Constants.DaysPerWeek;
 
-        /// <summary>Gets the weekly fat goal in grams.</summary>
         public double WeeklyFatsGoal => DailyFatsGoal * Constants.DaysPerWeek;
 
-        /// <summary>Gets or sets the meal search text used for autocomplete filtering.</summary>
         public string MealSearchText
         {
             get => mealSearchText;
@@ -156,22 +142,18 @@ namespace TeamNut.ViewModels
             }
         }
 
-        /// <summary>Gets or sets the currently selected meal for logging.</summary>
         public Meal? SelectedMeal
         {
             get => selectedMeal;
             set => SetProperty(ref selectedMeal, value);
         }
 
-        /// <summary>Gets or sets the status message for the log meal operation.</summary>
         public string LogMealStatusMessage
         {
             get => logMealStatusMessage;
             set => SetProperty(ref logMealStatusMessage, value);
         }
 
-        /// <summary>Loads all meals into the autocomplete list.</summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task LoadMealsForAutocompleteAsync()
         {
             var meals = await service.GetMealsForAutocompleteAsync();
@@ -179,8 +161,6 @@ namespace TeamNut.ViewModels
             UpdateFilteredMeals();
         }
 
-        /// <summary>Logs the currently selected meal to the daily log.</summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task LogSelectedMealAsync()
         {
             if (SelectedMeal == null)
@@ -219,8 +199,6 @@ namespace TeamNut.ViewModels
                 : Constants.Empty;
         }
 
-        /// <summary>Loads all daily and weekly nutrition data for the current user.</summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task LoadAsync()
         {
             if (!await service.HasAnyLogsAsync())

@@ -13,7 +13,6 @@ namespace TeamNut.Services
         private readonly IngredientRepository ingredientRepository;
         private readonly InventoryRepository inventoryRepository;
 
-        /// <summary>Initializes a new instance of the <see cref="ShoppingListService"/> class.</summary>
         public ShoppingListService()
         {
             repository = new ShoppingListRepository();
@@ -21,19 +20,11 @@ namespace TeamNut.Services
             inventoryRepository = new InventoryRepository();
         }
 
-        /// <summary>Gets all shopping items for the given user.</summary>
-        /// <param name="userId">The user identifier.</param>
-        /// <returns>A list of shopping items.</returns>
         public async Task<List<ShoppingItem>> GetShoppingItemsAsync(int userId)
         {
             return await repository.GetAllByUserId(userId);
         }
 
-        /// <summary>Adds an ingredient to the shopping list, or increases its quantity if it already exists.</summary>
-        /// <param name="itemName">The ingredient name.</param>
-        /// <param name="userId">The user identifier.</param>
-        /// <param name="quantity">The quantity in grams.</param>
-        /// <returns>The added or updated <see cref="ShoppingItem"/>, or <c>null</c> on error.</returns>
         public async Task<ShoppingItem?> AddItemAsync(string itemName, int userId, double quantity = 0)
         {
             try
@@ -66,9 +57,6 @@ namespace TeamNut.Services
             }
         }
 
-        /// <summary>Removes a shopping item from the list.</summary>
-        /// <param name="item">The item to remove.</param>
-        /// <returns><c>true</c> if successful; otherwise <c>false</c>.</returns>
         public async Task<bool> RemoveItemAsync(ShoppingItem item)
         {
             try
@@ -82,9 +70,6 @@ namespace TeamNut.Services
             }
         }
 
-        /// <summary>Updates a shopping item in the database.</summary>
-        /// <param name="item">The item to update.</param>
-        /// <returns><c>true</c> if successful; otherwise <c>false</c>.</returns>
         public async Task<bool> UpdateItemAsync(ShoppingItem item)
         {
             try
@@ -98,17 +83,11 @@ namespace TeamNut.Services
             }
         }
 
-        /// <summary>Searches for ingredients matching the given text.</summary>
-        /// <param name="search">The search string.</param>
-        /// <returns>A list of ingredient id/name pairs.</returns>
         public async Task<List<KeyValuePair<int, string>>> SearchIngredientsAsync(string search)
         {
             return await ingredientRepository.SearchIngredientsAsync(search);
         }
 
-        /// <summary>Moves a shopping item to the user's inventory.</summary>
-        /// <param name="item">The item to move.</param>
-        /// <returns><c>true</c> if successful; otherwise <c>false</c>.</returns>
         public async Task<bool> MoveToPantryAsync(ShoppingItem item)
         {
             try
@@ -128,9 +107,6 @@ namespace TeamNut.Services
             }
         }
 
-        /// <summary>Generates shopping list items from the user's active meal plan.</summary>
-        /// <param name="userId">The user identifier.</param>
-        /// <returns>The number of items added, 0 if nothing was needed, or -1 on error.</returns>
         public async Task<int> GenerateListAsync(int userId)
         {
             try

@@ -11,9 +11,6 @@ namespace TeamNut.Repositories
     {
         private readonly string connectionString = DbConfig.ConnectionString;
 
-        /// <summary>Gets a user by their identifier.</summary>
-        /// <param name="id">The user identifier.</param>
-        /// <returns>The <see cref="User"/>, or <c>null</c> if not found.</returns>
         public async Task<User?> GetById(int id)
         {
             using var conn = new SqliteConnection(connectionString);
@@ -35,9 +32,6 @@ namespace TeamNut.Repositories
             return null;
         }
 
-        /// <summary>Inserts health data for a user.</summary>
-        /// <param name="data">The health data to insert.</param>
-        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task AddUserData(UserData data)
         {
             using var conn = new SqliteConnection(connectionString);
@@ -61,9 +55,6 @@ namespace TeamNut.Repositories
             await cmd.ExecuteNonQueryAsync();
         }
 
-        /// <summary>Inserts a new user record.</summary>
-        /// <param name="entity">The user to insert.</param>
-        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task Add(User entity)
         {
             using var conn = new SqliteConnection(connectionString);
@@ -84,9 +75,6 @@ namespace TeamNut.Repositories
             }
         }
 
-        /// <summary>Updates an existing user record.</summary>
-        /// <param name="entity">The user to update.</param>
-        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task Update(User entity)
         {
             using var conn = new SqliteConnection(connectionString);
@@ -101,9 +89,6 @@ namespace TeamNut.Repositories
             await cmd.ExecuteNonQueryAsync();
         }
 
-        /// <summary>Deletes a user by their identifier.</summary>
-        /// <param name="id">The user identifier.</param>
-        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task Delete(int id)
         {
             using var conn = new SqliteConnection(connectionString);
@@ -114,10 +99,6 @@ namespace TeamNut.Repositories
             await cmd.ExecuteNonQueryAsync();
         }
 
-        /// <summary>Looks up a user by username and password.</summary>
-        /// <param name="username">The username.</param>
-        /// <param name="password">The password.</param>
-        /// <returns>The matching <see cref="User"/>, or <c>null</c>.</returns>
         public async Task<User?> GetByUsernameAndPassword(string username, string password)
         {
             using var conn = new SqliteConnection(connectionString);
@@ -139,8 +120,6 @@ namespace TeamNut.Repositories
             return null;
         }
 
-        /// <summary>Gets all users in the database.</summary>
-        /// <returns>All users.</returns>
         public async Task<IEnumerable<User>> GetAll()
         {
             if (string.IsNullOrEmpty(connectionString))
@@ -170,9 +149,6 @@ namespace TeamNut.Repositories
             return users;
         }
 
-        /// <summary>Gets health data for the given user.</summary>
-        /// <param name="userId">The user identifier.</param>
-        /// <returns>The <see cref="UserData"/>, or <c>null</c>.</returns>
         public async Task<UserData?> GetUserDataByUserId(int userId)
         {
             using var conn = new SqliteConnection(connectionString);
@@ -202,9 +178,6 @@ namespace TeamNut.Repositories
             return null;
         }
 
-        /// <summary>Updates health data for a user.</summary>
-        /// <param name="data">The updated health data.</param>
-        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task UpdateUserData(UserData data)
         {
             using var conn = new SqliteConnection(connectionString);

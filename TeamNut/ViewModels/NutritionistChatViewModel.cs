@@ -29,43 +29,33 @@ namespace TeamNut.ViewModels
         private const string StatusNutritionistCannotStartConversation = "Nutritionists can only respond to existing conversations.";
         private static readonly Regex AllowedMessageRegex = new Regex("^[a-zA-Z0-9 .,!?'\\-()]+$", RegexOptions.Compiled);
 
-        /// <summary>Gets or sets the list of conversations.</summary>
         [ObservableProperty]
         public partial ObservableCollection<Conversation> Conversations { get; set; }
 
-        /// <summary>Gets or sets the messages for the selected conversation.</summary>
         [ObservableProperty]
         public partial ObservableCollection<Message> Messages { get; set; }
 
-        /// <summary>Gets or sets the text the user is typing.</summary>
         [ObservableProperty]
         public partial string InputText { get; set; }
 
-        /// <summary>Gets or sets a value indicating whether the send button is enabled.</summary>
         [ObservableProperty]
         public partial bool CanSend { get; set; }
 
-        /// <summary>Gets or sets the status or validation message.</summary>
         [ObservableProperty]
         public partial string StatusMessage { get; set; }
 
-        /// <summary>Gets or sets a value indicating whether the nutritionist unanswered-conversations view is active.</summary>
         [ObservableProperty]
         public partial bool IsNutritionistView { get; set; }
 
-        /// <summary>Gets or sets the currently selected conversation.</summary>
         [ObservableProperty]
         public partial Conversation? SelectedConversation { get; set; }
 
-        /// <summary>Gets or sets a value indicating whether any messages are loaded.</summary>
         [ObservableProperty]
         public partial bool HasMessages { get; set; }
 
-        /// <summary>Gets or sets a value indicating whether the current user is a nutritionist.</summary>
         [ObservableProperty]
         public partial bool IsNutritionistUser { get; set; }
 
-        /// <summary>Initializes a new instance of the <see cref="NutritionistChatViewModel"/> class.</summary>
         public NutritionistChatViewModel()
         {
             Conversations = new ObservableCollection<Conversation>();
@@ -120,8 +110,6 @@ namespace TeamNut.ViewModels
             StatusMessage = string.Empty;
         }
 
-        /// <summary>Loads conversations for the current user or nutritionist.</summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task LoadConversationsAsync()
         {
             IEnumerable<Conversation> convs;
@@ -152,9 +140,6 @@ namespace TeamNut.ViewModels
                 : StatusNoActiveConversations;
         }
 
-        /// <summary>Loads messages for the specified conversation.</summary>
-        /// <param name="conversationId">The conversation identifier.</param>
-        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task LoadMessagesForConversationAsync(int conversationId)
         {
             currentConversationId = conversationId;
@@ -202,14 +187,11 @@ namespace TeamNut.ViewModels
             }
         }
 
-        /// <summary>Stops the background auto-refresh loop.</summary>
         public void StopAutoRefresh()
         {
             autoRefreshCts?.Cancel();
         }
 
-        /// <summary>Sends the current input text as a message in the active conversation.</summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         [RelayCommand]
         public async Task SendMessageAsync()
         {

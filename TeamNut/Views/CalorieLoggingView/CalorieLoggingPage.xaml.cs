@@ -10,7 +10,6 @@ namespace TeamNut.Views.CalorieLoggingView
     {
         private readonly DailyLogViewModel viewModel;
 
-        /// <summary>Initializes a new instance of the <see cref="CalorieLoggingPage"/> class.</summary>
         public CalorieLoggingPage()
         {
             this.InitializeComponent();

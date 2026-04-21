@@ -13,18 +13,14 @@ public partial class MainViewModel : ObservableObject
     private const string ReminderDisplayFormat = "{0} at {1}";
     private const string ReminderTimeFormat = @"hh\:mm";
 
-    /// <summary>Gets or sets the text for the next upcoming reminder.</summary>
     [ObservableProperty]
     public partial string NextReminderText { get; set; }
 
-    /// <summary>Initializes a new instance of the <see cref="MainViewModel"/> class.</summary>
     public MainViewModel()
     {
         NextReminderText = LoadingReminderText;
     }
 
-    /// <summary>Refreshes the next reminder text from the service.</summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     public async Task UpdateHeaderReminder()
     {
         int userId = UserSession.UserId ?? InvalidUserId;
@@ -42,8 +38,6 @@ public partial class MainViewModel : ObservableObject
         }
     }
 
-    /// <summary>Loads all header data for the main page.</summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     public async Task LoadHeaderData()
     {
         await UpdateHeaderReminder();

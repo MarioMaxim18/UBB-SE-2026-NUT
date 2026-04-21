@@ -25,12 +25,6 @@ namespace TeamNut
     /// <summary>Converts a boolean or role string to a <see cref="Visibility"/> value.</summary>
     public class BoolToVisibilityConverter : IValueConverter
     {
-        /// <summary>Converts a value to <see cref="Visibility"/>.</summary>
-        /// <param name="value">The input value (bool or role string).</param>
-        /// <param name="targetType">The target binding type.</param>
-        /// <param name="parameter">Optional converter parameter.</param>
-        /// <param name="language">The language of the conversion.</param>
-        /// <returns>The appropriate <see cref="Visibility"/>.</returns>
         public object Convert(object value, Type targetType, object parameter, string language)
         {
             if (parameter != null && value != null)
@@ -71,12 +65,6 @@ namespace TeamNut
             return Visibility.Collapsed;
         }
 
-        /// <summary>Not implemented.</summary>
-        /// <param name="value">Unused.</param>
-        /// <param name="targetType">Unused.</param>
-        /// <param name="parameter">Unused.</param>
-        /// <param name="language">Unused.</param>
-        /// <returns>Always throws.</returns>
         public object ConvertBack(object value, Type targetType, object parameter, string language)
             => throw new NotImplementedException();
     }
@@ -84,12 +72,6 @@ namespace TeamNut
     /// <summary>Converts a boolean to a <see cref="FontWeight"/>.</summary>
     public class BoolToFontWeightConverter : IValueConverter
     {
-        /// <summary>Converts a boolean to a font weight.</summary>
-        /// <param name="value">The boolean value.</param>
-        /// <param name="targetType">The target binding type.</param>
-        /// <param name="parameter">Optional converter parameter.</param>
-        /// <param name="language">The language of the conversion.</param>
-        /// <returns>Bold when <c>true</c>; otherwise Normal.</returns>
         public object Convert(object value, Type targetType, object parameter, string language)
         {
             return value is bool b && b
@@ -97,12 +79,6 @@ namespace TeamNut
                 : ConverterConstants.FontNormal;
         }
 
-        /// <summary>Not implemented.</summary>
-        /// <param name="value">Unused.</param>
-        /// <param name="targetType">Unused.</param>
-        /// <param name="parameter">Unused.</param>
-        /// <param name="language">Unused.</param>
-        /// <returns>Always throws.</returns>
         public object ConvertBack(object value, Type targetType, object parameter, string language)
             => throw new NotImplementedException();
     }
@@ -110,21 +86,9 @@ namespace TeamNut
     /// <summary>Inverts a boolean value.</summary>
     public class InverseBoolConverter : IValueConverter
     {
-        /// <summary>Returns the logical negation of the input boolean.</summary>
-        /// <param name="value">The boolean value.</param>
-        /// <param name="targetType">The target binding type.</param>
-        /// <param name="parameter">Optional converter parameter.</param>
-        /// <param name="language">The language of the conversion.</param>
-        /// <returns>The inverted boolean.</returns>
         public object Convert(object value, Type targetType, object parameter, string language)
             => value is bool b ? !b : true;
 
-        /// <summary>Returns the logical negation of the input boolean.</summary>
-        /// <param name="value">The boolean value.</param>
-        /// <param name="targetType">The target binding type.</param>
-        /// <param name="parameter">Optional converter parameter.</param>
-        /// <param name="language">The language of the conversion.</param>
-        /// <returns>The inverted boolean.</returns>
         public object ConvertBack(object value, Type targetType, object parameter, string language)
             => value is bool b ? !b : true;
     }
@@ -132,12 +96,6 @@ namespace TeamNut
     /// <summary>Converts an empty string to a <see cref="Visibility"/> value.</summary>
     public class EmptyStringToVisibilityConverter : IValueConverter
     {
-        /// <summary>Returns Visible when the string is empty (or Inverse).</summary>
-        /// <param name="value">The string to check.</param>
-        /// <param name="targetType">The target binding type.</param>
-        /// <param name="parameter">Pass "Inverse" to reverse the logic.</param>
-        /// <param name="language">The language of the conversion.</param>
-        /// <returns>The appropriate <see cref="Visibility"/>.</returns>
         public object Convert(object value, Type targetType, object parameter, string language)
         {
             bool isEmpty = string.IsNullOrWhiteSpace(value?.ToString());
@@ -149,12 +107,6 @@ namespace TeamNut
                 : Visibility.Collapsed;
         }
 
-        /// <summary>Not implemented.</summary>
-        /// <param name="value">Unused.</param>
-        /// <param name="targetType">Unused.</param>
-        /// <param name="parameter">Unused.</param>
-        /// <param name="language">Unused.</param>
-        /// <returns>Always throws.</returns>
         public object ConvertBack(object value, Type targetType, object parameter, string language)
             => throw new NotImplementedException();
     }
@@ -162,12 +114,6 @@ namespace TeamNut
     /// <summary>Converts a role string to a <see cref="HorizontalAlignment"/>.</summary>
     public class RoleToHorizontalAlignmentConverter : IValueConverter
     {
-        /// <summary>Returns Left for nutritionist, Right for user.</summary>
-        /// <param name="value">The role string.</param>
-        /// <param name="targetType">The target binding type.</param>
-        /// <param name="parameter">Optional converter parameter.</param>
-        /// <param name="language">The language of the conversion.</param>
-        /// <returns>The appropriate <see cref="HorizontalAlignment"/>.</returns>
         public object Convert(object value, Type targetType, object parameter, string language)
         {
             var role = value?.ToString() ?? string.Empty;
@@ -180,12 +126,6 @@ namespace TeamNut
                 : HorizontalAlignment.Right;
         }
 
-        /// <summary>Not implemented.</summary>
-        /// <param name="value">Unused.</param>
-        /// <param name="targetType">Unused.</param>
-        /// <param name="parameter">Unused.</param>
-        /// <param name="language">Unused.</param>
-        /// <returns>Always throws.</returns>
         public object ConvertBack(object value, Type targetType, object parameter, string language)
             => throw new NotImplementedException();
     }
@@ -193,12 +133,6 @@ namespace TeamNut
     /// <summary>Converts an integer equal to zero to a <see cref="Visibility"/> value.</summary>
     public class IntZeroToVisibilityConverter : IValueConverter
     {
-        /// <summary>Returns Visible when the integer is zero.</summary>
-        /// <param name="value">The integer value.</param>
-        /// <param name="targetType">The target binding type.</param>
-        /// <param name="parameter">Pass "Inverse" to reverse the logic.</param>
-        /// <param name="language">The language of the conversion.</param>
-        /// <returns>The appropriate <see cref="Visibility"/>.</returns>
         public object Convert(object value, Type targetType, object parameter, string language)
         {
             bool inverse =
@@ -220,12 +154,6 @@ namespace TeamNut
             return Visibility.Visible;
         }
 
-        /// <summary>Not implemented.</summary>
-        /// <param name="value">Unused.</param>
-        /// <param name="targetType">Unused.</param>
-        /// <param name="parameter">Unused.</param>
-        /// <param name="language">Unused.</param>
-        /// <returns>Always throws.</returns>
         public object ConvertBack(object value, Type targetType, object parameter, string language)
             => throw new NotImplementedException();
     }
@@ -233,12 +161,6 @@ namespace TeamNut
     /// <summary>Converts a role string to a background brush colour.</summary>
     public class RoleToBackgroundConverter : IValueConverter
     {
-        /// <summary>Returns a coloured brush based on the role string.</summary>
-        /// <param name="value">The role string.</param>
-        /// <param name="targetType">The target binding type.</param>
-        /// <param name="parameter">Optional converter parameter.</param>
-        /// <param name="language">The language of the conversion.</param>
-        /// <returns>A <see cref="SolidColorBrush"/> for the role.</returns>
         public object Convert(object value, Type targetType, object parameter, string language)
         {
             var role = value?.ToString() ?? string.Empty;
@@ -253,12 +175,6 @@ namespace TeamNut
             return new SolidColorBrush(color);
         }
 
-        /// <summary>Not implemented.</summary>
-        /// <param name="value">Unused.</param>
-        /// <param name="targetType">Unused.</param>
-        /// <param name="parameter">Unused.</param>
-        /// <param name="language">Unused.</param>
-        /// <returns>Always throws.</returns>
         public object ConvertBack(object value, Type targetType, object parameter, string language)
             => throw new NotImplementedException();
     }
@@ -266,12 +182,6 @@ namespace TeamNut
     /// <summary>Highlights conversations that have unanswered messages (nutritionist view only).</summary>
     public class UnansweredToHighlightConverter : IValueConverter
     {
-        /// <summary>Returns a highlight brush for unanswered conversations when viewed by a nutritionist.</summary>
-        /// <param name="value">The HasUnanswered boolean.</param>
-        /// <param name="targetType">The target binding type.</param>
-        /// <param name="parameter">Optional converter parameter.</param>
-        /// <param name="language">The language of the conversion.</param>
-        /// <returns>A <see cref="SolidColorBrush"/>.</returns>
         public object Convert(object value, Type targetType, object parameter, string language)
         {
             try
@@ -299,12 +209,6 @@ namespace TeamNut
             }
         }
 
-        /// <summary>Not implemented.</summary>
-        /// <param name="value">Unused.</param>
-        /// <param name="targetType">Unused.</param>
-        /// <param name="parameter">Unused.</param>
-        /// <param name="language">Unused.</param>
-        /// <returns>Always throws.</returns>
         public object ConvertBack(object value, Type targetType, object parameter, string language)
             => throw new NotImplementedException();
     }
@@ -312,12 +216,6 @@ namespace TeamNut
     /// <summary>Converts an integer greater than zero to a <see cref="Visibility"/> value.</summary>
     public class IntGreaterThanZeroToVisibilityConverter : IValueConverter
     {
-        /// <summary>Returns Visible when the integer is greater than zero.</summary>
-        /// <param name="value">The integer value.</param>
-        /// <param name="targetType">The target binding type.</param>
-        /// <param name="parameter">Pass "Inverse" to reverse the logic.</param>
-        /// <param name="language">The language of the conversion.</param>
-        /// <returns>The appropriate <see cref="Visibility"/>.</returns>
         public object Convert(object value, Type targetType, object parameter, string language)
         {
             bool inverse =
@@ -335,12 +233,6 @@ namespace TeamNut
                 : Visibility.Collapsed;
         }
 
-        /// <summary>Not implemented.</summary>
-        /// <param name="value">Unused.</param>
-        /// <param name="targetType">Unused.</param>
-        /// <param name="parameter">Unused.</param>
-        /// <param name="language">Unused.</param>
-        /// <returns>Always throws.</returns>
         public object ConvertBack(object value, Type targetType, object parameter, string language)
             => throw new NotImplementedException();
     }

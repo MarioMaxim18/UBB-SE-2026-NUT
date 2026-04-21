@@ -30,7 +30,6 @@ namespace TeamNut
         private const string DoubleLineBreak = "\n\n";
         private int pageSize = DefaultPageSize;
 
-        /// <summary>Initializes a new instance of the <see cref="MealsPage"/> class.</summary>
         public MealsPage()
         {
             InitializeComponent();

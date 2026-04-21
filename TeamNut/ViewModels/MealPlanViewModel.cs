@@ -47,21 +47,17 @@ namespace TeamNut.ModelViews
             { 2, "DINNER" }
         };
 
-        /// <summary>Gets or sets the status message shown at the top of the page.</summary>
         [ObservableProperty]
         public partial string StatusMessage { get; set; }
 
-        /// <summary>Gets or sets a value indicating whether a background operation is running.</summary>
         [ObservableProperty]
         public partial bool IsBusy { get; set; }
 
-        /// <summary>Gets or sets the meals in the generated plan.</summary>
         [ObservableProperty]
         public partial ObservableCollection<MealViewModel> GeneratedMeals { get; set; }
 
         private int currentMealPlanId;
 
-        /// <summary>Gets or sets the identifier of the currently loaded meal plan.</summary>
         public int CurrentMealPlanId
         {
             get => currentMealPlanId;
@@ -70,7 +66,6 @@ namespace TeamNut.ModelViews
 
         private int totalCalories;
 
-        /// <summary>Gets or sets the total calories for the current meal plan.</summary>
         public int TotalCalories
         {
             get => totalCalories;
@@ -79,7 +74,6 @@ namespace TeamNut.ModelViews
 
         private int totalProtein;
 
-        /// <summary>Gets or sets the total protein grams for the current meal plan.</summary>
         public int TotalProtein
         {
             get => totalProtein;
@@ -88,7 +82,6 @@ namespace TeamNut.ModelViews
 
         private int totalCarbs;
 
-        /// <summary>Gets or sets the total carbohydrate grams for the current meal plan.</summary>
         public int TotalCarbs
         {
             get => totalCarbs;
@@ -97,7 +90,6 @@ namespace TeamNut.ModelViews
 
         private int totalFat;
 
-        /// <summary>Gets or sets the total fat grams for the current meal plan.</summary>
         public int TotalFat
         {
             get => totalFat;
@@ -106,34 +98,27 @@ namespace TeamNut.ModelViews
 
         private bool hasMeals;
 
-        /// <summary>Gets or sets a value indicating whether the generated meals collection has any items.</summary>
         public bool HasMeals
         {
             get => hasMeals;
             set => SetProperty(ref hasMeals, value);
         }
 
-        /// <summary>Gets or sets the formatted total nutrition summary string.</summary>
         [ObservableProperty]
         public partial string TotalNutritionSummary { get; set; }
 
-        /// <summary>Gets or sets the user's goal description label.</summary>
         [ObservableProperty]
         public partial string GoalDescription { get; set; }
 
-        /// <summary>Gets or sets a value indicating whether an error dialog should be shown.</summary>
         [ObservableProperty]
         public partial bool ShowErrorDialog { get; set; }
 
-        /// <summary>Gets or sets the title for the error dialog.</summary>
         [ObservableProperty]
         public partial string ErrorDialogTitle { get; set; }
 
-        /// <summary>Gets or sets the message for the error dialog.</summary>
         [ObservableProperty]
         public partial string ErrorDialogMessage { get; set; }
 
-        /// <summary>Initializes a new instance of the <see cref="MealPlanViewModel"/> class.</summary>
         public MealPlanViewModel()
         {
             GeneratedMeals = new ObservableCollection<MealViewModel>();
@@ -174,8 +159,6 @@ namespace TeamNut.ModelViews
             }
         }
 
-        /// <summary>Loads today's existing meal plan or generates a new one.</summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task LoadOrGenerateTodaysMealPlanAsync()
         {
             IsBusy = true;

@@ -9,10 +9,8 @@ namespace TeamNut.Views.NutritionistChat
     /// <summary>Page for the nutritionist chat feature.</summary>
     public sealed partial class NutritionistChatPage : Page
     {
-        /// <summary>Gets the view model.</summary>
         public NutritionistChatViewModel ViewModel { get; } = new NutritionistChatViewModel();
 
-        /// <summary>Initializes a new instance of the <see cref="NutritionistChatPage"/> class.</summary>
         public NutritionistChatPage()
         {
             this.InitializeComponent();
@@ -44,8 +42,6 @@ namespace TeamNut.Views.NutritionistChat
             }
         }
 
-        /// <summary>Stops auto-refresh when navigating away.</summary>
-        /// <param name="e">Navigation event arguments.</param>
         protected override void OnNavigatedFrom(Microsoft.UI.Xaml.Navigation.NavigationEventArgs e)
         {
             base.OnNavigatedFrom(e);
