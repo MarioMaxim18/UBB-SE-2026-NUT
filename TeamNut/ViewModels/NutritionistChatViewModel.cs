@@ -229,7 +229,12 @@ namespace TeamNut.ViewModels
                 currentConversationId = conv.Id;
             }
 
-            int senderId = UserSession.UserId ?? InvalidUserId;
+            if (UserSession.UserId == null)
+            {
+                return;
+            }
+
+            int senderId = UserSession.UserId.Value;
             bool isNutritionist = UserSession.Role == NutritionistRole;
 
             await chatService.AddMessageAsync(
