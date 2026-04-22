@@ -4,6 +4,7 @@
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
+  <Project Path="../TeamNut.Tests/TeamNut.Tests.csproj" Id="a70d71a6-cd7b-47b7-9df7-0cce9d24540e" />
   <Project Path="TeamNut.csproj">
     <Platform Solution="*|ARM64" Project="ARM64" />
     <Platform Solution="*|x64" Project="x64" />
