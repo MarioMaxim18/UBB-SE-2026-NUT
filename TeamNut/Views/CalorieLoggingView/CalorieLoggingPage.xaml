@@ -32,8 +32,13 @@
         <TextBlock Grid.Row="1" Text="{Binding StatusMessage}" FontSize="16" TextWrapping="WrapWholeWords"
                    Visibility="{Binding HasData, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Inverse}"/>
 
-        <Grid Grid.Row="2" ColumnSpacing="16"
-              Visibility="{Binding HasData, Converter={StaticResource BoolToVisibilityConverter}}">
+        <ScrollViewer Grid.Row="2"
+                      VerticalScrollMode="Auto"
+                      VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollMode="Disabled"
+                      HorizontalScrollBarVisibility="Disabled"
+                      Visibility="{Binding HasData, Converter={StaticResource BoolToVisibilityConverter}}">
+        <Grid ColumnSpacing="16">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
@@ -79,5 +84,6 @@
                 </StackPanel>
             </Border>
         </Grid>
+        </ScrollViewer>
     </Grid>
 </Page>
