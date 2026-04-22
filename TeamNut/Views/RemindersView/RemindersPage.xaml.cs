@@ -44,6 +44,7 @@ namespace TeamNut.Views.RemindersView
             this.InitializeComponent();
             ViewModel = App.Services.GetService<RemindersViewModel>();
             validationService = App.Services.GetRequiredService<IValidationService>();
+            this.DataContext = ViewModel;
 
             this.Loaded += async (_, _) => await this.ViewModel.LoadReminders();
 
