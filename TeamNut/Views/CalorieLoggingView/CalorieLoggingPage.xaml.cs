@@ -1,5 +1,6 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Navigation;
 using TeamNut.Models;
 using TeamNut.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,6 +19,17 @@ namespace TeamNut.Views.CalorieLoggingView
             this.DataContext = ViewModel;
 
             LoadData();
+        }
+
+        protected override async void OnNavigatedTo(NavigationEventArgs e)
+        {
+            base.OnNavigatedTo(e);
+            await ViewModel.LoadAsync();
+        }
+
+        internal async System.Threading.Tasks.Task RefreshAsync()
+        {
+            await ViewModel.LoadAsync();
         }
 
         private async void LoadData()

@@ -380,9 +380,16 @@ namespace TeamNut.Views
             {
                 MealPlanFrame.Navigate(typeof(TeamNut.Views.MealPlanView.MealPlanPage));
             }
-            else if ((MainTabView.SelectedItem as Microsoft.UI.Xaml.Controls.TabViewItem) == DailyLogTab && DailyLogFrame.Content == null)
+            else if ((MainTabView.SelectedItem as Microsoft.UI.Xaml.Controls.TabViewItem) == DailyLogTab)
             {
-                DailyLogFrame.Navigate(typeof(TeamNut.Views.CalorieLoggingView.CalorieLoggingPage));
+                if (DailyLogFrame.Content == null)
+                {
+                    DailyLogFrame.Navigate(typeof(TeamNut.Views.CalorieLoggingView.CalorieLoggingPage));
+                }
+                else if (DailyLogFrame.Content is TeamNut.Views.CalorieLoggingView.CalorieLoggingPage progressPage)
+                {
+                    _ = progressPage.RefreshAsync();
+                }
             }
             else if ((MainTabView.SelectedItem as Microsoft.UI.Xaml.Controls.TabViewItem) == InventoryTab && InventoryFrame.Content == null)
             {
