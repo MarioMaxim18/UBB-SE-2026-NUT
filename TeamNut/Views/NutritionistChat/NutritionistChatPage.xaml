@@ -14,12 +14,13 @@
         </Grid.RowDefinitions>
         <Grid Grid.Row="0">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="260" />
+                <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
             <!-- Conversations list / nutritionist tabs -->
-            <StackPanel Grid.Column="0">
+            <StackPanel Grid.Column="0" Width="260"
+                        Visibility="{Binding IsNutritionistUser, Converter={StaticResource BoolToVisibilityConverter}}">
                 <!-- tabs only for nutritionist -->
                 <StackPanel Orientation="Horizontal" Visibility="{Binding IsNutritionistUser, Converter={StaticResource BoolToVisibilityConverter}}">
                     <ToggleSwitch OnContent="All chats" OffContent="My chats" IsOn="{Binding IsNutritionistView, Mode=TwoWay}" Margin="0,0,8,8" />

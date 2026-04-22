@@ -74,9 +74,6 @@ namespace TeamNut.ViewModels
 
             autoRefreshCts = new CancellationTokenSource();
             _ = AutoRefreshLoop(autoRefreshCts.Token);
-
-            Messages.CollectionChanged += (_, _) =>
-                HasMessages = Messages.Count > 0;
         }
 
         partial void OnInputTextChanged(string value)
@@ -138,6 +135,13 @@ namespace TeamNut.ViewModels
                 Conversations.Add(c);
             }
 
+            if (UserSession.Role != NutritionistRole
+                && currentConversationId == null
+                && Conversations.Count > 0)
+            {
+                SelectedConversation = Conversations[0];
+            }
+
             StatusMessage = Conversations.Any()
                 ? string.Empty
                 : StatusNoActiveConversations;
@@ -147,13 +151,23 @@ namespace TeamNut.ViewModels
         {
             currentConversationId = conversationId;
 
-            var msgs = await chatService.GetMessagesForConversationAsync(conversationId);
+            var msgs = (await chatService.GetMessagesForConversationAsync(conversationId)).ToList();
+
+            if (Messages.Count == msgs.Count
+                && Messages.Zip(msgs, (a, b) => a.Id == b.Id).All(eq => eq))
+            {
+                HasMessages = Messages.Count > 0;
+                return;
+            }
+
             Messages.Clear();
 
             foreach (var m in msgs)
             {
                 Messages.Add(m);
             }
+
+            HasMessages = Messages.Count > 0;
         }
 
         partial void OnSelectedConversationChanged(Conversation? value)

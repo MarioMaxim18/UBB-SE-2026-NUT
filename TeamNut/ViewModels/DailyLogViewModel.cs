@@ -154,6 +154,62 @@ namespace TeamNut.ViewModels
             set => SetProperty(ref logMealStatusMessage, value);
         }
 
+        public string DailyCaloriesText
+        {
+            get => dailyCaloriesText;
+            set => SetProperty(ref dailyCaloriesText, value);
+        }
+
+        public string DailyProteinText
+        {
+            get => dailyProteinText;
+            set => SetProperty(ref dailyProteinText, value);
+        }
+
+        public string DailyCarbsText
+        {
+            get => dailyCarbsText;
+            set => SetProperty(ref dailyCarbsText, value);
+        }
+
+        public string DailyFatsText
+        {
+            get => dailyFatsText;
+            set => SetProperty(ref dailyFatsText, value);
+        }
+
+        public string DailyBurnedCaloriesText
+        {
+            get => dailyBurnedCaloriesText;
+            set => SetProperty(ref dailyBurnedCaloriesText, value);
+        }
+
+        public string WeeklyCaloriesText
+        {
+            get => weeklyCaloriesText;
+            set => SetProperty(ref weeklyCaloriesText, value);
+        }
+
+        public string WeeklyProteinText
+        {
+            get => weeklyProteinText;
+            set => SetProperty(ref weeklyProteinText, value);
+        }
+
+        public string WeeklyCarbsText
+        {
+            get => weeklyCarbsText;
+            set => SetProperty(ref weeklyCarbsText, value);
+        }
+
+        public string WeeklyFatsText
+        {
+            get => weeklyFatsText;
+            set => SetProperty(ref weeklyFatsText, value);
+        }
+
+        public ObservableCollection<Meal> FilteredMeals => filteredMeals;
+
         public async Task LoadMealsForAutocompleteAsync()
         {
             var meals = await service.GetMealsForAutocompleteAsync();
@@ -219,18 +275,18 @@ namespace TeamNut.ViewModels
             DailyTotals = await service.GetTodayTotalsAsync();
             WeeklyTotals = await service.GetCurrentWeekTotalsAsync();
 
-            dailyCaloriesText = formattingService.FormatMetricWithGoal(DailyTotals.Calories, DailyCaloriesGoal, Constants.CaloriesUnit);
-            dailyProteinText = formattingService.FormatMetricWithGoal(DailyTotals.Protein, DailyProteinGoal, Constants.GramsUnit);
-            dailyCarbsText = formattingService.FormatMetricWithGoal(DailyTotals.Carbs, DailyCarbsGoal, Constants.GramsUnit);
-            dailyFatsText = formattingService.FormatMetricWithGoal(DailyTotals.Fats, DailyFatsGoal, Constants.GramsUnit);
+            DailyCaloriesText = formattingService.FormatMetricWithGoal(DailyTotals.Calories, DailyCaloriesGoal, Constants.CaloriesUnit);
+            DailyProteinText = formattingService.FormatMetricWithGoal(DailyTotals.Protein, DailyProteinGoal, Constants.GramsUnit);
+            DailyCarbsText = formattingService.FormatMetricWithGoal(DailyTotals.Carbs, DailyCarbsGoal, Constants.GramsUnit);
+            DailyFatsText = formattingService.FormatMetricWithGoal(DailyTotals.Fats, DailyFatsGoal, Constants.GramsUnit);
 
             var burnedCalories = await service.GetTodayBurnedCaloriesAsync();
-            dailyBurnedCaloriesText = formattingService.FormatBurnedCalories(burnedCalories);
+            DailyBurnedCaloriesText = formattingService.FormatBurnedCalories(burnedCalories);
 
-            weeklyCaloriesText = formattingService.FormatMetricWithGoal(WeeklyTotals.Calories, WeeklyCaloriesGoal, Constants.CaloriesUnit);
-            weeklyProteinText = formattingService.FormatMetricWithGoal(WeeklyTotals.Protein, WeeklyProteinGoal, Constants.GramsUnit);
-            weeklyCarbsText = formattingService.FormatMetricWithGoal(WeeklyTotals.Carbs, WeeklyCarbsGoal, Constants.GramsUnit);
-            weeklyFatsText = formattingService.FormatMetricWithGoal(WeeklyTotals.Fats, WeeklyFatsGoal, Constants.GramsUnit);
+            WeeklyCaloriesText = formattingService.FormatMetricWithGoal(WeeklyTotals.Calories, WeeklyCaloriesGoal, Constants.CaloriesUnit);
+            WeeklyProteinText = formattingService.FormatMetricWithGoal(WeeklyTotals.Protein, WeeklyProteinGoal, Constants.GramsUnit);
+            WeeklyCarbsText = formattingService.FormatMetricWithGoal(WeeklyTotals.Carbs, WeeklyCarbsGoal, Constants.GramsUnit);
+            WeeklyFatsText = formattingService.FormatMetricWithGoal(WeeklyTotals.Fats, WeeklyFatsGoal, Constants.GramsUnit);
         }
     }
 }
