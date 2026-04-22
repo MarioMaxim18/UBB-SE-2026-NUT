@@ -122,4 +122,8 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="TeamNut.Tests" />
+  </ItemGroup>
 </Project>
