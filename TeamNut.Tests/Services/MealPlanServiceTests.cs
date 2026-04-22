@@ -1,7 +1,10 @@
 ﻿using System.Collections.Generic;
 using FluentAssertions;
+using NSubstitute;
 using TeamNut.Models;
+using TeamNut.Repositories.Interfaces;
 using TeamNut.Services;
+using TeamNut.Services.Interfaces;
 using Xunit;
 
 namespace TeamNut.Tests.Services

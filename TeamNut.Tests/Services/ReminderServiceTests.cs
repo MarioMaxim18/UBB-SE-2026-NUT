@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 using FluentAssertions;
-using Moq;
+using NSubstitute;
 using TeamNut.Models;
 using TeamNut.Repositories.Interfaces;
 using TeamNut.Services;
@@ -10,13 +10,13 @@ namespace TeamNut.Tests.Services
 {
     public class ReminderServiceTests
     {
-        private readonly Mock<IReminderRepository> mockRepo;
+        private readonly IReminderRepository mockRepo;
         private readonly ReminderService service;
 
         public ReminderServiceTests()
         {
-            mockRepo = new Mock<IReminderRepository>();
-            service = new ReminderService(mockRepo.Object);
+            mockRepo = Substitute.For<IReminderRepository>();
+            service = new ReminderService(mockRepo);
         }
 
         [Fact]
@@ -30,11 +30,10 @@ namespace TeamNut.Tests.Services
                 Time = new System.TimeSpan(8, 0, 0)
             };
 
-            mockRepo.Setup(r => r.Add(It.IsAny<Reminder>())).Returns(Task.CompletedTask);
-
             var result = await service.SaveReminder(reminder);
 
             result.Should().Be("Success");
+            await mockRepo.Received(1).Add(Arg.Any<Reminder>());
         }
 
         [Theory]
@@ -54,6 +53,7 @@ namespace TeamNut.Tests.Services
 
             result.Should().Contain("Error");
             result.Should().Contain("Name");
+            await mockRepo.DidNotReceive().Add(Arg.Any<Reminder>());
         }
 
         [Fact]
@@ -70,6 +70,7 @@ namespace TeamNut.Tests.Services
 
             result.Should().Contain("Error");
             result.Should().Contain("50 characters");
+            await mockRepo.DidNotReceive().Add(Arg.Any<Reminder>());
         }
 
         [Fact]
@@ -81,8 +82,6 @@ namespace TeamNut.Tests.Services
                 Name = new string('a', 50),
                 ReminderDate = "2024-01-01"
             };
-
-            mockRepo.Setup(r => r.Add(It.IsAny<Reminder>())).Returns(Task.CompletedTask);
 
             var result = await service.SaveReminder(reminder);
 
@@ -103,8 +102,6 @@ namespace TeamNut.Tests.Services
                 Name = name
             };
 
-            mockRepo.Setup(r => r.Add(It.IsAny<Reminder>())).Returns(Task.CompletedTask);
-
             var result = await service.SaveReminder(reminder);
 
             result.Should().Be("Success");
@@ -120,12 +117,10 @@ namespace TeamNut.Tests.Services
                 Name = "Lunch"
             };
 
-            mockRepo.Setup(r => r.Add(It.IsAny<Reminder>())).Returns(Task.CompletedTask);
-
             await service.SaveReminder(reminder);
 
-            mockRepo.Verify(r => r.Add(It.IsAny<Reminder>()), Times.Once);
-            mockRepo.Verify(r => r.Update(It.IsAny<Reminder>()), Times.Never);
+            await mockRepo.Received(1).Add(Arg.Any<Reminder>());
+            await mockRepo.DidNotReceive().Update(Arg.Any<Reminder>());
         }
 
         [Fact]
@@ -138,12 +133,10 @@ namespace TeamNut.Tests.Services
                 Name = "Dinner"
             };
 
-            mockRepo.Setup(r => r.Update(It.IsAny<Reminder>())).Returns(Task.CompletedTask);
-
             await service.SaveReminder(reminder);
 
-            mockRepo.Verify(r => r.Update(It.IsAny<Reminder>()), Times.Once);
-            mockRepo.Verify(r => r.Add(It.IsAny<Reminder>()), Times.Never);
+            await mockRepo.Received(1).Update(Arg.Any<Reminder>());
+            await mockRepo.DidNotReceive().Add(Arg.Any<Reminder>());
         }
 
         [Fact]
@@ -154,8 +147,6 @@ namespace TeamNut.Tests.Services
                 UserId = 1,
                 Name = new string('a', 49)
             };
-
-            mockRepo.Setup(r => r.Add(It.IsAny<Reminder>())).Returns(Task.CompletedTask);
 
             var result = await service.SaveReminder(reminder);
 
