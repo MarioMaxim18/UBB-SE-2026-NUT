@@ -1,3 +1,7 @@
+// <copyright file="UserSession.cs" company="TeamNut">
+// Copyright (c) TeamNut. All rights reserved.
+// </copyright>
+
 namespace TeamNut.Models
 {
     internal static class UserSession

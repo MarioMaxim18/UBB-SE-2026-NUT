@@ -1,3 +1,7 @@
+// <copyright file="NutritionCalculationServiceTests.cs" company="TeamNut">
+// Copyright (c) TeamNut. All rights reserved.
+// </copyright>
+
 ﻿using System;
 using FluentAssertions;
 using FluentAssertions.Execution;

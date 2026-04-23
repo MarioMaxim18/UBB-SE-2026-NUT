@@ -1,7 +1,11 @@
-using CommunityToolkit.Mvvm.ComponentModel;
+// <copyright file="MealFilter.cs" company="TeamNut">
+// Copyright (c) TeamNut. All rights reserved.
+// </copyright>
 
 namespace TeamNut.Models
 {
+    using CommunityToolkit.Mvvm.ComponentModel;
+
     /// <summary>Represents the active filters used when searching meals.</summary>
     public partial class MealFilter : ObservableObject
     {

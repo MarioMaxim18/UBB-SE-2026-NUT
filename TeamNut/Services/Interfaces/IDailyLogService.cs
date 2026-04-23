@@ -1,3 +1,7 @@
+// <copyright file="IDailyLogService.cs" company="TeamNut">
+// Copyright (c) TeamNut. All rights reserved.
+// </copyright>
+
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using TeamNut.Models;

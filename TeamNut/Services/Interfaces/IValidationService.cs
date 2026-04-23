@@ -1,8 +1,12 @@
-using System.Collections.Generic;
-using TeamNut.Models;
+// <copyright file="IValidationService.cs" company="TeamNut">
+// Copyright (c) TeamNut. All rights reserved.
+// </copyright>
 
 namespace TeamNut.Services.Interfaces
 {
+    using System.Collections.Generic;
+    using TeamNut.Models;
+
     public interface IValidationService
     {
         List<string> ValidateUser(User user);

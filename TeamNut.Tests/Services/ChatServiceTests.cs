@@ -1,3 +1,7 @@
+// <copyright file="ChatServiceTests.cs" company="TeamNut">
+// Copyright (c) TeamNut. All rights reserved.
+// </copyright>
+
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -13,6 +17,7 @@ namespace TeamNut.Tests.Services
     public class ChatServiceTests
     {
         private readonly IChatRepository mockRepo;
+
         private readonly ChatService service;
 
         public ChatServiceTests()

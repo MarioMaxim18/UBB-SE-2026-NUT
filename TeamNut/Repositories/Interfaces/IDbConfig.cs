@@ -1,3 +1,7 @@
+// <copyright file="IDbConfig.cs" company="TeamNut">
+// Copyright (c) TeamNut. All rights reserved.
+// </copyright>
+
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;

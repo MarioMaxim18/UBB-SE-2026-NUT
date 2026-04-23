@@ -1,28 +1,40 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
-using TeamNut.Models;
-using TeamNut.Services;
-using TeamNut.Services.Interfaces;
+// <copyright file="UserViewModel.cs" company="TeamNut">
+// Copyright (c) TeamNut. All rights reserved.
+// </copyright>
 
 namespace TeamNut.ViewModels
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using CommunityToolkit.Mvvm.ComponentModel;
+    using CommunityToolkit.Mvvm.Input;
+    using TeamNut.Models;
+    using TeamNut.Services;
+    using TeamNut.Services.Interfaces;
+
     /// <summary>
     /// UserViewModel.
     /// </summary>
     public partial class UserViewModel : ObservableObject
     {
         private const string RoleNutritionist = "Nutritionist";
+
         private const string RoleUser = "User";
+
         private const string ErrorUsernameExists = "Username already exists. Please choose another one.";
+
         private const string ErrorInvalidBirthdate = "Please select a valid birthdate.";
+
         private const string ErrorRegistrationFailed = "Registration failed. Username might already exist.";
+
         private const string ErrorUsernamePasswordRequired = "Username and Password are required.";
+
         private const string ErrorInvalidCredentials = "Invalid username or password.";
+
         private const string ErrorDatabaseConnectionFormat = "Database Connection Failed! Start SSMS and check your server. Error: {0}";
+
         private const string ErrorSavingDataFormat = "An error occurred while saving: {0}";
 
         [ObservableProperty]
@@ -41,11 +53,15 @@ namespace TeamNut.ViewModels
         public partial DateTimeOffset SelectedDate { get; set; } = DateTimeOffset.Now;
 
         public event EventHandler? RegistrationValid;
+
         public event EventHandler? LoginSuccess;
+
         public event EventHandler? SaveDataSuccess;
 
         private readonly IUserService userService;
+
         private readonly IValidationService validationService;
+
         private readonly INutritionCalculationService nutritionCalculationService;
 
         public UserViewModel(
@@ -53,43 +69,43 @@ namespace TeamNut.ViewModels
             IValidationService vvalidationService,
             INutritionCalculationService nnutritionCalculationService)
         {
-            userService = uuserService;
-            validationService = vvalidationService;
-            nutritionCalculationService = nnutritionCalculationService;
+            this.userService = uuserService;
+            this.validationService = vvalidationService;
+            this.nutritionCalculationService = nnutritionCalculationService;
         }
 
         [RelayCommand]
         private async Task OnRegister()
         {
-            StatusMessage = string.Empty;
+            this.StatusMessage = string.Empty;
 
-            CurrentUser.Role = IsNutritionistChecked
+            this.CurrentUser.Role = this.IsNutritionistChecked
                 ? RoleNutritionist
                 : RoleUser;
 
-            List<string> errors = validationService.ValidateUser(CurrentUser);
+            List<string> errors = this.validationService.ValidateUser(this.CurrentUser);
             if (errors.Count > 0)
             {
-                StatusMessage = string.Join(Environment.NewLine, errors);
+                this.StatusMessage = string.Join(Environment.NewLine, errors);
                 return;
             }
 
-            if (await userService.CheckIfUsernameExistsAsync(CurrentUser.Username))
+            if (await this.userService.CheckIfUsernameExistsAsync(this.CurrentUser.Username))
             {
-                StatusMessage = ErrorUsernameExists;
+                this.StatusMessage = ErrorUsernameExists;
                 return;
             }
 
-            if (CurrentUser.Role == RoleUser)
+            if (this.CurrentUser.Role == RoleUser)
             {
-                RegistrationValid?.Invoke(this, EventArgs.Empty);
+                this.RegistrationValid?.Invoke(this, EventArgs.Empty);
             }
             else
             {
-                var registeredUser = await userService.RegisterUserAsync(CurrentUser);
+                var registeredUser = await this.userService.RegisterUserAsync(this.CurrentUser);
                 if (registeredUser != null)
                 {
-                    LoginSuccess?.Invoke(this, EventArgs.Empty);
+                    this.LoginSuccess?.Invoke(this, EventArgs.Empty);
                 }
             }
         }
@@ -97,73 +113,73 @@ namespace TeamNut.ViewModels
         [RelayCommand]
         private async Task OnSaveData()
         {
-            StatusMessage = string.Empty;
+            this.StatusMessage = string.Empty;
 
             try
             {
-                List<string> errors = validationService.ValidateUserData(CurrentUserData);
+                List<string> errors = this.validationService.ValidateUserData(this.CurrentUserData);
                 if (errors.Count > 0)
                 {
-                    StatusMessage = string.Join(Environment.NewLine, errors);
+                    this.StatusMessage = string.Join(Environment.NewLine, errors);
                     return;
                 }
 
-                int age = nutritionCalculationService.CalculateAge(SelectedDate);
+                int age = this.nutritionCalculationService.CalculateAge(this.SelectedDate);
                 if (age <= 0)
                 {
-                    StatusMessage = ErrorInvalidBirthdate;
+                    this.StatusMessage = ErrorInvalidBirthdate;
                     return;
                 }
 
-                var registeredUser = await userService.RegisterUserAsync(CurrentUser);
+                var registeredUser = await this.userService.RegisterUserAsync(this.CurrentUser);
                 if (registeredUser == null)
                 {
-                    StatusMessage = ErrorRegistrationFailed;
+                    this.StatusMessage = ErrorRegistrationFailed;
                     return;
                 }
 
-                CurrentUserData.UserId = registeredUser.Id;
-                await userService.AddUserDataAsync(CurrentUserData, SelectedDate);
+                this.CurrentUserData.UserId = registeredUser.Id;
+                await this.userService.AddUserDataAsync(this.CurrentUserData, this.SelectedDate);
 
-                SaveDataSuccess?.Invoke(this, EventArgs.Empty);
+                this.SaveDataSuccess?.Invoke(this, EventArgs.Empty);
             }
             catch (Exception ex)
             {
-                StatusMessage = string.Format(ErrorSavingDataFormat, ex.Message);
+                this.StatusMessage = string.Format(ErrorSavingDataFormat, ex.Message);
             }
         }
 
         [RelayCommand]
         private async Task OnLogin()
         {
-            StatusMessage = string.Empty;
+            this.StatusMessage = string.Empty;
 
-            if (string.IsNullOrWhiteSpace(CurrentUser.Username) ||
-                string.IsNullOrWhiteSpace(CurrentUser.Password))
+            if (string.IsNullOrWhiteSpace(this.CurrentUser.Username) ||
+                string.IsNullOrWhiteSpace(this.CurrentUser.Password))
             {
-                StatusMessage = ErrorUsernamePasswordRequired;
+                this.StatusMessage = ErrorUsernamePasswordRequired;
                 return;
             }
 
             try
             {
-                var user = await userService.LoginAsync(
-                    CurrentUser.Username,
-                    CurrentUser.Password);
+                var user = await this.userService.LoginAsync(
+                    this.CurrentUser.Username,
+                    this.CurrentUser.Password);
 
                 if (user != null)
                 {
-                    CurrentUser = user;
-                    LoginSuccess?.Invoke(this, EventArgs.Empty);
+                    this.CurrentUser = user;
+                    this.LoginSuccess?.Invoke(this, EventArgs.Empty);
                 }
                 else
                 {
-                    StatusMessage = ErrorInvalidCredentials;
+                    this.StatusMessage = ErrorInvalidCredentials;
                 }
             }
             catch (Exception ex)
             {
-                StatusMessage = string.Format(ErrorDatabaseConnectionFormat, ex.Message);
+                this.StatusMessage = string.Format(ErrorDatabaseConnectionFormat, ex.Message);
             }
         }
     }

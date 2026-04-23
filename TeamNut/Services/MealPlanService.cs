@@ -1,51 +1,84 @@
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using TeamNut.Models;
-using TeamNut.Repositories;
-using TeamNut.Repositories.Interfaces;
-using TeamNut.Services.Interfaces;
+// <copyright file="MealPlanService.cs" company="TeamNut">
+// Copyright (c) TeamNut. All rights reserved.
+// </copyright>
 
 namespace TeamNut.Services
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
+    using TeamNut.Models;
+    using TeamNut.Repositories;
+    using TeamNut.Repositories.Interfaces;
+    using TeamNut.Services.Interfaces;
+
     public class MealPlanService : IMealPlanService
     {
         private readonly IMealPlanRepository mealPlanRepository;
+
         private readonly IUserRepository userRepository;
+
         private readonly IReminderService reminderService;
+
         private const int MinValidId = 1;
+
         private const string DateFormatIso = "yyyy-MM-dd";
+
         private static readonly TimeSpan BreakfastTime = new TimeSpan(8, 0, 0);
+
         private static readonly TimeSpan LunchTime = new TimeSpan(13, 0, 0);
+
         private static readonly TimeSpan DinnerTime = new TimeSpan(17, 0, 0);
+
         private const double DefaultTolerance = 0.10;
+
         private const string ReminderFrequencyOnce = "Once";
+
         private const string DefaultBreakfastName = "Breakfast";
+
         private const string DefaultLunchName = "Lunch";
+
         private const string DefaultDinnerName = "Dinner";
+
         private const string GoalBulk = "bulk";
+
         private const string GoalCut = "cut";
+
         private const string GoalMaintenance = "maintenance";
+
         private const string GoalWellBeing = "well-being";
+
         private const int BulkCaloriesDelta = 300;
+
         private const int CutCaloriesDelta = -300;
+
         private const int MaintenanceCaloriesDelta = 100;
+
         private const string EmojiBulk = "💪";
+
         private const string EmojiCut = "🔥";
+
         private const string EmojiMaintenance = "⚖️";
+
         private const string EmojiWellBeing = "🧘";
+
         private const string EmojiDefault = "🎯";
+
         private const string ErrInvalidUserId = "Invalid user ID. Please ensure you are logged in.";
+
         private const string ErrGenerateMealPlanFailed = "Failed to generate meal plan. Please try again.";
+
         private const string ErrInvalidMealPlanId = "Invalid meal plan ID.";
+
         private const string ErrInvalidUserIdForPlan = "Invalid user ID.";
+
         private const string ErrUserMustBeLoggedIn = "User must be logged in to save daily logs.";
 
         public MealPlanService(IMealPlanRepository mmealPlanRepository, IUserRepository uuserRepository, IReminderService rreminderService)
         {
-            mealPlanRepository = mmealPlanRepository;
-            userRepository = uuserRepository;
-            reminderService = rreminderService;
+            this.mealPlanRepository = mmealPlanRepository;
+            this.userRepository = uuserRepository;
+            this.reminderService = rreminderService;
         }
 
         public async Task<int> GeneratePersonalizedMealPlanAsync(int userId)
@@ -58,14 +91,14 @@ namespace TeamNut.Services
             try
             {
                 int mealPlanId =
-                    await mealPlanRepository
+                    await this.mealPlanRepository
                         .GeneratePersonalizedDailyMealPlan(userId);
 
                 try
                 {
                     var today = DateTime.Today.ToString(DateFormatIso);
                     var existing =
-                        await reminderService.GetUserReminders(userId);
+                        await this.reminderService.GetUserReminders(userId);
 
                     bool alreadyHasTodayReminder = false;
                     foreach (var r in existing)
@@ -80,7 +113,7 @@ namespace TeamNut.Services
                     if (!alreadyHasTodayReminder)
                     {
                         var meals =
-                            await GetMealsForMealPlanAsync(mealPlanId);
+                            await this.GetMealsForMealPlanAsync(mealPlanId);
 
                         string breakfastName = DefaultBreakfastName;
                         string lunchName = DefaultLunchName;
@@ -104,7 +137,7 @@ namespace TeamNut.Services
                             dinnerName = meals[2].Name.Trim();
                         }
 
-                        await reminderService.SaveReminder(
+                        await this.reminderService.SaveReminder(
                             new Reminder
                             {
                                 UserId = userId,
@@ -115,7 +148,7 @@ namespace TeamNut.Services
                                 Frequency = ReminderFrequencyOnce
                             });
 
-                        await reminderService.SaveReminder(
+                        await this.reminderService.SaveReminder(
                             new Reminder
                             {
                                 UserId = userId,
@@ -126,7 +159,7 @@ namespace TeamNut.Services
                                 Frequency = ReminderFrequencyOnce
                             });
 
-                        await reminderService.SaveReminder(
+                        await this.reminderService.SaveReminder(
                             new Reminder
                             {
                                 UserId = userId,
@@ -137,7 +170,7 @@ namespace TeamNut.Services
                                 Frequency = ReminderFrequencyOnce
                             });
 
-                        reminderService
+                        this.reminderService
                             .NotifyRemindersChangedForUser(userId);
                     }
                 }
@@ -172,7 +205,7 @@ namespace TeamNut.Services
 
             try
             {
-                return await mealPlanRepository.GetMealsForMealPlan(mealPlanId) ?? new List<Meal>();
+                return await this.mealPlanRepository.GetMealsForMealPlan(mealPlanId) ?? new List<Meal>();
             }
             catch (Exception ex)
             {
@@ -190,7 +223,7 @@ namespace TeamNut.Services
 
             try
             {
-                return await mealPlanRepository.GetById(mealPlanId);
+                return await this.mealPlanRepository.GetById(mealPlanId);
             }
             catch (Exception ex)
             {
@@ -209,16 +242,16 @@ namespace TeamNut.Services
 
             try
             {
-                var latest = await mealPlanRepository.GetLatestMealPlan(userId);
+                var latest = await this.mealPlanRepository.GetLatestMealPlan(userId);
 
                 if (latest?.CreatedAt.Date == DateTime.Today)
                 {
                     return latest;
                 }
 
-                int newPlanId = await GeneratePersonalizedMealPlanAsync(userId);
+                int newPlanId = await this.GeneratePersonalizedMealPlanAsync(userId);
 
-                return await mealPlanRepository.GetById(newPlanId);
+                return await this.mealPlanRepository.GetById(newPlanId);
             }
             catch (Exception ex)
             {
@@ -230,7 +263,7 @@ namespace TeamNut.Services
         {
             try
             {
-                return await mealPlanRepository.GetAll();
+                return await this.mealPlanRepository.GetAll();
             }
             catch (Exception ex)
             {
@@ -317,7 +350,7 @@ namespace TeamNut.Services
             try
             {
                 var userData =
-                    await userRepository.GetUserDataByUserId(userId);
+                    await this.userRepository.GetUserDataByUserId(userId);
 
                 var goal = userData?.Goal?.Trim().ToLowerInvariant();
                 return string.IsNullOrEmpty(goal) ? GoalMaintenance : goal;
@@ -336,8 +369,8 @@ namespace TeamNut.Services
                     ErrUserMustBeLoggedIn);
             }
 
-            var meals = await GetMealsForMealPlanAsync(mealPlanId);
-            await mealPlanRepository.SaveMealsToDailyLog(
+            var meals = await this.GetMealsForMealPlanAsync(mealPlanId);
+            await this.mealPlanRepository.SaveMealsToDailyLog(
                 UserSession.UserId.Value,
                 meals);
         }
@@ -352,7 +385,7 @@ namespace TeamNut.Services
                     ErrUserMustBeLoggedIn);
             }
 
-            await mealPlanRepository.SaveMealToDailyLog(
+            await this.mealPlanRepository.SaveMealToDailyLog(
                 UserSession.UserId.Value,
                 mealId,
                 calories);

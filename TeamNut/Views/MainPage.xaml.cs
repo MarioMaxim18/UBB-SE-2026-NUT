@@ -1,77 +1,103 @@
-using System;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-using TeamNut.Models;
-using TeamNut.Repositories.Interfaces;
-using TeamNut.Services;
-using TeamNut.Services.Interfaces;
-using TeamNut.Views;
+// <copyright file="MainPage.xaml.cs" company="TeamNut">
+// Copyright (c) TeamNut. All rights reserved.
+// </copyright>
 
 namespace TeamNut.Views
 {
+    using System;
+    using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.UI.Xaml;
+    using Microsoft.UI.Xaml.Controls;
+    using TeamNut.Models;
+    using TeamNut.Repositories.Interfaces;
+    using TeamNut.Services;
+    using TeamNut.Services.Interfaces;
+    using TeamNut.Views;
+
     /// <summary>
     /// MainPage.
     /// </summary>
     public sealed partial class MainPage : Page
     {
         private readonly Microsoft.UI.Dispatching.DispatcherQueue dispatcher;
+
         private readonly DispatcherTimer reminderTimer;
+
         private readonly System.Collections.Generic.HashSet<int> shownReminders = new System.Collections.Generic.HashSet<int>();
+
         private readonly IReminderService reminderService;
 
         public MainViewModel ViewModel { get; }
 
         public TeamNut.ViewModels.RemindersViewModel RemindersViewModel { get; }
+
         private static readonly TimeSpan ReminderPollInterval = TimeSpan.FromSeconds(30);
+
         private static readonly TimeSpan ReminderTriggerWindow = TimeSpan.FromSeconds(30);
+
         private const string DateFormatIso = "yyyy-MM-dd";
+
         private const string TimeFormatShort = @"hh\:mm";
+
         private const string DefaultReminderTitle = "Reminder";
+
         private const string ReminderDialogPrompt = "Did you consume this meal?";
+
         private const string NoUpcomingMealsText = "No upcoming meals";
+
         private const string ReminderDetailsTitle = "Reminder Details";
+
         private const string ButtonConfirm = "Confirm";
+
         private const string ButtonDecline = "Decline";
+
         private const string ButtonClose = "Close";
+
         private const string LabelName = "Name";
+
         private const string LabelDate = "Date";
+
         private const string LabelTime = "Time";
+
         private const string LabelSound = "Sound";
+
         private const string LabelFrequency = "Frequency";
+
         private const string SoundOnText = "On";
+
         private const string SoundOffText = "Off";
+
         private const int DetailsPanelSpacing = 8;
 
         public MainPage()
         {
             InitializeComponent();
-            ViewModel = App.Services.GetRequiredService<MainViewModel>();
-            RemindersViewModel = App.Services.GetRequiredService<TeamNut.ViewModels.RemindersViewModel>();
-            reminderService = App.Services.GetRequiredService<IReminderService>();
+            this.ViewModel = App.Services.GetRequiredService<MainViewModel>();
+            this.RemindersViewModel = App.Services.GetRequiredService<TeamNut.ViewModels.RemindersViewModel>();
+            this.reminderService = App.Services.GetRequiredService<IReminderService>();
 
-            dispatcher = Microsoft.UI.Dispatching.DispatcherQueue
+            this.dispatcher = Microsoft.UI.Dispatching.DispatcherQueue
                 .GetForCurrentThread();
 
-            _ = ViewModel.LoadHeaderData();
-            LoadTopReminder();
-            reminderService.RemindersChanged += OnRemindersChanged;
+            _ = this.ViewModel.LoadHeaderData();
+            this.LoadTopReminder();
+            this.reminderService.RemindersChanged += this.OnRemindersChanged;
 
-            reminderTimer = new DispatcherTimer
+            this.reminderTimer = new DispatcherTimer
             {
                 Interval = ReminderPollInterval
             };
-            reminderTimer.Tick += ReminderTimer_Tick;
-            reminderTimer.Start();
+            this.reminderTimer.Tick += this.ReminderTimer_Tick;
+            this.reminderTimer.Start();
 
-            this.Unloaded += MainPage_Unloaded;
+            this.Unloaded += this.MainPage_Unloaded;
         }
 
         private void MainPage_Unloaded(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
         {
-            reminderTimer.Stop();
-            reminderTimer.Tick -= ReminderTimer_Tick;
-            reminderService.RemindersChanged -= OnRemindersChanged;
+            this.reminderTimer.Stop();
+            this.reminderTimer.Tick -= this.ReminderTimer_Tick;
+            this.reminderService.RemindersChanged -= this.OnRemindersChanged;
         }
 
         private async void ReminderTimer_Tick(object? sender, object? e)
@@ -85,7 +111,7 @@ namespace TeamNut.Views
                 }
 
                 var reminders =
-                    await reminderService.GetUserReminders(userId);
+                    await this.reminderService.GetUserReminders(userId);
 
                 var today = DateTime.Today.ToString(DateFormatIso);
                 var now = DateTime.Now.TimeOfDay;
@@ -102,7 +128,7 @@ namespace TeamNut.Views
                         continue;
                     }
 
-                    if (shownReminders.Contains(rem.Id))
+                    if (this.shownReminders.Contains(rem.Id))
                     {
                         continue;
                     }
@@ -110,14 +136,14 @@ namespace TeamNut.Views
                     var diff = (rem.Time - now).Duration();
                     if (diff <= ReminderTriggerWindow)
                     {
-                        shownReminders.Add(rem.Id);
-                        await ShowReminderDialog(rem);
+                        this.shownReminders.Add(rem.Id);
+                        await this.ShowReminderDialog(rem);
                     }
                 }
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"ReminderTimer_Tick: {ex}");
+                System.Diagnostics.Debug.WriteLine($"this.ReminderTimer_Tick: {ex}");
             }
         }
 
@@ -167,8 +193,8 @@ namespace TeamNut.Views
 
                         await inventory.ConsumeMeal(userId, matched.Id);
                     }
-                        await reminderService.DeleteReminder(rem.Id);
-                        reminderService.NotifyRemindersChangedForUser(userId);
+                        await this.reminderService.DeleteReminder(rem.Id);
+                        this.reminderService.NotifyRemindersChangedForUser(userId);
                 }
                 catch (Exception ex)
                 {
@@ -178,7 +204,7 @@ namespace TeamNut.Views
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"ShowReminderDialog: {ex}");
+                System.Diagnostics.Debug.WriteLine($"this.ShowReminderDialog: {ex}");
             }
         }
 
@@ -192,13 +218,13 @@ namespace TeamNut.Views
                     return;
                 }
 
-                if (dispatcher != null)
+                if (this.dispatcher != null)
                 {
-                    dispatcher.TryEnqueue(LoadTopReminder);
+                    this.dispatcher.TryEnqueue(this.LoadTopReminder);
                 }
                 else
                 {
-                    LoadTopReminder();
+                    this.LoadTopReminder();
                 }
             }
             catch
@@ -217,7 +243,7 @@ namespace TeamNut.Views
                 }
 
                 var next =
-                    await reminderService.GetNextReminder(userId);
+                    await this.reminderService.GetNextReminder(userId);
 
                 var text = next != null
                     ? $"{next.Name} at {next.Time:hh\\:mm}"
@@ -260,7 +286,7 @@ namespace TeamNut.Views
                 }
 
                 var reminder =
-                    await reminderService.GetNextReminder(userId);
+                    await this.reminderService.GetNextReminder(userId);
 
                 if (reminder == null)
                 {

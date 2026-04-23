@@ -1,3 +1,7 @@
+// <copyright file="UserServiceTests.cs" company="TeamNut">
+// Copyright (c) TeamNut. All rights reserved.
+// </copyright>
+
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -13,7 +17,9 @@ namespace TeamNut.Tests.Services
     public class UserServiceTests
     {
         private readonly IUserRepository mockUserRepo;
+
         private readonly INutritionCalculationService mockNutritionService;
+
         private readonly UserService service;
 
         public UserServiceTests()

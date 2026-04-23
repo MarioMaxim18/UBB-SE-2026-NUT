@@ -1,3 +1,7 @@
+// <copyright file="RemindersViewModel.cs" company="TeamNut">
+// Copyright (c) TeamNut. All rights reserved.
+// </copyright>
+
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -16,12 +20,18 @@ namespace TeamNut.ViewModels
     public partial class RemindersViewModel : ObservableObject, IDisposable
     {
         private bool disposed;
+
         private readonly IReminderService reminderService;
+
         private readonly DispatcherQueue? dispatcher;
+
         private const int InvalidUserId = 0;
+
         private const string SaveSuccessResult = "Success";
+
         private const string InvalidReminderResult = "Error: invalid reminder";
-        private const string LoadErrorLogFormat = "Reminders Load Error: {0}";
+
+        private const string LoadErrorLogFormat = "this.Reminders Load Error: {0}";
 
         public ObservableCollection<Reminder> Reminders { get; } = new ObservableCollection<Reminder>();
 
@@ -36,16 +46,16 @@ namespace TeamNut.ViewModels
 
         public RemindersViewModel(IReminderService rreminderService)
         {
-            reminderService = rreminderService;
+            this.reminderService = rreminderService;
             try
             {
-                dispatcher = DispatcherQueue.GetForCurrentThread();
+                this.dispatcher = DispatcherQueue.GetForCurrentThread();
             }
             catch
             {
-                dispatcher = null;
+                this.dispatcher = null;
             }
-            reminderService.RemindersChanged += OnRemindersChanged;
+            this.reminderService.RemindersChanged += this.OnRemindersChanged;
         }
 
         private async void OnRemindersChanged(object? sender, int userId)
@@ -54,7 +64,7 @@ namespace TeamNut.ViewModels
 
             if (currentUserId == userId)
             {
-                await LoadReminders();
+                await this.LoadReminders();
             }
         }
 
@@ -66,11 +76,11 @@ namespace TeamNut.ViewModels
                 return;
             }
 
-            await reminderService.DeleteReminder(reminder.Id);
+            await this.reminderService.DeleteReminder(reminder.Id);
 
-            EnqueueUI(() => Reminders.Remove(reminder));
+            this.EnqueueUI(() => this.Reminders.Remove(reminder));
 
-            reminderService.NotifyRemindersChangedForUser(
+            this.reminderService.NotifyRemindersChangedForUser(
                 UserSession.UserId ?? InvalidUserId);
         }
 
@@ -82,7 +92,7 @@ namespace TeamNut.ViewModels
                 return;
             }
 
-            await SaveReminderAsync(reminder);
+            await this.SaveReminderAsync(reminder);
         }
 
         public async Task<string> SaveReminderAsync(Reminder reminder)
@@ -92,11 +102,11 @@ namespace TeamNut.ViewModels
                 return InvalidReminderResult;
             }
 
-            string result = await reminderService.SaveReminder(reminder);
+            string result = await this.reminderService.SaveReminder(reminder);
 
             if (result == SaveSuccessResult)
             {
-                await LoadReminders();
+                await this.LoadReminders();
             }
 
             return result;
@@ -105,14 +115,14 @@ namespace TeamNut.ViewModels
         [RelayCommand]
         public async Task LoadReminders()
         {
-            if (IsBusy)
+            if (this.IsBusy)
             {
                 return;
             }
 
             try
             {
-                IsBusy = true;
+                this.IsBusy = true;
 
                 int userId = UserSession.UserId ?? InvalidUserId;
                 if (userId == InvalidUserId)
@@ -120,18 +130,18 @@ namespace TeamNut.ViewModels
                     return;
                 }
 
-                var reminders = (await reminderService.GetUserReminders(userId)).ToList();
-                var next = await reminderService.GetNextReminder(userId);
+                var reminders = (await this.reminderService.GetUserReminders(userId)).ToList();
+                var next = await this.reminderService.GetNextReminder(userId);
 
-                EnqueueUI(() =>
+                this.EnqueueUI(() =>
                 {
-                    Reminders.Clear();
+                    this.Reminders.Clear();
                     foreach (var reminder in reminders)
                     {
-                        Reminders.Add(reminder);
+                        this.Reminders.Add(reminder);
                     }
 
-                    NextReminder = next;
+                    this.NextReminder = next;
                 });
             }
             catch (Exception ex)
@@ -141,7 +151,7 @@ namespace TeamNut.ViewModels
             }
             finally
             {
-                IsBusy = false;
+                this.IsBusy = false;
             }
         }
 
@@ -153,7 +163,7 @@ namespace TeamNut.ViewModels
                 UserId = UserSession.UserId ?? InvalidUserId
             };
 
-            EnqueueUI(() => SelectedReminder = reminder);
+            this.EnqueueUI(() => this.SelectedReminder = reminder);
         }
 
         [RelayCommand]
@@ -164,14 +174,14 @@ namespace TeamNut.ViewModels
                 return;
             }
 
-            EnqueueUI(() => SelectedReminder = reminder);
+            this.EnqueueUI(() => this.SelectedReminder = reminder);
         }
 
         private void EnqueueUI(Action action)
         {
-            if (dispatcher != null)
+            if (this.dispatcher != null)
             {
-                dispatcher.TryEnqueue(() => action());
+                this.dispatcher.TryEnqueue(() => action());
             }
             else
             {
@@ -181,10 +191,10 @@ namespace TeamNut.ViewModels
 
         public void Dispose()
         {
-            if (!disposed)
+            if (!this.disposed)
             {
-                reminderService.RemindersChanged -= OnRemindersChanged;
-                disposed = true;
+                this.reminderService.RemindersChanged -= this.OnRemindersChanged;
+                this.disposed = true;
             }
         }
     }

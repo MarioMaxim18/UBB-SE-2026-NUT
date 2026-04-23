@@ -1,13 +1,17 @@
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Microsoft.Data.Sqlite;
-using TeamNut.Models;
-using TeamNut;
-using TeamNut.Repositories.Interfaces;
+// <copyright file="ReminderRepository.cs" company="TeamNut">
+// Copyright (c) TeamNut. All rights reserved.
+// </copyright>
 
 namespace TeamNut.Repositories
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
+    using Microsoft.Data.Sqlite;
+    using TeamNut.Models;
+    using TeamNut;
+    using TeamNut.Repositories.Interfaces;
+
     internal class ReminderRepository : IReminderRepository
     {
         private readonly string connectionString;

@@ -1,7 +1,11 @@
-using System;
+// <copyright file="Conversation.cs" company="TeamNut">
+// Copyright (c) TeamNut. All rights reserved.
+// </copyright>
 
 namespace TeamNut.Models
 {
+    using System;
+
     /// <summary>Represents a chat conversation between a user and a nutritionist.</summary>
     public class Conversation
     {

@@ -1,34 +1,61 @@
-using System;
-using TeamNut.Models;
-using TeamNut.Services.Interfaces;
+// <copyright file="NutritionCalculationService.cs" company="TeamNut">
+// Copyright (c) TeamNut. All rights reserved.
+// </copyright>
 
 namespace TeamNut.Services
 {
+    using System;
+    using TeamNut.Models;
+    using TeamNut.Services.Interfaces;
+
     public class NutritionCalculationService : INutritionCalculationService
     {
         private const string GenderMale = "male";
+
         private const string GenderFemale = "female";
+
         private const string GoalBulk = "bulk";
+
         private const string GoalCut = "cut";
+
         private const string GoalMaintenance = "maintenance";
+
         private const string GoalWellBeing = "well-being";
+
         private const double BmrWeightFactor = 10.0;
+
         private const double BmrHeightFactor = 6.25;
+
         private const double BmrAgeFactor = 5.0;
+
         private const double BmrMaleOffset = 5.0;
+
         private const double BmrFemaleOffset = 161.0;
+
         private const double ActivityMultiplier = 1.55;
+
         private const int BulkCalorieDelta = 300;
+
         private const int CutCalorieDelta = -300;
+
         private const double ProteinBulk = 2.0;
+
         private const double ProteinCut = 2.2;
+
         private const double ProteinMaintenance = 1.8;
+
         private const double ProteinWellBeing = 1.6;
+
         private const double FatBulkCut = 0.25;
+
         private const double FatMaintenance = 0.28;
+
         private const double FatWellBeing = 0.30;
+
         private const int CaloriesPerGramProtein = 4;
+
         private const int CaloriesPerGramCarbs = 4;
+
         private const int CaloriesPerGramFat = 9;
 
         public int CalculateAge(DateTimeOffset? birthDate)

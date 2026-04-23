@@ -1,3 +1,7 @@
+// <copyright file="RemindersPage.xaml.cs" company="TeamNut">
+// Copyright (c) TeamNut. All rights reserved.
+// </copyright>
+
 namespace TeamNut.Views.RemindersView
 {
     using System;
@@ -14,32 +18,55 @@ namespace TeamNut.Views.RemindersView
     public sealed partial class RemindersPage : Page
     {
         private const int DialogStackSpacing = 8;
+
         private const int FrequencyComboWidth = 200;
+
         private const int MaxReminderNameLength = 50;
+
         private const string DateFormatIso = "yyyy-MM-dd";
+
         private const string ButtonSave = "Save";
+
         private const string ButtonCancel = "Cancel";
+
         private const string ButtonYes = "Yes";
+
         private const string ButtonOk = "OK";
+
         private const string TitleAddReminder = "Add Reminder";
+
         private const string TitleEditReminder = "Edit Reminder";
+
         private const string TitleDeleteReminder = "Delete Reminder";
+
         private const string TitleSaveFailed = "Save Failed";
+
         private const string LabelName = "Name";
+
         private const string LabelDate = "Date";
+
         private const string LabelTime = "Time";
+
         private const string LabelSound = "Sound";
+
         private const string LabelFrequency = "Frequency";
+
         private const string FrequencyOnce = "Once";
+
         private const string FrequencyDaily = "Daily";
+
         private const string FrequencyWeekly = "Weekly";
+
         private const string FrequencyMonthly = "Monthly";
+
         private const string MsgConfirmDelete = "Are you sure you want to delete this reminder?";
+
         private const string SaveSuccessText = "Success";
 
         private static readonly Thickness FrequencyComboMargin = new Thickness(0, 4, 0, 0);
 
         public TeamNut.ViewModels.RemindersViewModel ViewModel { get; }
+
         private readonly IValidationService validationService;
 
         public RemindersPage()

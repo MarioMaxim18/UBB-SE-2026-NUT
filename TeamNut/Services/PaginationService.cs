@@ -1,10 +1,14 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using TeamNut.Services.Interfaces;
+// <copyright file="PaginationService.cs" company="TeamNut">
+// Copyright (c) TeamNut. All rights reserved.
+// </copyright>
 
 namespace TeamNut.Services
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using TeamNut.Services.Interfaces;
+
     public class PaginationService : IPaginationService
     {
         public List<T> GetPage<T>(IEnumerable<T> items, int currentPage, int pageSize)

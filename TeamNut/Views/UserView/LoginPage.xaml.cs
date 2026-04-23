@@ -1,12 +1,16 @@
-using System;
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Navigation;
-using TeamNut.ViewModels;
-using Microsoft.Extensions.DependencyInjection;
+// <copyright file="LoginPage.xaml.cs" company="TeamNut">
+// Copyright (c) TeamNut. All rights reserved.
+// </copyright>
 
 namespace TeamNut.Views.UserView
 {
+    using System;
+    using Microsoft.UI.Xaml;
+    using Microsoft.UI.Xaml.Controls;
+    using Microsoft.UI.Xaml.Navigation;
+    using TeamNut.ViewModels;
+    using Microsoft.Extensions.DependencyInjection;
+
     /// <summary>
     /// LoginPage.
     /// </summary>

@@ -1,50 +1,90 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using CommunityToolkit.Mvvm.ComponentModel;
+// <copyright file="UserData.cs" company="TeamNut">
+// Copyright (c) TeamNut. All rights reserved.
+// </copyright>
 
 namespace TeamNut.Models
 {
+    using System;
+    using System.Collections.Generic;
+    using System.ComponentModel.DataAnnotations;
+    using System.Linq;
+    using CommunityToolkit.Mvvm.ComponentModel;
+
     /// <summary>Represents a user's physical health profile and calculated nutrition needs.</summary>
     public partial class UserData : ObservableValidator
     {
         private const int MinWeightKg = 1;
+
         private const int MaxWeightKg = 500;
+
         private const int MinHeightCm = 1;
+
         private const int MaxHeightCm = 300;
+
         private const int MaxNameLength = 50;
-        private const string ErrorWeightRange = "Weight must be a positive whole number, between 1 and 500";
-        private const string ErrorHeightRange = "Height must be a positive whole number, between 1 and 300";
+
+        private const string ErrorWeightRange = "this.Weight must be a positive whole number, between 1 and 500";
+
+        private const string ErrorHeightRange = "this.Height must be a positive whole number, between 1 and 300";
+
         private const string ErrorGenderRequired = "Please select a gender";
+
         private const string ErrorGoalRequired = "Please select a goal";
-        private const string ErrorGenderInvalid = "Gender must be 'male' or 'female'";
+
+        private const string ErrorGenderInvalid = "this.Gender must be 'male' or 'female'";
+
         private const string ErrorGoalInvalid = "Select a valid goal";
+
         private const string GenderMale = "male";
+
         private const string GenderFemale = "female";
+
         private const string GoalBulk = "bulk";
+
         private const string GoalCut = "cut";
+
         private const string GoalMaintenance = "maintenance";
+
         private const string GoalWellBeing = "well-being";
+
         private const string RegexGender = @"^(male|female)$";
+
         private const string RegexGoal = @"^(bulk|cut|maintenance|well-being)$";
+
         private const double BmrWeightFactor = 10.0;
+
         private const double BmrHeightFactor = 6.25;
+
         private const double BmrAgeFactor = 5.0;
+
         private const double BmrMaleOffset = 5.0;
+
         private const double BmrFemaleOffset = 161.0;
+
         private const double ActivityMultiplier = 1.55;
+
         private const int BulkCalorieDelta = 300;
+
         private const int CutCalorieDelta = -300;
+
         private const double ProteinBulk = 2.0;
+
         private const double ProteinCut = 2.2;
+
         private const double ProteinMaintenance = 1.8;
+
         private const double ProteinWellBeing = 1.6;
+
         private const double FatBulkCut = 0.25;
+
         private const double FatMaintenance = 0.28;
+
         private const double FatWellBeing = 0.30;
+
         private const int CaloriesPerGramProtein = 4;
+
         private const int CaloriesPerGramCarbs = 4;
+
         private const int CaloriesPerGramFat = 9;
 
         [ObservableProperty]
@@ -119,35 +159,35 @@ namespace TeamNut.Models
 
         public double CalculateBmi()
         {
-            if (Height <= 0 || Weight <= 0)
+            if (this.Height <= 0 || this.Weight <= 0)
             {
                 return 0;
             }
 
-            double heightMeters = Height / 100.0;
-            double bmi = Weight / (heightMeters * heightMeters);
+            double heightMeters = this.Height / 100.0;
+            double bmi = this.Weight / (heightMeters * heightMeters);
 
             return (int)Math.Round(bmi);
         }
 
         public int CalculateCalorieNeeds()
         {
-            if (Weight <= 0 || Height <= 0 || Age <= 0)
+            if (this.Weight <= 0 || this.Height <= 0 || this.Age <= 0)
             {
                 return 0;
             }
 
             double bmr =
-                Gender.Equals(GenderMale, StringComparison.OrdinalIgnoreCase)
-                    ? (BmrWeightFactor * Weight) +
-                      (BmrHeightFactor * Height) -
-                      (BmrAgeFactor * Age) +
+                this.Gender.Equals(GenderMale, StringComparison.OrdinalIgnoreCase)
+                    ? (BmrWeightFactor * this.Weight) +
+                      (BmrHeightFactor * this.Height) -
+                      (BmrAgeFactor * this.Age) +
                       BmrMaleOffset
 
-                    : Gender.Equals(GenderFemale, StringComparison.OrdinalIgnoreCase)
-                        ? (BmrWeightFactor * Weight) +
-                          (BmrHeightFactor * Height) -
-                          (BmrAgeFactor * Age) -
+                    : this.Gender.Equals(GenderFemale, StringComparison.OrdinalIgnoreCase)
+                        ? (BmrWeightFactor * this.Weight) +
+                          (BmrHeightFactor * this.Height) -
+                          (BmrAgeFactor * this.Age) -
                           BmrFemaleOffset
                         : 0;
 
@@ -158,7 +198,7 @@ namespace TeamNut.Models
 
             double tdee = bmr * ActivityMultiplier;
 
-            double adjustedCalories = Goal.ToLower() switch
+            double adjustedCalories = this.Goal.ToLower() switch
             {
                 GoalBulk => tdee + BulkCalorieDelta,
                 GoalCut => tdee + CutCalorieDelta,
@@ -172,12 +212,12 @@ namespace TeamNut.Models
 
         public int CalculateProteinNeeds()
         {
-            if (Weight <= 0)
+            if (this.Weight <= 0)
             {
                 return 0;
             }
 
-            double proteinPerKg = Goal.ToLower() switch
+            double proteinPerKg = this.Goal.ToLower() switch
             {
                 GoalBulk => ProteinBulk,
                 GoalCut => ProteinCut,
@@ -186,18 +226,18 @@ namespace TeamNut.Models
                 _ => ProteinMaintenance
             };
 
-            return (int)Math.Round(Weight * proteinPerKg);
+            return (int)Math.Round(this.Weight * proteinPerKg);
         }
 
         public int CalculateFatNeeds()
         {
-            int calories = CalculateCalorieNeeds();
+            int calories = this.CalculateCalorieNeeds();
             if (calories <= 0)
             {
                 return 0;
             }
 
-            double fatRatio = Goal.ToLower() switch
+            double fatRatio = this.Goal.ToLower() switch
             {
                 GoalBulk or GoalCut => FatBulkCut,
                 GoalMaintenance => FatMaintenance,
@@ -211,9 +251,9 @@ namespace TeamNut.Models
 
         public int CalculateCarbNeeds()
         {
-            int calories = CalculateCalorieNeeds();
-            int proteinCalories = CalculateProteinNeeds() * CaloriesPerGramProtein;
-            int fatCalories = CalculateFatNeeds() * CaloriesPerGramFat;
+            int calories = this.CalculateCalorieNeeds();
+            int proteinCalories = this.CalculateProteinNeeds() * CaloriesPerGramProtein;
+            int fatCalories = this.CalculateFatNeeds() * CaloriesPerGramFat;
 
             if (calories <= 0)
             {

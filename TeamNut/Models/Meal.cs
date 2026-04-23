@@ -1,9 +1,13 @@
-using System.ComponentModel.DataAnnotations;
-using CommunityToolkit.Mvvm.ComponentModel;
-using Microsoft.UI.Xaml;
+// <copyright file="Meal.cs" company="TeamNut">
+// Copyright (c) TeamNut. All rights reserved.
+// </copyright>
 
 namespace TeamNut.Models
 {
+    using System.ComponentModel.DataAnnotations;
+    using CommunityToolkit.Mvvm.ComponentModel;
+    using Microsoft.UI.Xaml;
+
     /// <summary>Represents a meal and its nutrition/filter metadata.</summary>
     public partial class Meal : ObservableObject
     {

@@ -1,12 +1,16 @@
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Navigation;
-using TeamNut.Models;
-using TeamNut.ViewModels;
-using Microsoft.Extensions.DependencyInjection;
+// <copyright file="CalorieLoggingPage.xaml.cs" company="TeamNut">
+// Copyright (c) TeamNut. All rights reserved.
+// </copyright>
 
 namespace TeamNut.Views.CalorieLoggingView
 {
+    using Microsoft.UI.Xaml;
+    using Microsoft.UI.Xaml.Controls;
+    using Microsoft.UI.Xaml.Navigation;
+    using TeamNut.Models;
+    using TeamNut.ViewModels;
+    using Microsoft.Extensions.DependencyInjection;
+
     /// <summary>
     /// CalorieLoggingPage.
     /// </summary>

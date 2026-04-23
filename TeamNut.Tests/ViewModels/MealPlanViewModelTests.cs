@@ -1,3 +1,7 @@
+// <copyright file="MealPlanViewModelTests.cs" company="TeamNut">
+// Copyright (c) TeamNut. All rights reserved.
+// </copyright>
+
 ﻿namespace TeamNut.Tests.ModelViews
 {
     using System;

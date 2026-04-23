@@ -1,11 +1,15 @@
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Navigation;
-using TeamNut.Models;
-using TeamNut.ViewModels;
+// <copyright file="InventoryPage.xaml.cs" company="TeamNut">
+// Copyright (c) TeamNut. All rights reserved.
+// </copyright>
 
 namespace TeamNut.Views.InventoryView
 {
+    using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.UI.Xaml.Controls;
+    using Microsoft.UI.Xaml.Navigation;
+    using TeamNut.Models;
+    using TeamNut.ViewModels;
+
     /// <summary>
     /// InventoryPage.
     /// </summary>

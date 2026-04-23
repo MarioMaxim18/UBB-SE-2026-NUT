@@ -1,13 +1,17 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using TeamNut.Models;
-using TeamNut.Repositories;
-using TeamNut.Repositories.Interfaces;
-using TeamNut.Services.Interfaces;
+// <copyright file="MealService.cs" company="TeamNut">
+// Copyright (c) TeamNut. All rights reserved.
+// </copyright>
 
 namespace TeamNut.Services
 {
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using TeamNut.Models;
+    using TeamNut.Repositories;
+    using TeamNut.Repositories.Interfaces;
+    using TeamNut.Services.Interfaces;
+
     public class MealService : IMealService
     {
         private readonly IMealRepository mealRepository;

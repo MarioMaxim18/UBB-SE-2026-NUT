@@ -1,12 +1,16 @@
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Microsoft.Data.Sqlite;
-using TeamNut.Models;
-using TeamNut.Repositories.Interfaces;
+// <copyright file="IngredientRepository.cs" company="TeamNut">
+// Copyright (c) TeamNut. All rights reserved.
+// </copyright>
 
 namespace TeamNut.Repositories
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
+    using Microsoft.Data.Sqlite;
+    using TeamNut.Models;
+    using TeamNut.Repositories.Interfaces;
+
     internal class IngredientRepository : IIngredientRepository
     {
         private readonly string connectionString;

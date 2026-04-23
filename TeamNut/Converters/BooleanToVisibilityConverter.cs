@@ -1,9 +1,13 @@
-using System;
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Data;
+// <copyright file="BooleanToVisibilityConverter.cs" company="TeamNut">
+// Copyright (c) TeamNut. All rights reserved.
+// </copyright>
 
 namespace TeamNut.Converters
 {
+    using System;
+    using Microsoft.UI.Xaml;
+    using Microsoft.UI.Xaml.Data;
+
     /// <summary>Converts a boolean value to a <see cref="Visibility"/> value.</summary>
     public class BooleanToVisibilityConverter : IValueConverter
     {

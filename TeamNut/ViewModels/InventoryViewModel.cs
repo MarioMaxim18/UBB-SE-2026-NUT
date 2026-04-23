@@ -1,79 +1,102 @@
-using System;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Threading.Tasks;
-using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
-using TeamNut.Models;
-using TeamNut.Services;
-using TeamNut.Services.Interfaces;
+// <copyright file="InventoryViewModel.cs" company="TeamNut">
+// Copyright (c) TeamNut. All rights reserved.
+// </copyright>
+
 namespace TeamNut.ViewModels
 {
+    using System;
+    using System.Collections.ObjectModel;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using CommunityToolkit.Mvvm.ComponentModel;
+    using CommunityToolkit.Mvvm.Input;
+    using TeamNut.Models;
+    using TeamNut.Services;
+    using TeamNut.Services.Interfaces;
+
     /// <summary>
     /// InventoryViewModel.
     /// </summary>
     public partial class InventoryViewModel : ObservableObject
     {
         private readonly IInventoryService inventoryService;
+
         private readonly IFilteringService filteringService;
+
         private readonly int currentUserId;
+
         private const double DefaultQuantityToAdd = 100;
+
         private const double MinQuantityAllowed = 0;
+
         private const string EmptyInventoryMessage = "Your pantry is empty. Start adding items!";
+
         private const string SelectIngredientMessage = "Please choose an ingredient from suggestions.";
+
         private const string InvalidQuantityMessage = "Quantity must be greater than 0.";
+
         private const string LoadInventoryErrorMessage = "Error loading inventory: {0}";
+
         private const string LoadIngredientsErrorMessage = "Error loading ingredients: {0}";
+
         private const string DeleteItemErrorMessage = "Could not delete item: {0}";
+
         private const string AddItemErrorMessage = "Could not add item: {0}";
+
         private const string AddItemSuccessMessage = "Added {0}g of {1}.";
+
         private bool isBusy;
+
         private string emptyListMessage = EmptyInventoryMessage;
+
         private string statusMessage = string.Empty;
+
         private string ingredientSearchText = string.Empty;
+
         private Ingredient? selectedIngredient;
+
         private double quantityToAdd = DefaultQuantityToAdd;
 
         public bool IsBusy
         {
-            get => isBusy;
-            set => SetProperty(ref isBusy, value);
+            get => this.isBusy;
+            set => SetProperty(ref this.isBusy, value);
         }
 
         public string EmptyListMessage
         {
-            get => emptyListMessage;
-            set => SetProperty(ref emptyListMessage, value);
+            get => this.emptyListMessage;
+            set => SetProperty(ref this.emptyListMessage, value);
         }
 
         public string StatusMessage
         {
-            get => statusMessage;
-            set => SetProperty(ref statusMessage, value);
+            get => this.statusMessage;
+            set => SetProperty(ref this.statusMessage, value);
         }
 
         public string IngredientSearchText
         {
-            get => ingredientSearchText;
+            get => this.ingredientSearchText;
             set
             {
-                if (SetProperty(ref ingredientSearchText, value))
+                if (SetProperty(ref this.ingredientSearchText, value))
                 {
-                    UpdateFilteredIngredients();
+                    this.UpdateFilteredIngredients();
                 }
             }
         }
 
         public Ingredient? SelectedIngredient
         {
-            get => selectedIngredient;
-            set => SetProperty(ref selectedIngredient, value);
+            get => this.selectedIngredient;
+            set => SetProperty(ref this.selectedIngredient, value);
         }
 
         public double QuantityToAdd
         {
-            get => quantityToAdd;
-            set => SetProperty(ref quantityToAdd, value);
+            get => this.quantityToAdd;
+            set => SetProperty(ref this.quantityToAdd, value);
         }
 
         public ObservableCollection<Inventory> Items { get; } = new ObservableCollection<Inventory>();
@@ -86,12 +109,12 @@ namespace TeamNut.ViewModels
             IInventoryService iinventoryService,
             IFilteringService ffilteringService)
         {
-            inventoryService = iinventoryService;
-            filteringService = ffilteringService;
-            currentUserId = Models.UserSession.UserId ?? 0;
+            this.inventoryService = iinventoryService;
+            this.filteringService = ffilteringService;
+            this.currentUserId = Models.UserSession.UserId ?? 0;
 
-            _ = LoadInventoryAsync();
-            _ = LoadIngredientsAsync();
+            _ = this.LoadInventoryAsync();
+            _ = this.LoadIngredientsAsync();
         }
 
         [RelayCommand]
@@ -105,15 +128,15 @@ namespace TeamNut.ViewModels
             try
             {
                 IsBusy = true;
-                var inventoryItems = await inventoryService.GetUserInventory(currentUserId);
+                var inventoryItems = await this.inventoryService.GetUserInventory(this.currentUserId);
 
-                Items.Clear();
+                this.Items.Clear();
                 foreach (var item in inventoryItems)
                 {
-                    Items.Add(item);
+                    this.Items.Add(item);
                 }
 
-                OnPropertyChanged(nameof(IsListEmpty));
+                OnPropertyChanged(nameof(this.IsListEmpty));
             }
             catch (Exception ex)
             {
@@ -135,9 +158,9 @@ namespace TeamNut.ViewModels
 
             try
             {
-                await inventoryService.RemoveItem(item.Id);
-                Items.Remove(item);
-                OnPropertyChanged(nameof(IsListEmpty));
+                await this.inventoryService.RemoveItem(item.Id);
+                this.Items.Remove(item);
+                OnPropertyChanged(nameof(this.IsListEmpty));
             }
             catch (Exception ex)
             {
@@ -163,12 +186,12 @@ namespace TeamNut.ViewModels
             try
             {
                 int qty = (int)Math.Round(QuantityToAdd);
-                await inventoryService.AddToPantry(
-                    currentUserId,
+                await this.inventoryService.AddToPantry(
+                    this.currentUserId,
                     SelectedIngredient.FoodId,
                     qty);
 
-                await LoadInventoryAsync();
+                await this.LoadInventoryAsync();
 
                 StatusMessage = string.Format(
                     AddItemSuccessMessage,
@@ -177,7 +200,7 @@ namespace TeamNut.ViewModels
 
                 IngredientSearchText = string.Empty;
                 SelectedIngredient = null;
-                UpdateFilteredIngredients();
+                this.UpdateFilteredIngredients();
             }
             catch (Exception ex)
             {
@@ -190,15 +213,15 @@ namespace TeamNut.ViewModels
         {
             try
             {
-                var ingredients = await inventoryService.GetAllIngredients();
-                AvailableIngredients.Clear();
+                var ingredients = await this.inventoryService.GetAllIngredients();
+                this.AvailableIngredients.Clear();
 
                 foreach (var ingredient in ingredients)
                 {
-                    AvailableIngredients.Add(ingredient);
+                    this.AvailableIngredients.Add(ingredient);
                 }
 
-                UpdateFilteredIngredients();
+                this.UpdateFilteredIngredients();
             }
             catch (Exception ex)
             {
@@ -208,15 +231,15 @@ namespace TeamNut.ViewModels
 
         private void UpdateFilteredIngredients()
         {
-            FilteredIngredients.Clear();
+            this.FilteredIngredients.Clear();
 
             var query = IngredientSearchText?.Trim() ?? string.Empty;
 
-            var filtered = filteringService.FilterIngredients(AvailableIngredients, query);
+            var filtered = this.filteringService.FilterIngredients(this.AvailableIngredients, query);
 
             foreach (var ingredient in filtered)
             {
-                FilteredIngredients.Add(ingredient);
+                this.FilteredIngredients.Add(ingredient);
             }
         }
 

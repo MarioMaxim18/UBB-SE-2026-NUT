@@ -1,7 +1,11 @@
-using CommunityToolkit.Mvvm.ComponentModel;
+// <copyright file="Inventory.cs" company="TeamNut">
+// Copyright (c) TeamNut. All rights reserved.
+// </copyright>
 
 namespace TeamNut.Models
 {
+    using CommunityToolkit.Mvvm.ComponentModel;
+
     /// <summary>Represents a user's inventory entry for a food ingredient.</summary>
     public partial class Inventory : ObservableObject
     {

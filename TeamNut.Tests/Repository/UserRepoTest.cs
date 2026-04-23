@@ -1,3 +1,7 @@
+// <copyright file="UserRepoTest.cs" company="TeamNut">
+// Copyright (c) TeamNut. All rights reserved.
+// </copyright>
+
 using Xunit;
 
 namespace TeamNut.Tests;

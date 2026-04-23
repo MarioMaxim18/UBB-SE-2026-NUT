@@ -1,7 +1,11 @@
-using System;
+// <copyright file="DailyLog.cs" company="TeamNut">
+// Copyright (c) TeamNut. All rights reserved.
+// </copyright>
 
 namespace TeamNut.Models
 {
+    using System;
+
     /// <summary>Represents a daily nutrition log entry.</summary>
     public class DailyLog
     {

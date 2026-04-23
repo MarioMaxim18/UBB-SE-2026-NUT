@@ -1,3 +1,7 @@
+// <copyright file="DailyLogServiceTests.cs" company="TeamNut">
+// Copyright (c) TeamNut. All rights reserved.
+// </copyright>
+
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -14,8 +18,11 @@ namespace TeamNut.Tests.Services
     public class DailyLogServiceTests
     {
         private readonly IDailyLogRepository mockDailyLogRepo;
+
         private readonly IUserRepository mockUserRepo;
+
         private readonly IMealService mockMealService;
+
         private readonly DailyLogService service;
 
         public DailyLogServiceTests()

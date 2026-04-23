@@ -1,12 +1,16 @@
-using System;
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-using TeamNut.Models;
-using TeamNut.ViewModels;
-using Microsoft.Extensions.DependencyInjection;
+// <copyright file="NutritionistChatPage.xaml.cs" company="TeamNut">
+// Copyright (c) TeamNut. All rights reserved.
+// </copyright>
 
 namespace TeamNut.Views.NutritionistChat
 {
+    using System;
+    using Microsoft.UI.Xaml;
+    using Microsoft.UI.Xaml.Controls;
+    using TeamNut.Models;
+    using TeamNut.ViewModels;
+    using Microsoft.Extensions.DependencyInjection;
+
     /// <summary>
     /// NutritionistChatPage.
     /// </summary>

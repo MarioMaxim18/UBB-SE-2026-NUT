@@ -1,3 +1,7 @@
+// <copyright file="ReminderServiceTests.cs" company="TeamNut">
+// Copyright (c) TeamNut. All rights reserved.
+// </copyright>
+
 ﻿using System.Threading.Tasks;
 using FluentAssertions;
 using NSubstitute;
@@ -11,6 +15,7 @@ namespace TeamNut.Tests.Services
     public class ReminderServiceTests
     {
         private readonly IReminderRepository mockRepo;
+
         private readonly ReminderService service;
 
         public ReminderServiceTests()

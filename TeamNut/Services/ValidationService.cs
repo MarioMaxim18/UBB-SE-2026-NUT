@@ -1,11 +1,15 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Text.RegularExpressions;
-using TeamNut.Models;
-using TeamNut.Services.Interfaces;
+// <copyright file="ValidationService.cs" company="TeamNut">
+// Copyright (c) TeamNut. All rights reserved.
+// </copyright>
 
 namespace TeamNut.Services
 {
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Text.RegularExpressions;
+    using TeamNut.Models;
+    using TeamNut.Services.Interfaces;
+
     public class ValidationService : IValidationService
     {
         private static readonly Regex AllowedTextInputRegex = new Regex("^[a-zA-Z0-9 .,!?'\\-()]+$", RegexOptions.Compiled);

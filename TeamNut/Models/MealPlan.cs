@@ -1,7 +1,11 @@
-using System;
+// <copyright file="MealPlan.cs" company="TeamNut">
+// Copyright (c) TeamNut. All rights reserved.
+// </copyright>
 
 namespace TeamNut.Models
 {
+    using System;
+
     /// <summary>Represents a generated meal plan for a user.</summary>
     public class MealPlan
     {

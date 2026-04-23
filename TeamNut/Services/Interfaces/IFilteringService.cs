@@ -1,9 +1,13 @@
-using System;
-using System.Collections.Generic;
-using TeamNut.Models;
+// <copyright file="IFilteringService.cs" company="TeamNut">
+// Copyright (c) TeamNut. All rights reserved.
+// </copyright>
 
 namespace TeamNut.Services.Interfaces
 {
+    using System;
+    using System.Collections.Generic;
+    using TeamNut.Models;
+
     public interface IFilteringService
     {
         List<Meal> FilterMeals(IEnumerable<Meal> meals, string searchText, StringComparison comparison = StringComparison.OrdinalIgnoreCase);

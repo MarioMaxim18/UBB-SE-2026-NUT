@@ -1,11 +1,15 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using TeamNut.Models;
-using TeamNut.Services.Interfaces;
+// <copyright file="FilteringService.cs" company="TeamNut">
+// Copyright (c) TeamNut. All rights reserved.
+// </copyright>
 
 namespace TeamNut.Services
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using TeamNut.Models;
+    using TeamNut.Services.Interfaces;
+
     public class FilteringService : IFilteringService
     {
         public List<Meal> FilterMeals(

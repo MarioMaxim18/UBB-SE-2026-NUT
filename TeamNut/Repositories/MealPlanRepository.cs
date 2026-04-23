@@ -1,20 +1,24 @@
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Microsoft.Data.Sqlite;
-using TeamNut.Models;
-using TeamNut.Views.MealPlanView;
-using TeamNut.Repositories.Interfaces;
+// <copyright file="MealPlanRepository.cs" company="TeamNut">
+// Copyright (c) TeamNut. All rights reserved.
+// </copyright>
 
 namespace TeamNut.Repositories
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
+    using Microsoft.Data.Sqlite;
+    using TeamNut.Models;
+    using TeamNut.Views.MealPlanView;
+    using TeamNut.Repositories.Interfaces;
+
     internal class MealPlanRepository : IMealPlanRepository
     {
         private readonly string connectionString;
 
         public MealPlanRepository(IDbConfig dbConfig)
         {
-            connectionString = dbConfig.ConnectionString;
+            this.connectionString = dbConfig.ConnectionString;
         }
 
         public async Task<MealPlan?> GetById(int id)
@@ -28,7 +32,7 @@ namespace TeamNut.Repositories
             using var reader = await cmd.ExecuteReaderAsync();
             if (await reader.ReadAsync())
             {
-                return MapReaderToMealPlan(reader);
+                return this.MapReaderToMealPlan(reader);
             }
             return null;
         }
@@ -47,7 +51,7 @@ namespace TeamNut.Repositories
             using var reader = await cmd.ExecuteReaderAsync();
             if (await reader.ReadAsync())
             {
-                return MapReaderToMealPlan(reader);
+                return this.MapReaderToMealPlan(reader);
             }
             return null;
         }
@@ -63,7 +67,7 @@ namespace TeamNut.Repositories
             using var reader = await cmd.ExecuteReaderAsync();
             while (await reader.ReadAsync())
             {
-                plans.Add(MapReaderToMealPlan(reader));
+                plans.Add(this.MapReaderToMealPlan(reader));
             }
             return plans;
         }
@@ -121,7 +125,7 @@ namespace TeamNut.Repositories
             using var reader = await cmd.ExecuteReaderAsync();
             if (await reader.ReadAsync())
             {
-                return MapReaderToMealPlan(reader);
+                return this.MapReaderToMealPlan(reader);
             }
             return null;
         }

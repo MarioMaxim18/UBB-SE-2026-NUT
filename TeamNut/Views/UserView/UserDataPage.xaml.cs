@@ -1,19 +1,24 @@
-using System;
-using System.Linq;
-using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Navigation;
-using TeamNut.ViewModels;
-using TeamNut.Services.Interfaces;
-using Microsoft.Extensions.DependencyInjection;
+// <copyright file="UserDataPage.xaml.cs" company="TeamNut">
+// Copyright (c) TeamNut. All rights reserved.
+// </copyright>
 
 namespace TeamNut.Views.UserView
 {
+    using System;
+    using System.Linq;
+    using Microsoft.UI.Xaml.Controls;
+    using Microsoft.UI.Xaml.Navigation;
+    using TeamNut.ViewModels;
+    using TeamNut.Services.Interfaces;
+    using Microsoft.Extensions.DependencyInjection;
+
     /// <summary>
     /// UserDataPage.
     /// </summary>
     public sealed partial class UserDataPage : Page
     {
         public UserViewModel ViewModel { get; }
+
         private readonly IValidationService validationService;
 
         public UserDataPage()

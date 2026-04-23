@@ -1,29 +1,33 @@
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.Data.Sqlite;
-using TeamNut.Models;
-using TeamNut.Repositories.Interfaces;
+// <copyright file="MealRepository.cs" company="TeamNut">
+// Copyright (c) TeamNut. All rights reserved.
+// </copyright>
 
 namespace TeamNut.Repositories
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Data;
+    using System.Linq;
+    using System.Text;
+    using System.Threading.Tasks;
+    using Microsoft.Data.Sqlite;
+    using TeamNut.Models;
+    using TeamNut.Repositories.Interfaces;
+
     internal class MealRepository : IMealRepository
     {
         private readonly string connectionString;
 
         public MealRepository(IDbConfig dbConfig)
         {
-            connectionString = dbConfig.ConnectionString;
+            this.connectionString = dbConfig.ConnectionString;
         }
 
         public List<Meal> GetMeals()
         {
             try
             {
-                return GetAll().Result.ToList();
+                return this.GetAll().Result.ToList();
             }
             catch
             {
@@ -97,7 +101,7 @@ namespace TeamNut.Repositories
             using var reader = await cmd.ExecuteReaderAsync();
             while (await reader.ReadAsync())
             {
-                meals.Add(MapReaderToMeal(reader));
+                meals.Add(this.MapReaderToMeal(reader));
             }
             return meals;
         }
@@ -128,12 +132,12 @@ namespace TeamNut.Repositories
 
         public async Task<IEnumerable<Meal>> GetAll()
         {
-            return await GetFilteredMeals(new MealFilter());
+            return await this.GetFilteredMeals(new MealFilter());
         }
 
         public async Task<Meal?> GetById(int id)
         {
-            var result = await GetFilteredMeals(new MealFilter());
+            var result = await this.GetFilteredMeals(new MealFilter());
             return result.FirstOrDefault(m => m.Id == id);
         }
 
@@ -143,7 +147,7 @@ namespace TeamNut.Repositories
             const string sql = @"INSERT INTO Meals (name, imageUrl, isKeto, isVegan, isNutFree, isLactoseFree, isGlutenFree, description)
                                 VALUES (@name, @img, @keto, @vegan, @nut, @lac, @glu, @desc)";
             using var cmd = new SqliteCommand(sql, conn);
-            AddMealParameters(cmd, entity);
+            this.AddMealParameters(cmd, entity);
             await conn.OpenAsync();
             await cmd.ExecuteNonQueryAsync();
         }
@@ -156,7 +160,7 @@ namespace TeamNut.Repositories
                                  WHERE meal_id=@id";
             using var cmd = new SqliteCommand(sql, conn);
             cmd.Parameters.AddWithValue("@id", entity.Id);
-            AddMealParameters(cmd, entity);
+            this.AddMealParameters(cmd, entity);
             await conn.OpenAsync();
             await cmd.ExecuteNonQueryAsync();
         }
@@ -206,6 +210,7 @@ namespace TeamNut.Repositories
                 Description = reader["description"]?.ToString() ?? string.Empty,
             };
         }
+
         public async Task<List<string>> GetIngredientLinesForMealAsync(int mealId)
         {
             var ingredients = new List<string>();

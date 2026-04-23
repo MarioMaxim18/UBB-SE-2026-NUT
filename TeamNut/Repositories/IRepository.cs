@@ -1,8 +1,12 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
+// <copyright file="IRepository.cs" company="TeamNut">
+// Copyright (c) TeamNut. All rights reserved.
+// </copyright>
 
 namespace TeamNut.Repositories
 {
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
+
     public interface IRepository<T>
         where T : class
     {

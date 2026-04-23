@@ -1,22 +1,31 @@
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using TeamNut.Models;
-using TeamNut.Repositories;
-using TeamNut.Repositories.Interfaces;
-using TeamNut.Services.Interfaces;
+// <copyright file="ReminderService.cs" company="TeamNut">
+// Copyright (c) TeamNut. All rights reserved.
+// </copyright>
 
 namespace TeamNut.Services
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
+    using TeamNut.Models;
+    using TeamNut.Repositories;
+    using TeamNut.Repositories.Interfaces;
+    using TeamNut.Services.Interfaces;
+
     public class ReminderService : IReminderService
     {
         private readonly IReminderRepository reminderRepository;
+
         public event EventHandler<int>? RemindersChanged;
 
         private const int MaxReminderNameLength = 50;
+
         private const int InvalidUserId = 0;
+
         private const string ResultSuccess = "Success";
+
         private const string ErrorInvalidName = "Error: Name must be between 1 and 50 characters.";
+
         private const string ConfirmConsumptionLogFormat = "User {0} confirmed meal {1}. Updating logs...";
 
         public ReminderService(IReminderRepository rreminderRepository)

@@ -1,8 +1,12 @@
-using System;
-using TeamNut.Models;
+// <copyright file="INutritionCalculationService.cs" company="TeamNut">
+// Copyright (c) TeamNut. All rights reserved.
+// </copyright>
 
 namespace TeamNut.Services.Interfaces
 {
+    using System;
+    using TeamNut.Models;
+
     public interface INutritionCalculationService
     {
         int CalculateAge(DateTimeOffset? birthDate);

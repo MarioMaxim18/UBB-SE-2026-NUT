@@ -1,3 +1,7 @@
+// <copyright file="MealPlanRepositoryTests.cs" company="TeamNut">
+// Copyright (c) TeamNut. All rights reserved.
+// </copyright>
+
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -1047,6 +1051,7 @@ CREATE TABLE IF NOT EXISTS MealPlan (
 
             await act.Should().ThrowAsync<SqliteException>();
         }
+
         private static string CreateSharedInMemoryDatabase(Func<SqliteConnection, Task> initializer, out SqliteConnection masterConnection, string dbName = "TestDb")
         {
             var connectionString = $"Data Source={dbName};Mode=Memory;Cache=Shared";

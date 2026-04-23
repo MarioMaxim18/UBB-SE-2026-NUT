@@ -1,29 +1,41 @@
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using TeamNut.Models;
-using TeamNut.Repositories.Interfaces;
-using TeamNut.Services.Interfaces;
+// <copyright file="DailyLogService.cs" company="TeamNut">
+// Copyright (c) TeamNut. All rights reserved.
+// </copyright>
 
 namespace TeamNut.Services
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
+    using TeamNut.Models;
+    using TeamNut.Repositories.Interfaces;
+    using TeamNut.Services.Interfaces;
+
     public class DailyLogService : IDailyLogService
     {
         private readonly IDailyLogRepository repository;
+
         private readonly IUserRepository userRepository;
+
         private readonly IMealService mealService;
+
         private const int DaysInWeek = 7;
+
         private const int OneDay = 1;
+
         private const DayOfWeek StartOfWeek = DayOfWeek.Monday;
+
         private const double DefaultBurnedCalories = 500d;
+
         private const string EmptySearchTerm = "";
+
         private const string ErrorUserNotLoggedIn = "User is not logged in.";
 
         public DailyLogService(IDailyLogRepository dailyLogRepo, IUserRepository userRepo, IMealService mmealService)
         {
-            repository = dailyLogRepo;
-            userRepository = userRepo;
-            mealService = mmealService;
+            this.repository = dailyLogRepo;
+            this.userRepository = userRepo;
+            this.mealService = mmealService;
         }
 
         private int GetUserId()
@@ -34,22 +46,22 @@ namespace TeamNut.Services
 
         public async Task<bool> HasAnyLogsAsync()
         {
-            return await repository.HasAnyLogs(GetUserId());
+            return await this.repository.HasAnyLogs(this.GetUserId());
         }
 
         public async Task<DailyLog> GetTodayTotalsAsync()
         {
-            var userId = GetUserId();
+            var userId = this.GetUserId();
             var start = DateTime.Today;
             var end = start.AddDays(OneDay);
 
-            return await repository
+            return await this.repository
                 .GetNutritionTotalsForRange(userId, start, end);
         }
 
         public async Task<DailyLog> GetCurrentWeekTotalsAsync()
         {
-            var userId = GetUserId();
+            var userId = this.GetUserId();
             var today = DateTime.Today;
 
             int diff =
@@ -58,7 +70,7 @@ namespace TeamNut.Services
             var startOfWeek = today.AddDays(-diff);
             var endOfWeek = startOfWeek.AddDays(DaysInWeek);
 
-            return await repository
+            return await this.repository
                 .GetNutritionTotalsForRange(
                     userId,
                     startOfWeek,
@@ -67,8 +79,8 @@ namespace TeamNut.Services
 
         public async Task<UserData?> GetCurrentUserNutritionTargetsAsync()
         {
-            return await userRepository
-                .GetUserDataByUserId(GetUserId());
+            return await this.userRepository
+                .GetUserDataByUserId(this.GetUserId());
         }
 
         public Task<double> GetTodayBurnedCaloriesAsync()
@@ -83,13 +95,13 @@ namespace TeamNut.Services
                 SearchTerm = searchTerm ?? EmptySearchTerm,
             };
 
-            return await mealService
+            return await this.mealService
                 .GetFilteredMealsAsync(filter);
         }
 
         public async Task<List<Meal>> GetMealsForAutocompleteAsync()
         {
-            return await mealService
+            return await this.mealService
                 .GetFilteredMealsAsync(new MealFilter());
         }
 
@@ -100,10 +112,10 @@ namespace TeamNut.Services
                 throw new ArgumentNullException(nameof(meal));
             }
 
-            await repository.Add(
+            await this.repository.Add(
                 new DailyLog
                 {
-                    UserId = GetUserId(),
+                    UserId = this.GetUserId(),
                     MealId = meal.Id,
                     Calories = meal.Calories,
                     LoggedAt = DateTime.Now,

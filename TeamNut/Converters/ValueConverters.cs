@@ -1,24 +1,37 @@
-using System;
-using Microsoft.UI.Text;
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Data;
-using Microsoft.UI.Xaml.Media;
-using Windows.UI;
-using Windows.UI.Text;
+// <copyright file="ValueConverters.cs" company="TeamNut">
+// Copyright (c) TeamNut. All rights reserved.
+// </copyright>
 
 namespace TeamNut
 {
+    using System;
+    using Microsoft.UI.Text;
+    using Microsoft.UI.Xaml;
+    using Microsoft.UI.Xaml.Data;
+    using Microsoft.UI.Xaml.Media;
+    using Windows.UI;
+    using Windows.UI.Text;
+
     internal static class ConverterConstants
     {
         public const string ParamInverse = "Inverse";
+
         public const string RoleNutritionist = "Nutritionist";
+
         public const string RoleUser = "User";
+
         public static readonly FontWeight FontBold = FontWeights.Bold;
+
         public static readonly FontWeight FontNormal = FontWeights.Normal;
+
         public const int VisibleThreshold = 0;
+
         public static readonly Color Transparent = Color.FromArgb(0, 0, 0, 0);
+
         public static readonly Color NutritionistBackground = Color.FromArgb(255, 180, 210, 240);
+
         public static readonly Color UserBackground = Color.FromArgb(255, 200, 235, 195);
+
         public static readonly Color UnansweredHighlight = Color.FromArgb(255, 255, 250, 200);
     }
 

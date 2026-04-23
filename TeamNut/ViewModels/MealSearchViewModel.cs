@@ -1,24 +1,33 @@
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Threading.Tasks;
-using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
-using TeamNut.Models;
-using TeamNut.Services;
-using TeamNut.Services.Interfaces;
+// <copyright file="MealSearchViewModel.cs" company="TeamNut">
+// Copyright (c) TeamNut. All rights reserved.
+// </copyright>
 
 namespace TeamNut.ViewModels
 {
+    using System.Collections.Generic;
+    using System.Collections.ObjectModel;
+    using System.Threading.Tasks;
+    using CommunityToolkit.Mvvm.ComponentModel;
+    using CommunityToolkit.Mvvm.Input;
+    using TeamNut.Models;
+    using TeamNut.Services;
+    using TeamNut.Services.Interfaces;
+
     /// <summary>
     /// MealSearchViewModel.
     /// </summary>
     public partial class MealSearchViewModel : ObservableObject
     {
         private readonly IMealService mealService;
+
         private readonly IPaginationService paginationService;
+
         private const string DefaultSearchTerm = "";
+
         private const string NoIngredientsFoundMessage = "No ingredients found.";
+
         private const string IngredientsLineSeparator = "\n";
+
         private const int DefaultPageSize = 5;
 
         public ObservableCollection<Meal> Meals { get; private set; } = new ObservableCollection<Meal>();
@@ -28,7 +37,9 @@ namespace TeamNut.ViewModels
         public Meal? SelectedMeal { get; set; }
 
         private List<Meal> allMeals = new List<Meal>();
+
         private int currentPage = 1;
+
         private int pageSize = DefaultPageSize;
 
         [ObservableProperty]
@@ -44,71 +55,71 @@ namespace TeamNut.ViewModels
             IMealService mmealService,
             IPaginationService ppaginationService)
         {
-            mealService = mmealService;
-            paginationService = ppaginationService;
-            _ = LoadMealsAsync();
+            this.mealService = mmealService;
+            this.paginationService = ppaginationService;
+            _ = this.LoadMealsAsync();
         }
 
         public void SetAllMeals(List<Meal> meals)
         {
-            allMeals = meals;
-            currentPage = 1;
-            UpdatePagedMeals();
+            this.allMeals = meals;
+            this.currentPage = 1;
+            this.UpdatePagedMeals();
         }
 
         public void GoToNextPage()
         {
-            int totalPages = paginationService.GetTotalPages(allMeals.Count, pageSize);
-            if (currentPage < totalPages)
+            int totalPages = this.paginationService.GetTotalPages(this.allMeals.Count, this.pageSize);
+            if (this.currentPage < totalPages)
             {
-                currentPage++;
-                UpdatePagedMeals();
+                this.currentPage++;
+                this.UpdatePagedMeals();
             }
         }
 
         public void GoToPreviousPage()
         {
-            if (currentPage > 1)
+            if (this.currentPage > 1)
             {
-                currentPage--;
-                UpdatePagedMeals();
+                this.currentPage--;
+                this.UpdatePagedMeals();
             }
         }
 
         private void UpdatePagedMeals()
         {
-            var pagedMeals = paginationService.GetPage(allMeals, currentPage, pageSize);
-            int totalPages = paginationService.GetTotalPages(allMeals.Count, pageSize);
+            var pagedMeals = this.paginationService.GetPage(this.allMeals, this.currentPage, this.pageSize);
+            int totalPages = this.paginationService.GetTotalPages(this.allMeals.Count, this.pageSize);
 
-            Meals = new ObservableCollection<Meal>(pagedMeals);
-            OnPropertyChanged(nameof(Meals));
+            this.Meals = new ObservableCollection<Meal>(pagedMeals);
+            OnPropertyChanged(nameof(this.Meals));
 
-            PageText = $"{currentPage} / {totalPages}";
-            CanGoToPreviousPage = currentPage > 1;
-            CanGoToNextPage = currentPage < totalPages;
+            this.PageText = $"{this.currentPage} / {totalPages}";
+            this.CanGoToPreviousPage = this.currentPage > 1;
+            this.CanGoToNextPage = this.currentPage < totalPages;
         }
 
         public async Task LoadMealsAsync(string? filter = null)
         {
-            var list = await mealService.GetMealsAsync(
-                new MealFilter { SearchTerm = filter ?? string.Empty });
-            Meals = new ObservableCollection<Meal>(list);
-            OnPropertyChanged(nameof(Meals));
+            var list = await this.mealService.GetMealsAsync(
+                new MealFilter { this.SearchTerm = filter ?? string.Empty });
+            this.Meals = new ObservableCollection<Meal>(list);
+            OnPropertyChanged(nameof(this.Meals));
         }
 
         public async Task<List<Meal>> SearchMealsAsync(MealFilter filter)
         {
-            var list = await mealService.GetFilteredMealsAsync(filter);
+            var list = await this.mealService.GetFilteredMealsAsync(filter);
 
-            Meals = new ObservableCollection<Meal>(list);
-            OnPropertyChanged(nameof(Meals));
+            this.Meals = new ObservableCollection<Meal>(list);
+            OnPropertyChanged(nameof(this.Meals));
 
             return list;
         }
 
         public async Task<string> GetMealIngredientsTextAsync(int mealId)
         {
-            var lines = await mealService.GetMealIngredientLinesAsync(mealId);
+            var lines = await this.mealService.GetMealIngredientLinesAsync(mealId);
 
             return lines.Count > 0
                 ? string.Join(IngredientsLineSeparator, lines)
@@ -118,7 +129,7 @@ namespace TeamNut.ViewModels
         [RelayCommand]
         public async Task SearchAsync()
         {
-            await LoadMealsAsync(SearchTerm);
+            await this.LoadMealsAsync(this.SearchTerm);
         }
 
         [RelayCommand]
@@ -129,7 +140,7 @@ namespace TeamNut.ViewModels
                 return;
             }
 
-            await mealService.ToggleFavoriteAsync(meal);
+            await this.mealService.ToggleFavoriteAsync(meal);
         }
     }
 }

@@ -1,7 +1,11 @@
-using System.Collections.Generic;
+// <copyright file="IPaginationService.cs" company="TeamNut">
+// Copyright (c) TeamNut. All rights reserved.
+// </copyright>
 
 namespace TeamNut.Services.Interfaces
 {
+    using System.Collections.Generic;
+
     public interface IPaginationService
     {
         List<T> GetPage<T>(IEnumerable<T> items, int currentPage, int pageSize);
