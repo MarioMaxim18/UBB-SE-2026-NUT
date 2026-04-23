@@ -1,14 +1,14 @@
-﻿namespace TeamNut.Tests.ViewModels
-{
-    using NSubstitute;
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
-    using TeamNut.Models;
-    using TeamNut.Services;
-    using TeamNut.Services.Interfaces;
-    using TeamNut.ViewModels;
-    using Xunit;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using NSubstitute;
+using TeamNut.Models;
+using TeamNut.Services;
+using TeamNut.Services.Interfaces;
+using TeamNut.ViewModels;
+using Xunit;
 
+namespace TeamNut.Tests.ViewModels
+{
     [Collection("UsesStaticUserSession")]
     public class NutritionistChatViewModelTests
     {
