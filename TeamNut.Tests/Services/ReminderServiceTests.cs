@@ -50,7 +50,7 @@ namespace TeamNut.Tests.Services
             var reminder = new Reminder
             {
                 UserId = 1,
-                Name = name,
+                Name = name ?? string.Empty,
                 ReminderDate = "2024-01-01"
             };
 

@@ -120,7 +120,7 @@ namespace TeamNut.Tests.Services
         [InlineData(null)]
         public void IsValidTextInput_WithEmptyOrWhitespace_ReturnsFalse(string? input)
         {
-            var result = service.IsValidTextInput(input);
+            var result = service.IsValidTextInput(input!);
 
             result.Should().BeFalse();
         }
@@ -153,7 +153,7 @@ namespace TeamNut.Tests.Services
         [InlineData(null)]
         public void IsNumericOnly_WithEmptyOrNull_ReturnsTrue(string? input)
         {
-            var result = service.IsNumericOnly(input);
+            var result = service.IsNumericOnly(input!);
 
             result.Should().BeTrue();
         }
@@ -188,7 +188,7 @@ namespace TeamNut.Tests.Services
         [InlineData(null)]
         public void IsValidReminderName_WithEmptyOrWhitespace_ReturnsFalse(string? name)
         {
-            var result = service.IsValidReminderName(name);
+            var result = service.IsValidReminderName(name!);
 
             result.Should().BeFalse();
         }

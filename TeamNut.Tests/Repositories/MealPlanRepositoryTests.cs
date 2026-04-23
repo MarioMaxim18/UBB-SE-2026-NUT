@@ -1,4 +1,4 @@
-// <copyright file="MealPlanRepositoryTests.cs" company="TeamNut">
+﻿// <copyright file="MealPlanRepositoryTests.cs" company="TeamNut">
 // Copyright (c) TeamNut. All rights reserved.
 // </copyright>
 
@@ -19,6 +19,9 @@ using Xunit;
 
 namespace TeamNut.Repositories.UnitTests
 {
+    /// <summary>
+    /// MealPlanRepositoryTests.
+    /// </summary>
     public partial class MealPlanRepositoryTests
     {
         private static string CreateTempDatabaseWithMealPlans(IEnumerable<(int mealplanId, int userId, string createdAt, string goal)>? seed = null)
@@ -1166,7 +1169,6 @@ CREATE TABLE IF NOT EXISTS MealPlan (
             var connectionString = CreateSharedInMemoryDatabase(async conn =>
             {
                 await InitializeSchemaAsync(conn);
-
             }, out var masterConn, dbName: Guid.NewGuid().ToString());
 
             try
@@ -1194,7 +1196,6 @@ CREATE TABLE IF NOT EXISTS MealPlan (
 
                 await InsertMealWithIngredientAsync(conn, mealId: 1, foodId: 101, caloriesPer100g: 500, proteinPer100g: 10, carbsPer100g: 20, fatPer100g: 5, quantity: 100);
                 await InsertMealWithIngredientAsync(conn, mealId: 2, foodId: 102, caloriesPer100g: 600, proteinPer100g: 12, carbsPer100g: 25, fatPer100g: 6, quantity: 100);
-
             }, out var masterConn, dbName: Guid.NewGuid().ToString());
 
             try
