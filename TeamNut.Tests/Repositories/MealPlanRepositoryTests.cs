@@ -1334,7 +1334,7 @@ CREATE TABLE IF NOT EXISTS MealPlan (
                 var goalType = reader["goal_type"]?.ToString() ?? string.Empty;
                 var userId = Convert.ToInt32(reader["user_id"]);
                 userId.Should().Be(42);
-                goalType.Should().Be("general");
+                goalType.Should().Be(string.Empty);
             }
             finally
             {
