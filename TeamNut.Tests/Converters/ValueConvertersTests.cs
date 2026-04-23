@@ -2,6 +2,7 @@ using FluentAssertions;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media;
+using TeamNut;
 using TeamNut.Converters;
 using TeamNut.Models;
 using Xunit;
@@ -60,7 +61,7 @@ namespace TeamNut.Tests.Converters
         {
             var converter = new BoolToFontWeightConverter();
 
-            var result = converter.Convert(true, typeof(FontWeight), null, string.Empty);
+            var result = converter.Convert(true, typeof(object), null, string.Empty);
 
             result.Should().Be(FontWeights.Bold);
         }
