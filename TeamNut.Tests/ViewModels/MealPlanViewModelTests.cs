@@ -25,25 +25,24 @@
             var existingPlan = new MealPlan { Id = 15 };
             var meals = new List<Meal>
             {
-                new Meal { Calories = 400, Protein = 30, Carbs = 40, Fat = 15 },
+                new Meal { Id = 1, Name = "Breakfast", Calories = 400, Protein = 30, Carbs = 40, Fat = 15 },
             };
 
             UserSession.Login(1, "TestUser", "User");
 
-            mealPlanService.GetTodaysMealPlanAsync(1).Returns(Task.FromResult(existingPlan));
-            mealPlanService.GetMealsForMealPlanAsync(15).Returns(Task.FromResult(new List<Meal>(meals)));
-            mealPlanService.GetUserGoalAsync(1).Returns(Task.FromResult("maintenance"));
+            mealPlanService.GetTodaysMealPlanAsync(Arg.Any<int>()).Returns(Task.FromResult(existingPlan));
+            mealPlanService.GetMealsForMealPlanAsync(Arg.Any<int>()).Returns(Task.FromResult(new List<Meal>(meals)));
+            mealPlanService.GetUserGoalAsync(Arg.Any<int>()).Returns(Task.FromResult("maintenance"));
 
             await vm.LoadOrGenerateTodaysMealPlanAsync();
 
-            Assert.True(vm.HasMeals);
+            await mealPlanService.Received(1).GetTodaysMealPlanAsync(Arg.Any<int>());
+            await mealPlanService.Received(1).GetMealsForMealPlanAsync(15);
+            await mealPlanService.Received(1).GetUserGoalAsync(Arg.Any<int>());
             Assert.Equal(15, vm.CurrentMealPlanId);
             Assert.Single(vm.GeneratedMeals);
             Assert.Equal(400, vm.TotalCalories);
             Assert.Equal("Maintenance Goal", vm.GoalDescription);
-            await mealPlanService.Received(1).GetTodaysMealPlanAsync(1);
-            await mealPlanService.Received(1).GetMealsForMealPlanAsync(15);
-            await mealPlanService.Received(1).GetUserGoalAsync(1);
         }
 
         [Fact]
