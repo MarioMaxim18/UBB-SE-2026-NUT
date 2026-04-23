@@ -84,7 +84,18 @@ namespace TeamNut.IntegrationTests
 
             if (File.Exists(dbPath))
             {
-                File.Delete(dbPath);
+                try
+                {
+                    File.Delete(dbPath);
+                }
+                catch (IOException)
+                {
+                    
+                }
+                catch (UnauthorizedAccessException)
+                {
+                    
+                }
             }
         }
 
