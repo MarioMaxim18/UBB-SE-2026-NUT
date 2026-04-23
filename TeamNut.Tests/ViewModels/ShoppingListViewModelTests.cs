@@ -10,6 +10,11 @@
 
     public class ShoppingListViewModelTests
     {
+        public ShoppingListViewModelTests()
+        {
+            UserSession.Logout();
+        }
+
         [Fact]
         public async Task AddItemCommand_WhenServiceReturnsNull_SetsErrorStatus()
         {

@@ -475,9 +475,7 @@ CREATE TABLE IF NOT EXISTS MealPlan (
         [InlineData(int.MaxValue, int.MaxValue, int.MaxValue)]
         public async Task SaveMealToDailyLog_ValidInputs_InsertsRow(int userId, int mealId, int calories)
         {
-
-            string memDbName = $"file:memdb_{Guid.NewGuid()}?mode=memory&cache=shared";
-            string connectionString = memDbName;
+            string connectionString = $"Data Source=MealPlanSaveDailyLog_{Guid.NewGuid():N};Mode=Memory;Cache=Shared";
 
             var dbConfigMock = new Mock<IDbConfig>();
             dbConfigMock.SetupGet(x => x.ConnectionString).Returns(connectionString);
@@ -1478,7 +1476,7 @@ CREATE TABLE IF NOT EXISTS MealPlan (
         public async Task GetTodaysMealPlan_WithMultipleTodayEntries_ReturnsMostRecentMealPlan(int userId)
         {
 
-            string connectionString = "Data Source=:memory:;Cache=Shared";
+            string connectionString = $"Data Source=MealPlanToday_{Guid.NewGuid():N};Mode=Memory;Cache=Shared";
 
             await using var persistent = new SqliteConnection(connectionString);
             await persistent.OpenAsync();
@@ -1543,7 +1541,7 @@ CREATE TABLE IF NOT EXISTS MealPlan (
         public async Task GetTodaysMealPlan_NoEntryForToday_ReturnsNull(int userId)
         {
 
-            string connectionString = "Data Source=:memory:;Cache=Shared";
+            string connectionString = $"Data Source=MealPlanNoToday_{Guid.NewGuid():N};Mode=Memory;Cache=Shared";
             await using var persistent = new SqliteConnection(connectionString);
             await persistent.OpenAsync();
 
