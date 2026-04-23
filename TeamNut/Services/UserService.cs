@@ -1,7 +1,5 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using TeamNut.Models;
 using TeamNut.Repositories;
@@ -11,12 +9,13 @@ namespace TeamNut.Services
     public class UserService
     {
         private readonly UserRepository _userRepository;
+
         public UserService()
         {
             _userRepository = new UserRepository();
         }
 
-        public async Task<bool> CheckIfUsernameExistsAsync(string username)
+        public async Task<bool> UsernameExistsAsync(string username)
         {
             var users = await _userRepository.GetAll();
             return users.Any(u => u.Username.Equals(username, StringComparison.OrdinalIgnoreCase));
@@ -36,7 +35,7 @@ namespace TeamNut.Services
 
         public async Task<User> RegisterUserAsync(User user)
         {
-            if (await CheckIfUsernameExistsAsync(user.Username))
+            if (await UsernameExistsAsync(user.Username))
             {
                 return null;
             }
@@ -46,7 +45,7 @@ namespace TeamNut.Services
             return user;
         }
 
-        public async Task<UserData> AddUserDataAsync(UserData data)
+        public async Task<UserData> SaveUserDataAsync(UserData data)
         {
             ApplyCalculatedNutrition(data);
             await _userRepository.AddUserData(data);
@@ -63,6 +62,7 @@ namespace TeamNut.Services
             ApplyCalculatedNutrition(data);
             await _userRepository.UpdateUserData(data);
         }
+
 
         private static void ApplyCalculatedNutrition(UserData data)
         {

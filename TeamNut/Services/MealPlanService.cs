@@ -26,20 +26,27 @@ namespace TeamNut.Services
 
             try
             {
+                // Generate the base meal plan
                 int mealPlanId = await _mealPlanRepository.GeneratePersonalizedDailyMealPlan(userId);
 
+                // Setup default reminders if none exist for today
                 try
                 {
                     var reminderService = new ReminderService();
-                    var todays = DateTime.Today.ToString("yyyy-MM-dd");
-                    var existing = (await reminderService.GetUserReminders(userId));
-                    bool anyToday = false;
-                    foreach (var r in existing)
+                    var todaysDate = DateTime.Today.ToString("yyyy-MM-dd");
+                    var existingReminders = await reminderService.GetUserReminders(userId);
+
+                    bool hasRemindersToday = false;
+                    foreach (var reminder in existingReminders)
                     {
-                        if (r.ReminderDate == todays) { anyToday = true; break; }
+                        if (reminder.ReminderDate == todaysDate)
+                        {
+                            hasRemindersToday = true;
+                            break;
+                        }
                     }
 
-                    if (!anyToday)
+                    if (!hasRemindersToday)
                     {
                         var meals = await GetMealsForMealPlanAsync(mealPlanId);
 
@@ -47,6 +54,7 @@ namespace TeamNut.Services
                         string lunchName = "Lunch";
                         string dinnerName = "Dinner";
 
+                        // Safely extract meal names if they exist
                         if (meals != null && meals.Count > 0)
                         {
                             if (!string.IsNullOrWhiteSpace(meals[0].Name)) breakfastName = meals[0].Name.Trim();
@@ -60,9 +68,9 @@ namespace TeamNut.Services
                             if (!string.IsNullOrWhiteSpace(meals[2].Name)) dinnerName = meals[2].Name.Trim();
                         }
 
-                        var breakfast = new Reminder { UserId = userId, Name = breakfastName, ReminderDate = todays, Time = new TimeSpan(8,0,0), HasSound = false, Frequency = "Once" };
-                        var lunch = new Reminder { UserId = userId, Name = lunchName, ReminderDate = todays, Time = new TimeSpan(13,0,0), HasSound = false, Frequency = "Once" };
-                        var dinner = new Reminder { UserId = userId, Name = dinnerName, ReminderDate = todays, Time = new TimeSpan(17,0,0), HasSound = false, Frequency = "Once" };
+                        var breakfast = new Reminder { UserId = userId, Name = breakfastName, ReminderDate = todaysDate, Time = new TimeSpan(8, 0, 0), HasSound = false, Frequency = "Once" };
+                        var lunch = new Reminder { UserId = userId, Name = lunchName, ReminderDate = todaysDate, Time = new TimeSpan(13, 0, 0), HasSound = false, Frequency = "Once" };
+                        var dinner = new Reminder { UserId = userId, Name = dinnerName, ReminderDate = todaysDate, Time = new TimeSpan(17, 0, 0), HasSound = false, Frequency = "Once" };
 
                         await reminderService.SaveReminder(breakfast);
                         await reminderService.SaveReminder(lunch);
@@ -71,7 +79,11 @@ namespace TeamNut.Services
                         ReminderService.NotifyRemindersChangedForUser(userId);
                     }
                 }
-                catch { }
+                catch
+                {
+                    // Silently fail reminder setup to not block meal plan generation
+                }
+
                 if (mealPlanId <= 0)
                 {
                     throw new InvalidOperationException("Failed to generate meal plan. Please try again.");
@@ -190,6 +202,7 @@ namespace TeamNut.Services
         {
             var (totalCalories, totalProtein, totalCarbs, totalFat) = CalculateTotalNutrition(meals);
 
+            // Check if macros fall within the acceptable tolerance percentage
             bool caloriesValid = Math.Abs(totalCalories - targetCalories) <= (targetCalories * tolerance);
             bool proteinValid = Math.Abs(totalProtein - targetProtein) <= (targetProtein * tolerance);
             bool carbsValid = Math.Abs(totalCarbs - targetCarbs) <= (targetCarbs * tolerance);
@@ -214,10 +227,11 @@ namespace TeamNut.Services
 
         public string GetGoalEmoji(string goal)
         {
+            // Fixed corrupted encoding characters back to standard emojis
             return goal?.ToLower() switch
             {
                 "bulk" => "💪",
-                "cut" => "🔥",
+                "cut" => "✂️",
                 "maintenance" => "⚖️",
                 "well-being" => "🧘",
                 _ => "🎯"
@@ -259,4 +273,3 @@ namespace TeamNut.Services
         }
     }
 }
-

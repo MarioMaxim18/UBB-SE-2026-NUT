@@ -30,19 +30,21 @@ namespace TeamNut.Services
             return await _repository.HasAnyLogs(GetUserId());
         }
 
-        public async Task<DailyLog> GetTodayTotalsAsync()
+        public async Task<DailyLog> GetDailyTotalsAsync()
         {
             var userId = GetUserId();
             var start = DateTime.Today;
             var end = start.AddDays(1);
+
             return await _repository.GetNutritionTotalsForRange(userId, start, end);
         }
 
-        public async Task<DailyLog> GetCurrentWeekTotalsAsync()
+        public async Task<DailyLog> GetWeeklyTotalsAsync()
         {
             var userId = GetUserId();
             var today = DateTime.Today;
 
+            // Calculate the start (Monday) and end of the current week
             int diff = (7 + (today.DayOfWeek - DayOfWeek.Monday)) % 7;
             var startOfWeek = today.AddDays(-diff);
             var endOfWeek = startOfWeek.AddDays(7);
@@ -50,12 +52,13 @@ namespace TeamNut.Services
             return await _repository.GetNutritionTotalsForRange(userId, startOfWeek, endOfWeek);
         }
 
-        public async Task<UserData> GetCurrentUserNutritionTargetsAsync()
+        public async Task<UserData> GetUserNutritionTargetsAsync()
         {
             return await _userRepository.GetUserDataByUserId(GetUserId());
         }
 
-        public Task<double> GetTodayBurnedCaloriesAsync()
+        // Hardcoded for now, consider moving to a repository or calculation logic later
+        public Task<double> GetDailyBurnedCaloriesAsync()
         {
             return Task.FromResult(500d);
         }
@@ -77,10 +80,7 @@ namespace TeamNut.Services
 
         public async Task LogMealAsync(Meal meal)
         {
-            if (meal == null)
-            {
-                throw new ArgumentNullException(nameof(meal));
-            }
+            if (meal == null) throw new ArgumentNullException(nameof(meal));
 
             await _repository.Add(new DailyLog
             {

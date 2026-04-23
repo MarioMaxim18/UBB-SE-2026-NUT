@@ -20,14 +20,13 @@ namespace TeamNut.Services
             _ingredientRepository = new IngredientRepository();
         }
 
-        public async Task<bool> ConsumeMeal(int userId, int mealId)
+        public async Task<bool> DeductMealIngredientsAsync(int userId, int mealId)
         {
-            
             var requiredIngredients = await _mealPlanRepository.GetIngredientsForMeal(mealId);
+            var inventoryItems = await _inventoryRepository.GetAllByUserId(userId);
 
             foreach (var req in requiredIngredients)
             {
-                var inventoryItems = await _inventoryRepository.GetAllByUserId(userId);
                 var stock = inventoryItems.FirstOrDefault(i => i.IngredientId == req.IngredientId);
 
                 if (stock != null)
@@ -35,6 +34,7 @@ namespace TeamNut.Services
                     int qtyToRemove = (int)Math.Round(req.Quantity);
                     stock.QuantityGrams -= qtyToRemove;
 
+                    // Remove item completely if stock is depleted
                     if (stock.QuantityGrams <= 0)
                     {
                         await _inventoryRepository.Delete(stock.Id);
@@ -48,7 +48,7 @@ namespace TeamNut.Services
             return true;
         }
 
-        public async Task AddToPantry(int userId, int ingredientId, int quantity)
+        public async Task AddToInventoryAsync(int userId, int ingredientId, int quantity)
         {
             var newItem = new Inventory
             {
@@ -60,23 +60,23 @@ namespace TeamNut.Services
             await _inventoryRepository.Add(newItem);
         }
 
-        public async Task AddIngredientByNameToPantry(int userId, string ingredientName)
+        public async Task AddIngredientByNameAsync(int userId, string ingredientName)
         {
             int ingredientId = await _ingredientRepository.GetOrCreateIngredientIdByNameAsync(ingredientName);
-            await AddToPantry(userId, ingredientId, 100);
+            await AddToInventoryAsync(userId, ingredientId, 100);
         }
 
-        public async Task<IEnumerable<Inventory>> GetUserInventory(int userId)
+        public async Task<IEnumerable<Inventory>> GetInventoryAsync(int userId)
         {
             return await _inventoryRepository.GetAllByUserId(userId);
         }
 
-        public async Task RemoveItem(int inventoryId)
+        public async Task RemoveItemAsync(int inventoryId)
         {
             await _inventoryRepository.Delete(inventoryId);
         }
 
-        public async Task<IEnumerable<Ingredient>> GetAllIngredients()
+        public async Task<IEnumerable<Ingredient>> GetAllIngredientsAsync()
         {
             return await _ingredientRepository.GetAllAsync();
         }

@@ -2,23 +2,24 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using TeamNut.Models;
+using TeamNut.Repositories;
 
 namespace TeamNut.Services
 {
     public class ShoppingListService
     {
-        private readonly TeamNut.Repositories.ShoppingListRepository _repository;
-        private readonly TeamNut.Repositories.IngredientRepository _ingredientRepository;
-        private readonly TeamNut.Repositories.InventoryRepository _inventoryRepository;
+        private readonly ShoppingListRepository _repository;
+        private readonly IngredientRepository _ingredientRepository;
+        private readonly InventoryRepository _inventoryRepository;
 
         public ShoppingListService()
         {
-            _repository = new TeamNut.Repositories.ShoppingListRepository();
-            _ingredientRepository = new TeamNut.Repositories.IngredientRepository();
-            _inventoryRepository = new TeamNut.Repositories.InventoryRepository();
+            _repository = new ShoppingListRepository();
+            _ingredientRepository = new IngredientRepository();
+            _inventoryRepository = new InventoryRepository();
         }
 
-        public async Task<List<ShoppingItem>> GetShoppingItemsAsync(int userId)
+        public async Task<List<ShoppingItem>> GetListItemsAsync(int userId)
         {
             return await _repository.GetAllByUserId(userId);
         }
@@ -86,7 +87,7 @@ namespace TeamNut.Services
             return await _ingredientRepository.SearchIngredientsAsync(search);
         }
 
-        public async Task<bool> MoveToPantryAsync(ShoppingItem item)
+        public async Task<bool> MoveToInventoryAsync(ShoppingItem item)
         {
             try
             {
@@ -96,6 +97,7 @@ namespace TeamNut.Services
                     IngredientId = item.IngredientId,
                     QuantityGrams = item.QuantityGrams > 0 ? (int)item.QuantityGrams : 100
                 });
+
                 await _repository.Delete(item.Id);
                 return true;
             }
@@ -105,7 +107,7 @@ namespace TeamNut.Services
             }
         }
 
-        public async Task<int> GenerateListAsync(int userId)
+        public async Task<int> GenerateFromMealPlanAsync(int userId)
         {
             try
             {
@@ -113,7 +115,6 @@ namespace TeamNut.Services
                 if (!neededIngredients.Any()) return 0;
 
                 var inventory = (await _inventoryRepository.GetAllByUserId(userId)).ToList();
-
                 var currentList = await _repository.GetAllByUserId(userId);
 
                 int itemsAddedCount = 0;
@@ -122,17 +123,13 @@ namespace TeamNut.Services
                 {
                     double totalNeeded = needed.QuantityGrams;
 
+                    
                     var inStock = inventory.FirstOrDefault(i => i.IngredientId == needed.IngredientId);
-                    if (inStock != null)
-                    {
-                        totalNeeded -= inStock.QuantityGrams;
-                    }
+                    if (inStock != null) totalNeeded -= inStock.QuantityGrams;
 
+                  
                     var alreadyInList = currentList.FirstOrDefault(s => s.IngredientId == needed.IngredientId);
-                    if (alreadyInList != null)
-                    {
-                        totalNeeded -= alreadyInList.QuantityGrams;
-                    }
+                    if (alreadyInList != null) totalNeeded -= alreadyInList.QuantityGrams;
 
                     if (totalNeeded > 0)
                     {
