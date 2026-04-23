@@ -2,13 +2,11 @@ using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Threading.Tasks;
-
 using TeamNut.Models;
 using TeamNut.Services;
 
 namespace TeamNut.ViewModels
 {
-
     public partial class ShoppingListViewModel : ObservableObject
     {
         private readonly ShoppingListService _shoppingListService;
@@ -39,10 +37,11 @@ namespace TeamNut.ViewModels
             if (UserSession.UserId == null) return;
 
             var loadedItems = await _shoppingListService.GetShoppingItemsAsync(UserSession.UserId.Value);
-            
+
             Items.Clear();
             foreach (var item in loadedItems)
             {
+                // Auto-save checkmark state changes
                 item.PropertyChanged += async (s, e) =>
                 {
                     if (e.PropertyName == nameof(ShoppingItem.IsChecked))
@@ -55,15 +54,16 @@ namespace TeamNut.ViewModels
         }
 
         [RelayCommand]
-        public async Task AddItem(string itemName)
+        public async Task AddItemAsync(string itemName)
         {
             if (!string.IsNullOrWhiteSpace(itemName) && UserSession.UserId != null)
             {
                 var addedItem = await _shoppingListService.AddItemAsync(itemName.Trim(), UserSession.UserId.Value, PendingQuantity);
+
                 if (addedItem != null)
                 {
                     var existing = System.Linq.Enumerable.FirstOrDefault(Items, i => i.Id == addedItem.Id);
-                    
+
                     if (existing == null)
                     {
                         addedItem.PropertyChanged += async (s, e) =>
@@ -92,7 +92,7 @@ namespace TeamNut.ViewModels
         }
 
         [RelayCommand]
-        public async Task MoveToPantry(ShoppingItem item)
+        public async Task MoveToPantryAsync(ShoppingItem item)
         {
             if (item != null && Items.Contains(item))
             {
@@ -110,7 +110,7 @@ namespace TeamNut.ViewModels
         }
 
         [RelayCommand]
-        public async Task RemoveItem(ShoppingItem item)
+        public async Task RemoveItemAsync(ShoppingItem item)
         {
             if (item != null && Items.Contains(item))
             {
@@ -128,11 +128,12 @@ namespace TeamNut.ViewModels
         }
 
         [RelayCommand]
-        public async Task GenerateList()
+        public async Task GenerateListAsync()
         {
             if (UserSession.UserId != null)
             {
                 int itemsAdded = await _shoppingListService.GenerateListAsync(UserSession.UserId.Value);
+
                 if (itemsAdded > 0)
                 {
                     await LoadItemsAsync();
@@ -159,7 +160,8 @@ namespace TeamNut.ViewModels
             StatusMessage = message;
             IsError = error;
             IsStatusVisible = true;
-            
+
+            // Hide status message after 3 seconds
             Task.Delay(3000).ContinueWith(_ =>
             {
                 IsStatusVisible = false;

@@ -38,14 +38,11 @@ namespace TeamNut.ViewModels
         }
 
         [RelayCommand]
-        private async Task OnRegister()
+        private async Task OnRegisterAsync()
         {
             StatusMessage = string.Empty;
 
-            if (IsNutritionistChecked)
-                CurrentUser.Role = "Nutritionist";
-            else
-                CurrentUser.Role = "User";
+            CurrentUser.Role = IsNutritionistChecked ? "Nutritionist" : "User";
 
             List<string> errors = CurrentUser.ValidateAndReturnErrors();
             if (errors.Any())
@@ -76,7 +73,7 @@ namespace TeamNut.ViewModels
         }
 
         [RelayCommand]
-        private async Task OnSaveData()
+        private async Task OnSaveDataAsync()
         {
             StatusMessage = string.Empty;
 
@@ -90,11 +87,13 @@ namespace TeamNut.ViewModels
                 }
 
                 CurrentUserData.Age = CurrentUserData.CalculateAge(SelectedDate);
+
                 if (CurrentUserData.Age <= 0)
                 {
                     StatusMessage = "Please select a valid birthdate.";
                     return;
                 }
+
                 CurrentUserData.Bmi = CurrentUserData.CalculateBmi();
                 CurrentUserData.CalorieNeeds = CurrentUserData.CalculateCalorieNeeds();
                 CurrentUserData.ProteinNeeds = CurrentUserData.CalculateProteinNeeds();
@@ -121,7 +120,7 @@ namespace TeamNut.ViewModels
         }
 
         [RelayCommand]
-        private async Task OnLogin()
+        private async Task OnLoginAsync()
         {
             StatusMessage = string.Empty;
 

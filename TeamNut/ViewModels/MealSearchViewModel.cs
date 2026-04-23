@@ -12,9 +12,7 @@ namespace TeamNut.ViewModels
         private readonly MealService _mealService;
 
         public ObservableCollection<Meal> Meals { get; private set; } = new ObservableCollection<Meal>();
-
         public string SearchTerm { get; set; } = string.Empty;
-
         public Meal? SelectedMeal { get; set; }
 
         public MealSearchViewModel()
@@ -25,8 +23,8 @@ namespace TeamNut.ViewModels
 
         public async Task LoadMealsAsync(string? filter = null)
         {
-            //var list = await _mealService.GetMealsAsync(filter);
             var list = await _mealService.GetMealsAsync(new MealFilter { SearchTerm = filter });
+
             Meals = new ObservableCollection<Meal>(list);
             OnPropertyChanged(nameof(Meals));
         }
@@ -34,8 +32,10 @@ namespace TeamNut.ViewModels
         public async Task<System.Collections.Generic.List<Meal>> SearchMealsAsync(MealFilter filter)
         {
             var list = await _mealService.GetFilteredMealsAsync(filter);
+
             Meals = new ObservableCollection<Meal>(list);
             OnPropertyChanged(nameof(Meals));
+
             return list;
         }
 

@@ -87,7 +87,7 @@ namespace TeamNut.ModelViews
         }
 
         [RelayCommand]
-        private async Task OnGenerateMealPlan()
+        private async Task OnGenerateMealPlanAsync()
         {
             int? userId = UserSession.UserId;
 
@@ -165,7 +165,6 @@ namespace TeamNut.ModelViews
                 CurrentMealPlanId = mealPlanId;
 
                 string userGoal = await _mealPlanService.GetUserGoalAsync(userId);
-
                 var meals = await _mealPlanService.GetMealsForMealPlanAsync(mealPlanId);
 
                 if (meals == null || meals.Count == 0)
@@ -215,7 +214,6 @@ namespace TeamNut.ModelViews
             try
             {
                 string userGoal = await _mealPlanService.GetUserGoalAsync(userId);
-
                 int mealPlanId = await _mealPlanService.GeneratePersonalizedMealPlanAsync(userId);
 
                 await LoadMealPlanByIdAsync(mealPlanId, userId);
@@ -254,7 +252,7 @@ namespace TeamNut.ModelViews
         }
 
         [RelayCommand]
-        private async Task SaveToDailyLog()
+        private async Task SaveToDailyLogAsync()
         {
             try
             {
@@ -267,7 +265,6 @@ namespace TeamNut.ModelViews
                 }
 
                 await _mealPlanService.SaveMealsToDailyLogAsync(CurrentMealPlanId);
-
                 StatusMessage = $"All {GeneratedMeals.Count} meals saved to daily log!";
             }
             catch (Exception ex)
@@ -278,14 +275,15 @@ namespace TeamNut.ModelViews
             }
         }
 
-        public async Task SaveToDailyLogAsync()
+        public async Task SaveMealToDailyLogAsync(int mealId)
         {
-            if (CurrentMealPlanId <= 0)
+            var meal = GeneratedMeals.FirstOrDefault(m => m.Id == mealId);
+            if (meal == null)
             {
-                throw new InvalidOperationException("No meal plan is currently loaded. Please generate a meal plan first.");
+                throw new InvalidOperationException("Meal not found in current meal plan.");
             }
 
-            await _mealPlanService.SaveMealsToDailyLogAsync(CurrentMealPlanId);
+            await _mealPlanService.SaveMealToDailyLogAsync(mealId, meal.Calories);
         }
 
         public async Task RegenerateMealPlanForTestingAsync()
@@ -310,17 +308,5 @@ namespace TeamNut.ModelViews
                 IsBusy = false;
             }
         }
-
-        public async Task SaveMealToDailyLogAsync(int mealId)
-        {
-            var meal = GeneratedMeals.FirstOrDefault(m => m.Id == mealId);
-            if (meal == null)
-            {
-                throw new InvalidOperationException("Meal not found in current meal plan.");
-            }
-
-            await _mealPlanService.SaveMealToDailyLogAsync(mealId, meal.Calories);
-        }
     }
 }
-

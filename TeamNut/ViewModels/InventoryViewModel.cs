@@ -63,10 +63,11 @@ namespace TeamNut.ViewModels
             set => SetProperty(ref _quantityToAdd, value);
         }
 
-        
         public ObservableCollection<Inventory> Items { get; } = new();
         public ObservableCollection<Ingredient> AvailableIngredients { get; } = new();
         public ObservableCollection<Ingredient> FilteredIngredients { get; } = new();
+
+        public bool IsListEmpty => !Items.Any();
 
         public InventoryViewModel(int userId)
         {
@@ -77,7 +78,6 @@ namespace TeamNut.ViewModels
             _ = LoadIngredientsAsync();
         }
 
-       
         [RelayCommand]
         public async Task LoadInventoryAsync()
         {
@@ -106,7 +106,6 @@ namespace TeamNut.ViewModels
             }
         }
 
-        
         [RelayCommand]
         private async Task RemoveItemAsync(Inventory item)
         {
@@ -124,7 +123,6 @@ namespace TeamNut.ViewModels
             }
         }
 
-        
         [RelayCommand]
         private async Task AddNewIngredientAsync()
         {
@@ -145,6 +143,7 @@ namespace TeamNut.ViewModels
                 int qty = (int)Math.Round(QuantityToAdd);
                 await _inventoryService.AddToPantry(_currentUserId, SelectedIngredient.FoodId, qty);
                 await LoadInventoryAsync();
+
                 StatusMessage = $"Added {qty}g of {SelectedIngredient.Name}.";
                 IngredientSearchText = string.Empty;
                 SelectedIngredient = null;
@@ -163,6 +162,7 @@ namespace TeamNut.ViewModels
             {
                 var ingredients = await _inventoryService.GetAllIngredients();
                 AvailableIngredients.Clear();
+
                 foreach (var ingredient in ingredients)
                 {
                     AvailableIngredients.Add(ingredient);
@@ -181,6 +181,7 @@ namespace TeamNut.ViewModels
             FilteredIngredients.Clear();
 
             var query = IngredientSearchText?.Trim() ?? string.Empty;
+
             var filtered = string.IsNullOrWhiteSpace(query)
                 ? AvailableIngredients
                 : new ObservableCollection<Ingredient>(AvailableIngredients.Where(i => i.Name.Contains(query, StringComparison.OrdinalIgnoreCase)));
@@ -190,8 +191,5 @@ namespace TeamNut.ViewModels
                 FilteredIngredients.Add(ingredient);
             }
         }
-
-        
-        public bool IsListEmpty => !Items.Any();
     }
 }

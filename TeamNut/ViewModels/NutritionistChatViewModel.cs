@@ -15,7 +15,6 @@ namespace TeamNut.ViewModels
     public partial class NutritionistChatViewModel : ObservableObject
     {
         private readonly ChatService _chatService;
-
         private CancellationTokenSource? _autoRefreshCts;
 
         [ObservableProperty]
@@ -36,6 +35,12 @@ namespace TeamNut.ViewModels
         [ObservableProperty]
         private bool isNutritionistView = false;
 
+        [ObservableProperty]
+        private bool hasMessages = false;
+
+        [ObservableProperty]
+        private bool isNutritionistUser = false;
+
         private int? _currentConversationId;
 
         [ObservableProperty]
@@ -46,20 +51,20 @@ namespace TeamNut.ViewModels
             _chatService = new ChatService();
             _ = LoadConversationsAsync();
 
-            // start periodic refresh
+            // Start periodic refresh
             _autoRefreshCts = new CancellationTokenSource();
             _ = AutoRefreshLoop(_autoRefreshCts.Token);
 
-            // monitor messages collection to update HasMessages
+            // Monitor messages collection to update HasMessages
             Messages.CollectionChanged += (s, e) => HasMessages = Messages.Count > 0;
 
-            // set nutritionist flag for UI
-            IsNutritionistUser = TeamNut.Models.UserSession.Role == "Nutritionist";
+            // Set nutritionist flag for UI
+            IsNutritionistUser = UserSession.Role == "Nutritionist";
         }
 
         partial void OnInputTextChanged(string value)
         {
-            if (TeamNut.Models.UserSession.Role == "Nutritionist" && _currentConversationId == null)
+            if (UserSession.Role == "Nutritionist" && _currentConversationId == null)
             {
                 CanSend = false;
                 StatusMessage = "Please select a conversation to respond.";
@@ -76,7 +81,7 @@ namespace TeamNut.ViewModels
             if (value.Length > 1000)
             {
                 CanSend = false;
-                StatusMessage = "message too long";
+                StatusMessage = "Message too long.";
                 return;
             }
 
@@ -91,52 +96,38 @@ namespace TeamNut.ViewModels
             StatusMessage = string.Empty;
         }
 
-        [ObservableProperty]
-        private bool hasMessages = false;
-
-        [ObservableProperty]
-        private bool isNutritionistUser = false;
-
         public async Task LoadConversationsAsync()
         {
             IEnumerable<Conversation> convs;
-            if (TeamNut.Models.UserSession.Role == "Nutritionist")
+
+            if (UserSession.Role == "Nutritionist")
             {
-                // nutritionist: toggle between showing all user chats or only those they've responded to
                 if (IsNutritionistView)
                 {
-                    // Show all chats from users who have sent at least one message
                     convs = await _chatService.GetConversationsWithUserMessagesAsync();
                 }
                 else
                 {
-                    // Show only chats where this nutritionist has responded
-                    convs = await _chatService.GetConversationsWhereNutritionistRespondedAsync(TeamNut.Models.UserSession.UserId ?? 0);
+                    convs = await _chatService.GetConversationsWhereNutritionistRespondedAsync(UserSession.UserId ?? 0);
                 }
             }
             else
             {
-                // regular user: only their own conversation
-                var conv = await _chatService.GetOrCreateConversationForUserAsync(TeamNut.Models.UserSession.UserId ?? 0);
+                var conv = await _chatService.GetOrCreateConversationForUserAsync(UserSession.UserId ?? 0);
                 convs = new[] { conv };
             }
+
             Conversations.Clear();
             foreach (var c in convs) Conversations.Add(c);
 
-            if (!Conversations.Any())
-            {
-                StatusMessage = "no active user inquiries at this time";
-            }
-            else
-            {
-                StatusMessage = string.Empty;
-            }
+            StatusMessage = !Conversations.Any() ? "No active user inquiries at this time." : string.Empty;
         }
 
         public async Task LoadMessagesForConversationAsync(int conversationId)
         {
             _currentConversationId = conversationId;
             var msgs = await _chatService.GetMessagesForConversationAsync(conversationId);
+
             Messages.Clear();
             foreach (var m in msgs) Messages.Add(m);
         }
@@ -151,7 +142,6 @@ namespace TeamNut.ViewModels
 
         partial void OnIsNutritionistViewChanged(bool value)
         {
-
             _ = LoadConversationsAsync();
         }
 
@@ -163,6 +153,7 @@ namespace TeamNut.ViewModels
                 {
                     await Task.Delay(TimeSpan.FromSeconds(5), token);
                     await LoadConversationsAsync();
+
                     if (_currentConversationId != null)
                     {
                         await LoadMessagesForConversationAsync(_currentConversationId.Value);
@@ -185,13 +176,14 @@ namespace TeamNut.ViewModels
         public async Task SendMessageAsync()
         {
             if (string.IsNullOrWhiteSpace(InputText)) return;
+
             if (InputText.Length > 1000)
             {
-                StatusMessage = "message too long";
+                StatusMessage = "Message too long.";
                 return;
             }
 
-            if (!System.Text.RegularExpressions.Regex.IsMatch(InputText, "^[a-zA-Z0-9 .,!?'\\-()]+$"))
+            if (!Regex.IsMatch(InputText, "^[a-zA-Z0-9 .,!?'\\-()]+$"))
             {
                 StatusMessage = "Only alphanumeric characters and basic punctuation are allowed.";
                 return;
@@ -199,23 +191,25 @@ namespace TeamNut.ViewModels
 
             if (_currentConversationId == null)
             {
-                if (TeamNut.Models.UserSession.Role == "Nutritionist")
+                if (UserSession.Role == "Nutritionist")
                 {
                     StatusMessage = "Nutritionists can only respond to existing conversations.";
                     return;
                 }
-                if (TeamNut.Models.UserSession.UserId == null) return;
-                var conv = await _chatService.GetOrCreateConversationForUserAsync(TeamNut.Models.UserSession.UserId.Value);
+
+                if (UserSession.UserId == null) return;
+
+                var conv = await _chatService.GetOrCreateConversationForUserAsync(UserSession.UserId.Value);
                 _currentConversationId = conv.Id;
             }
 
-            var senderId = TeamNut.Models.UserSession.UserId ?? 0;
-            var isNutritionist = TeamNut.Models.UserSession.Role == "Nutritionist";
+            var senderId = UserSession.UserId ?? 0;
+            var isNutritionist = UserSession.Role == "Nutritionist";
+
             await _chatService.AddMessageAsync(_currentConversationId.Value, senderId, InputText.Trim(), isNutritionist);
+
             InputText = string.Empty;
             await LoadMessagesForConversationAsync(_currentConversationId.Value);
         }
     }
 }
-
-

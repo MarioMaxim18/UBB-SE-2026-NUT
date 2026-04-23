@@ -11,14 +11,19 @@ namespace TeamNut.ViewModels
     public class DailyLogViewModel : ObservableObject
     {
         private readonly DailyLogService _service;
+
         private bool _hasData;
         private string _statusMessage = string.Empty;
         private DailyLog _dailyTotals = new();
         private DailyLog _weeklyTotals = new();
+
+        // Goals
         private double _dailyCaloriesGoal = 2000;
         private double _dailyProteinGoal = 150;
         private double _dailyCarbsGoal = 250;
         private double _dailyFatsGoal = 70;
+
+        // Display Text
         private string _dailyCaloriesText = string.Empty;
         private string _dailyProteinText = string.Empty;
         private string _dailyCarbsText = string.Empty;
@@ -28,6 +33,8 @@ namespace TeamNut.ViewModels
         private string _weeklyCarbsText = string.Empty;
         private string _weeklyFatsText = string.Empty;
         private string _dailyBurnedCaloriesText = string.Empty;
+
+        // Meal Search
         private string _mealSearchText = string.Empty;
         private ObservableCollection<Meal> _availableMeals = new();
         private ObservableCollection<Meal> _filteredMeals = new();
@@ -199,9 +206,11 @@ namespace TeamNut.ViewModels
             }
 
             await _service.LogMealAsync(SelectedMeal);
+
             LogMealStatusMessage = $"Logged {SelectedMeal.Name}.";
             MealSearchText = string.Empty;
             SelectedMeal = null;
+
             await LoadAsync();
         }
 
@@ -234,7 +243,7 @@ namespace TeamNut.ViewModels
             if (!await _service.HasAnyLogsAsync())
             {
                 HasData = false;
-                StatusMessage = "You need to have had atleast one consumed meal.";
+                StatusMessage = "You need to have had at least one consumed meal.";
                 return;
             }
 
@@ -262,6 +271,7 @@ namespace TeamNut.ViewModels
             DailyProteinText = BuildMetricText(DailyTotals.Protein, DailyProteinGoal, "g");
             DailyCarbsText = BuildMetricText(DailyTotals.Carbs, DailyCarbsGoal, "g");
             DailyFatsText = BuildMetricText(DailyTotals.Fats, DailyFatsGoal, "g");
+
             var burnedCalories = await _service.GetTodayBurnedCaloriesAsync();
             DailyBurnedCaloriesText = $"{burnedCalories:F0} kcal";
 

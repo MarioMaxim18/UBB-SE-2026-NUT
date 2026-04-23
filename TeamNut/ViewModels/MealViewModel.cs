@@ -14,11 +14,14 @@ namespace TeamNut.Views.MealPlanView
         public int Protein { get; set; }
         public int Carbs { get; set; }
         public int Fat { get; set; }
+
+        
         public bool IsVegan { get; set; }
         public bool IsKeto { get; set; }
         public bool IsGlutenFree { get; set; }
         public bool IsLactoseFree { get; set; }
         public bool IsNutFree { get; set; }
+
         public List<IngredientViewModel> Ingredients { get; set; } = new List<IngredientViewModel>();
 
         public static MealViewModel FromMeal(Meal meal, string mealType)
