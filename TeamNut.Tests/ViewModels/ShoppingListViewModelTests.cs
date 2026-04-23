@@ -8,8 +8,14 @@
     using TeamNut.ViewModels;
     using Xunit;
 
-    public class ShoppingListViewModelTests
+    [Collection("UsesStaticUserSession")]
+    public class ShoppingListViewModelTests : System.IDisposable
     {
+        public void Dispose()
+        {
+            UserSession.Logout();
+        }
+
         public ShoppingListViewModelTests()
         {
             UserSession.Logout();

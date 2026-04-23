@@ -32,7 +32,6 @@
         {
             var reminderService = Substitute.For<IReminderService>();
             var vm = new MainViewModel(reminderService);
-
             UserSession.Login(1, "TestUser", "User");
 
             reminderService.GetNextReminder(Arg.Any<int>()).Returns(Task.FromResult<Reminder?>(null));
@@ -50,7 +49,6 @@
             var reminderService = Substitute.For<IReminderService>();
             var vm = new MainViewModel(reminderService);
             vm.NextReminderText = "Loading...";
-
             UserSession.Logout();
 
             await vm.UpdateHeaderReminder();
