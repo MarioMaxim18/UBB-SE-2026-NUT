@@ -139,13 +139,17 @@ namespace TeamNut.ViewModels
                     ? await this.chatService.GetConversationsWithUserMessagesAsync()
                     : await this.chatService.GetConversationsWhereNutritionistRespondedAsync(
                         UserSession.UserId ?? InvalidUserId);
+
+                convs ??= Enumerable.Empty<Conversation>();
             }
             else
             {
                 var conv = await this.chatService.GetOrCreateConversationForUserAsync(
                     UserSession.UserId ?? InvalidUserId);
 
-                convs = new[] { conv };
+                convs = conv != null
+                    ? new[] { conv }
+                    : Enumerable.Empty<Conversation>();
             }
 
             this.Conversations.Clear();
