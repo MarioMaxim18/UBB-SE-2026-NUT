@@ -946,8 +946,7 @@ LIMIT 1;";
         [MemberData(nameof(UserRecords))]
         public async Task GetById_IdExists_ReturnsUser(int id, string username, string password, string role)
         {
-            string dbName = Guid.NewGuid().ToString("N");
-            string connectionString = $"Data Source=file:{dbName}?mode=memory&cache=shared;URI=true";
+            string connectionString = $"Data Source=UserGetById_{Guid.NewGuid():N};Mode=Memory;Cache=Shared";
 
             await using var keepAlive = new SqliteConnection(connectionString);
             await keepAlive.OpenAsync();
@@ -988,8 +987,7 @@ LIMIT 1;";
         [InlineData(int.MinValue)]
         public async Task GetById_IdDoesNotExist_ReturnsNull(int id)
         {
-            string dbName = Guid.NewGuid().ToString("N");
-            string connectionString = $"Data Source=file:{dbName}?mode=memory&cache=shared;URI=true";
+            string connectionString = $"Data Source=UserGetByIdMissing_{Guid.NewGuid():N};Mode=Memory;Cache=Shared";
 
             await using var keepAlive = new SqliteConnection(connectionString);
             await keepAlive.OpenAsync();

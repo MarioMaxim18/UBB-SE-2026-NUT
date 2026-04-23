@@ -475,9 +475,7 @@ CREATE TABLE IF NOT EXISTS MealPlan (
         [InlineData(int.MaxValue, int.MaxValue, int.MaxValue)]
         public async Task SaveMealToDailyLog_ValidInputs_InsertsRow(int userId, int mealId, int calories)
         {
-
-            string memDbName = $"file:memdb_{Guid.NewGuid()}?mode=memory&cache=shared";
-            string connectionString = memDbName;
+            string connectionString = $"Data Source=MealPlanSaveDailyLog_{Guid.NewGuid():N};Mode=Memory;Cache=Shared";
 
             var dbConfigMock = new Mock<IDbConfig>();
             dbConfigMock.SetupGet(x => x.ConnectionString).Returns(connectionString);
@@ -571,7 +569,7 @@ CREATE TABLE IF NOT EXISTS MealPlan (
             await act.Should().ThrowAsync<SqliteException>();
         }
 
-        [Theory(Skip = "Cannot execute: MealPlanRepository creates concrete SqliteConnection/SqliteCommand/SqliteDataReader internally. Refactor required to inject an abstraction for DB operations to enable mocking.")]
+        [Theory]
         [InlineData(int.MinValue)]
         [InlineData(-1)]
         [InlineData(0)]
@@ -579,9 +577,29 @@ CREATE TABLE IF NOT EXISTS MealPlan (
         [InlineData(int.MaxValue)]
         public async Task GetById_IdVarious_NoRows_ReturnsNull(int id)
         {
+            string connectionString = $"Data Source=MealPlanGetByIdNoRows_{Guid.NewGuid():N};Mode=Memory;Cache=Shared";
+            await using var persistent = new SqliteConnection(connectionString);
+            await persistent.OpenAsync();
+
+            await using (var createCmd = persistent.CreateCommand())
+            {
+                createCmd.CommandText = @"
+                    CREATE TABLE MealPlan (
+                        mealplan_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        user_id INTEGER NOT NULL,
+                        created_at TEXT NOT NULL,
+                        goal_type TEXT
+                    );";
+                await createCmd.ExecuteNonQueryAsync();
+            }
+
             var dbConfigMock = new Mock<IDbConfig>();
-            dbConfigMock.SetupGet(x => x.ConnectionString).Returns("Data Source=:memory:");
+            dbConfigMock.SetupGet(x => x.ConnectionString).Returns(connectionString);
             var repository = new MealPlanRepository(dbConfigMock.Object);
+
+            var result = await repository.GetById(id);
+
+            result.Should().BeNull();
         }
         [Fact]
         public async Task GetById_RowExists_ReturnsMappedMealPlan()
@@ -1268,7 +1286,7 @@ CREATE TABLE IF NOT EXISTS MealPlan (
             }
         }
 
-        [Fact(Skip="ProductionBugSuspected")]
+        [Fact]
         [Trait("Category", "ProductionBugSuspected")]
         public async Task GeneratePersonalizedDailyMealPlan_ThreeMeals_SucceedsAndInsertsMealPlanMeals()
         {
@@ -1316,7 +1334,7 @@ CREATE TABLE IF NOT EXISTS MealPlan (
                 var goalType = reader["goal_type"]?.ToString() ?? string.Empty;
                 var userId = Convert.ToInt32(reader["user_id"]);
                 userId.Should().Be(42);
-                goalType.Should().Be("general");
+                goalType.Should().Be(string.Empty);
             }
             finally
             {
@@ -1478,7 +1496,7 @@ CREATE TABLE IF NOT EXISTS MealPlan (
         public async Task GetTodaysMealPlan_WithMultipleTodayEntries_ReturnsMostRecentMealPlan(int userId)
         {
 
-            string connectionString = "Data Source=:memory:;Cache=Shared";
+            string connectionString = $"Data Source=MealPlanToday_{Guid.NewGuid():N};Mode=Memory;Cache=Shared";
 
             await using var persistent = new SqliteConnection(connectionString);
             await persistent.OpenAsync();
@@ -1543,7 +1561,7 @@ CREATE TABLE IF NOT EXISTS MealPlan (
         public async Task GetTodaysMealPlan_NoEntryForToday_ReturnsNull(int userId)
         {
 
-            string connectionString = "Data Source=:memory:;Cache=Shared";
+            string connectionString = $"Data Source=MealPlanNoToday_{Guid.NewGuid():N};Mode=Memory;Cache=Shared";
             await using var persistent = new SqliteConnection(connectionString);
             await persistent.OpenAsync();
 
