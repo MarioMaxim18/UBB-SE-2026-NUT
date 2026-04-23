@@ -153,7 +153,7 @@
             shoppingListService.GenerateListAsync(1).Returns(5);
             shoppingListService.GetShoppingItemsAsync(1).Returns(new List<ShoppingItem>());
 
-            await vm.GenerateListCommand.ExecuteAsync(null);
+            await vm.GenerateList();
 
             Assert.False(vm.IsError);
             Assert.Equal("Successfully generated 5 new items from your Meal Plan!", vm.StatusMessage);
@@ -170,7 +170,7 @@
             UserSession.Login(1, "TestUser", "User");
             shoppingListService.GenerateListAsync(1).Returns(0);
 
-            await vm.GenerateListCommand.ExecuteAsync(null);
+            await vm.GenerateList();
 
             Assert.False(vm.IsError);
             Assert.Equal("You already have everything you need", vm.StatusMessage);
@@ -188,7 +188,7 @@
 
             shoppingListService.GenerateListAsync(Arg.Any<int>()).Returns(Task.FromResult(-1));
 
-            await vm.GenerateListCommand.ExecuteAsync(null);
+            await vm.GenerateList();
 
             Assert.True(vm.IsError);
             Assert.Equal("Error analyzing Meal Plan for ingredients.", vm.StatusMessage);
