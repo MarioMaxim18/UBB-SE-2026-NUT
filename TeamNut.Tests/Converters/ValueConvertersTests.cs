@@ -56,16 +56,6 @@ namespace TeamNut.Tests.Converters
             result.Should().Be(Visibility.Collapsed);
         }
 
-        [Fact(Skip = "Requires WinUI UI type initialization in the test host.")]
-        public void BoolToFontWeightConverter_WhenValueIsTrue_ReturnsBold()
-        {
-            var converter = new BoolToFontWeightConverter();
-
-            var result = converter.Convert(true, typeof(object), null, string.Empty);
-
-            result.Should().Be(FontWeights.Bold);
-        }
-
         [Fact]
         public void InverseBoolConverter_WhenValueIsFalse_ReturnsTrue()
         {
@@ -104,36 +94,6 @@ namespace TeamNut.Tests.Converters
             var result = converter.Convert(0, typeof(Visibility), null, string.Empty);
 
             result.Should().Be(Visibility.Visible);
-        }
-
-        [Fact(Skip = "Requires WinUI brush/color type initialization in the test host.")]
-        public void RoleToBackgroundConverter_WhenRoleIsNutritionist_ReturnsExpectedBrush()
-        {
-            var converter = new RoleToBackgroundConverter();
-
-            var result = converter.Convert("Nutritionist", typeof(SolidColorBrush), null, string.Empty);
-
-            result.Should().BeOfType<SolidColorBrush>();
-            ((SolidColorBrush)result).Color.Should().Be(ConverterConstants.NutritionistBackground);
-        }
-
-        [Fact(Skip = "Requires WinUI brush/color type initialization in the test host.")]
-        public void UnansweredToHighlightConverter_WhenNutritionistAndHasUnanswered_ReturnsHighlightBrush()
-        {
-            var converter = new UnansweredToHighlightConverter();
-            UserSession.Login(1, "nutritionist", "Nutritionist");
-
-            try
-            {
-                var result = converter.Convert(true, typeof(SolidColorBrush), null, string.Empty);
-
-                result.Should().BeOfType<SolidColorBrush>();
-                ((SolidColorBrush)result).Color.Should().Be(ConverterConstants.UnansweredHighlight);
-            }
-            finally
-            {
-                UserSession.Logout();
-            }
         }
 
         [Fact]
