@@ -34,7 +34,7 @@
 
             UserSession.Login(1, "TestUser", "User");
 
-            mealPlanService.GetTodaysMealPlanAsync(Arg.Any<int>()).Returns(Task.FromResult(existingPlan));
+            mealPlanService.GetTodaysMealPlanAsync(Arg.Any<int>()).Returns(_ => Task.FromResult<MealPlan?>(existingPlan));
             mealPlanService.GetMealsForMealPlanAsync(Arg.Any<int>()).Returns(Task.FromResult(new List<Meal>(meals)));
             mealPlanService.GetUserGoalAsync(Arg.Any<int>()).Returns(Task.FromResult("maintenance"));
 
@@ -57,7 +57,7 @@
             var generatedMeals = new List<Meal> { new Meal { Id = 5 } };
 
             UserSession.Login(1, "TestUser", "User");
-            mealPlanService.GetTodaysMealPlanAsync(1).Returns(Task.FromResult<MealPlan>(null!));
+            mealPlanService.GetTodaysMealPlanAsync(1).Returns(_ => Task.FromResult<MealPlan?>(null));
             mealPlanService.GeneratePersonalizedMealPlanAsync(1).Returns(20);
             mealPlanService.GetMealsForMealPlanAsync(20).Returns(Task.FromResult(new List<Meal>(generatedMeals)));
             mealPlanService.GetUserGoalAsync(1).Returns(Task.FromResult("muscle"));

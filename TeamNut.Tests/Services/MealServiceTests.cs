@@ -1,4 +1,4 @@
-// <copyright file="MealServiceTests.cs" company="TeamNut">
+﻿// <copyright file="MealServiceTests.cs" company="TeamNut">
 // Copyright (c) TeamNut. All rights reserved.
 // </copyright>
 
@@ -24,7 +24,7 @@
             await service.GetMealsAsync(null!);
 
             await fakeRepo.Received(1).GetAll();
-            await fakeRepo.DidNotReceiveWithAnyArgs().GetFilteredMeals(default);
+            await fakeRepo.DidNotReceiveWithAnyArgs().GetFilteredMeals(Arg.Any<MealFilter>());
         }
 
         [Fact]

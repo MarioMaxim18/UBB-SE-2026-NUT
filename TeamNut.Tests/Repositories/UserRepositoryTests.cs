@@ -1,4 +1,4 @@
-// <copyright file="UserRepositoryTests.cs" company="TeamNut">
+﻿// <copyright file="UserRepositoryTests.cs" company="TeamNut">
 // Copyright (c) TeamNut. All rights reserved.
 // </copyright>
 
@@ -143,7 +143,7 @@ LIMIT 1;";
         public async Task Constructor_NullConnectionString_GetAll_ThrowsInvalidOperationException()
         {
             var mockConfig = new Mock<IDbConfig>();
-            mockConfig.SetupGet(m => m.ConnectionString).Returns((string?)null);
+            mockConfig.SetupGet(m => m.ConnectionString).Returns((string)null!);
             var repo = new UserRepository(mockConfig.Object);
 
             Func<Task> act = async () => await repo.GetAll();
@@ -376,7 +376,7 @@ LIMIT 1;";
         {
             yield return new object[] { new UserData { UserId = 10, Weight = 0, Height = 0, Age = 0, Gender = string.Empty, Goal = string.Empty, Bmi = 0.0, CalorieNeeds = 0, ProteinNeeds = 0, CarbNeeds = 0, FatNeeds = 0 } };
 
-            yield return new object[] { new UserData { UserId = 11, Weight = int.MinValue, Height = int.MaxValue, Age = int.MinValue, Gender = "male\0\u0001", Goal = "maintenance", Bmi = double.MinValue == double.MinValue ? double.MinValue : 0.0, CalorieNeeds = int.MaxValue, ProteinNeeds = int.MinValue, CarbNeeds = int.MaxValue, FatNeeds = int.MinValue } };
+            yield return new object[] { new UserData { UserId = 11, Weight = int.MinValue, Height = int.MaxValue, Age = int.MinValue, Gender = "male\0\u0001", Goal = "maintenance", Bmi = double.MinValue, CalorieNeeds = int.MaxValue, ProteinNeeds = int.MinValue, CarbNeeds = int.MaxValue, FatNeeds = int.MinValue } };
 
             yield return new object[] { new UserData { UserId = 12, Weight = 1, Height = 300, Age = 130, Gender = "female", Goal = "well-being", Bmi = 9999.9, CalorieNeeds = 250000, ProteinNeeds = 10000, CarbNeeds = 200000, FatNeeds = 50000 } };
 

@@ -1,4 +1,4 @@
-// <copyright file="FilteringServiceTests.cs" company="TeamNut">
+﻿// <copyright file="FilteringServiceTests.cs" company="TeamNut">
 // Copyright (c) TeamNut. All rights reserved.
 // </copyright>
 
@@ -135,7 +135,7 @@ namespace TeamNut.Tests.Services
             var meals = new List<Meal>
             {
                 new Meal { Name = "Chicken Salad" },
-                new Meal { Name = null },
+                new Meal { Name = null! },
                 new Meal { Name = "Beef Stew" }
             };
 

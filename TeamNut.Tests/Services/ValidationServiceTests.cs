@@ -1,4 +1,4 @@
-// <copyright file="ValidationServiceTests.cs" company="TeamNut">
+﻿// <copyright file="ValidationServiceTests.cs" company="TeamNut">
 // Copyright (c) TeamNut. All rights reserved.
 // </copyright>
 
@@ -109,7 +109,7 @@ namespace TeamNut.Tests.Services
         [InlineData("Punctuation! And? Questions.")]
         public void IsValidTextInput_WithValidText_ReturnsTrue(string input)
         {
-            var result = service.IsValidTextInput(input);
+            var result = service.IsValidTextInput(input!);
 
             result.Should().BeTrue();
         }
@@ -143,7 +143,7 @@ namespace TeamNut.Tests.Services
         [InlineData("0")]
         public void IsNumericOnly_WithNumericString_ReturnsTrue(string input)
         {
-            var result = service.IsNumericOnly(input);
+            var result = service.IsNumericOnly(input!);
 
             result.Should().BeTrue();
         }
@@ -177,7 +177,7 @@ namespace TeamNut.Tests.Services
         [InlineData("a")]
         public void IsValidReminderName_WithValidName_ReturnsTrue(string name)
         {
-            var result = service.IsValidReminderName(name);
+            var result = service.IsValidReminderName(name!);
 
             result.Should().BeTrue();
         }

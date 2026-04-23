@@ -1,4 +1,4 @@
-// <copyright file="MealPlanServiceTests.cs" company="TeamNut">
+﻿// <copyright file="MealPlanServiceTests.cs" company="TeamNut">
 // Copyright (c) TeamNut. All rights reserved.
 // </copyright>
 
@@ -167,7 +167,7 @@ namespace TeamNut.Tests.Services
         [InlineData(null, "🎯")]
         public void GetGoalEmoji_WithVariousGoals_ReturnsCorrectEmoji(string? goal, string expected)
         {
-            var result = service.GetGoalEmoji(goal);
+            var result = service.GetGoalEmoji(goal!);
 
             result.Should().Be(expected);
         }

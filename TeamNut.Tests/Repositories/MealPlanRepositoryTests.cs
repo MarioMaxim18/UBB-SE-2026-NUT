@@ -891,7 +891,6 @@ CREATE TABLE IF NOT EXISTS MealPlan (
                 meal.Protein.Should().Be(15);
                 meal.Carbs.Should().Be(30);
                 meal.Fat.Should().Be(8);
-
             }
         }
 
@@ -958,7 +957,6 @@ CREATE TABLE IF NOT EXISTS MealPlan (
 
                 result.Should().NotBeNull();
                 result.Should().BeEmpty("no MealPlanMeal rows exist that reference the provided plan id");
-
             }
         }
 
@@ -1347,7 +1345,6 @@ CREATE TABLE IF NOT EXISTS MealPlan (
 
                 result.Should().BeEquivalentTo(expected, options => options.WithoutStrictOrdering());
             }
-
         }
 
         [Fact]
@@ -1452,7 +1449,6 @@ CREATE TABLE IF NOT EXISTS MealPlan (
             result.CreatedAt.ToString("yyyy-MM-dd HH:mm").Should().Be(newer.Substring(0, 16));
 
             result.Id.Should().BeGreaterThan(0);
-
         }
 
         [Theory]

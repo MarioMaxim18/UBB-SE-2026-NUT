@@ -1,4 +1,4 @@
-// <copyright file="UserViewModelTests.cs" company="TeamNut">
+﻿// <copyright file="UserViewModelTests.cs" company="TeamNut">
 // Copyright (c) TeamNut. All rights reserved.
 // </copyright>
 
@@ -170,7 +170,7 @@
 
             validationService.ValidateUserData(Arg.Any<UserData>()).Returns(new List<string>());
             calcService.CalculateAge(Arg.Any<DateTimeOffset>()).Returns(25);
-            userService.RegisterUserAsync(Arg.Any<User>()).Returns(Task.FromException<User>(new Exception("DB Offline")));
+            userService.RegisterUserAsync(Arg.Any<User>()).Returns(_ => Task.FromException<User?>(new Exception("DB Offline")));
 
             await vm.SaveDataCommand.ExecuteAsync(null);
 
@@ -241,7 +241,7 @@
 
             vm.CurrentUser.Username = "TestUser";
             vm.CurrentUser.Password = "TestPass";
-            userService.LoginAsync("TestUser", "TestPass").Returns(Task.FromException<User>(new Exception("Timeout")));
+            userService.LoginAsync("TestUser", "TestPass").Returns(_ => Task.FromException<User?>(new Exception("Timeout")));
 
             await vm.LoginCommand.ExecuteAsync(null);
 

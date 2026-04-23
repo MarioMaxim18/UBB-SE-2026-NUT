@@ -45,7 +45,7 @@ namespace TeamNut.Tests.Services
         [InlineData("")]
         [InlineData("   ")]
         [InlineData(null)]
-        public async Task SaveReminder_WithEmptyName_ReturnsError(string name)
+        public async Task SaveReminder_WithEmptyName_ReturnsError(string? name)
         {
             var reminder = new Reminder
             {
