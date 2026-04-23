@@ -89,7 +89,7 @@ namespace TeamNut.Tests.Services
         public async Task LoginAsync_WithInvalidCredentials_ReturnsNull()
         {
             mockUserRepo.GetByUsernameAndPassword("JohnDoe", "WrongPassword")
-                .Returns((User)null);
+                .Returns((User?)null);
 
             var result = await service.LoginAsync("JohnDoe", "WrongPassword");
 

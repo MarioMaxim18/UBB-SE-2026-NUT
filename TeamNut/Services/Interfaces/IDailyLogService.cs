@@ -6,7 +6,7 @@ namespace TeamNut.Services.Interfaces
 {
     public interface IDailyLogService
     {
-        Task<UserData> GetCurrentUserNutritionTargetsAsync();
+        Task<UserData?> GetCurrentUserNutritionTargetsAsync();
         Task<DailyLog> GetCurrentWeekTotalsAsync();
         Task<List<Meal>> GetMealsForAutocompleteAsync();
         Task<double> GetTodayBurnedCaloriesAsync();

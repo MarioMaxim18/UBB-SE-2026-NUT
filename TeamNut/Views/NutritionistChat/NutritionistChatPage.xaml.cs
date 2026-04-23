@@ -7,6 +7,9 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace TeamNut.Views.NutritionistChat
 {
+    /// <summary>
+    /// NutritionistChatPage.
+    /// </summary>
     public sealed partial class NutritionistChatPage : Page
     {
         public NutritionistChatViewModel ViewModel { get; }
@@ -14,7 +17,7 @@ namespace TeamNut.Views.NutritionistChat
         public NutritionistChatPage()
         {
             this.InitializeComponent();
-            ViewModel = App.Services.GetService<NutritionistChatViewModel>();
+            ViewModel = App.Services.GetRequiredService<NutritionistChatViewModel>();
             this.DataContext = ViewModel;
         }
 

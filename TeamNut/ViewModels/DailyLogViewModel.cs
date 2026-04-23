@@ -8,6 +8,9 @@ using TeamNut.Services.Interfaces;
 
 namespace TeamNut.ViewModels
 {
+    /// <summary>
+    /// DailyLogViewModel.
+    /// </summary>
     public partial class DailyLogViewModel : ObservableObject
     {
         private static class Constants

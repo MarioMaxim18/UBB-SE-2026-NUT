@@ -8,6 +8,9 @@ namespace TeamNut.Views.RemindersView
     using TeamNut.ViewModels;
     using TeamNut.Services.Interfaces;
 
+    /// <summary>
+    /// RemindersPage.
+    /// </summary>
     public sealed partial class RemindersPage : Page
     {
         private const int DialogStackSpacing = 8;
@@ -42,7 +45,7 @@ namespace TeamNut.Views.RemindersView
         public RemindersPage()
         {
             this.InitializeComponent();
-            ViewModel = App.Services.GetService<RemindersViewModel>();
+            ViewModel = App.Services.GetRequiredService<RemindersViewModel>();
             validationService = App.Services.GetRequiredService<IValidationService>();
             this.DataContext = ViewModel;
 

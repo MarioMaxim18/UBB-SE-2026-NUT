@@ -19,7 +19,7 @@ namespace TeamNut
     {
         internal Window? AppWindow;
 
-        public static IServiceProvider Services { get; private set; }
+        public static IServiceProvider Services { get; private set; } = null!;
 
         public App()
         {

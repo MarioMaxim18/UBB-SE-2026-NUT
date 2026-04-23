@@ -50,7 +50,7 @@ namespace TeamNut.Tests.Services
             mockMealService.GetFilteredMealsAsync(Arg.Any<MealFilter>())
                 .Returns(new List<Meal>());
 
-            await service.SearchMealsAsync(null);
+            await service.SearchMealsAsync(null!);
 
             await mockMealService.Received(1).GetFilteredMealsAsync(
                 Arg.Is<MealFilter>(f => f.SearchTerm == string.Empty));
@@ -77,7 +77,7 @@ namespace TeamNut.Tests.Services
         [Fact]
         public async Task LogMealAsync_WithNullMeal_ThrowsArgumentNullException()
         {
-            Func<Task> act = async () => await service.LogMealAsync(null);
+            Func<Task> act = async () => await service.LogMealAsync(null!);
 
             await act.Should().ThrowAsync<ArgumentNullException>()
                 .WithParameterName("meal");

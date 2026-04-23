@@ -4,6 +4,9 @@ using TeamNut.Models;
 using TeamNut.Services;
 using TeamNut.Services.Interfaces;
 
+/// <summary>
+/// MainViewModel.
+/// </summary>
 public partial class MainViewModel : ObservableObject
 {
     private const int InvalidUserId = 0;
@@ -11,7 +14,7 @@ public partial class MainViewModel : ObservableObject
     private const string NoUpcomingMealsText = "No upcoming meals";
     private const string ReminderDisplayFormat = "{0} at {1}";
     private const string ReminderTimeFormat = @"hh\:mm";
-    private readonly IReminderService reminderService;
+    private readonly IReminderService? reminderService;
 
     public MainViewModel(IReminderService rreminderService)
     {
@@ -32,6 +35,12 @@ public partial class MainViewModel : ObservableObject
 
         if (userId != InvalidUserId)
         {
+            if (reminderService == null)
+            {
+                NextReminderText = NoUpcomingMealsText;
+                return;
+            }
+
             var next = await reminderService.GetNextReminder(userId);
 
             NextReminderText = next != null

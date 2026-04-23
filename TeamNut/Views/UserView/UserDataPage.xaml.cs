@@ -8,6 +8,9 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace TeamNut.Views.UserView
 {
+    /// <summary>
+    /// UserDataPage.
+    /// </summary>
     public sealed partial class UserDataPage : Page
     {
         public UserViewModel ViewModel { get; }

@@ -7,6 +7,9 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace TeamNut.Views.CalorieLoggingView
 {
+    /// <summary>
+    /// CalorieLoggingPage.
+    /// </summary>
     public sealed partial class CalorieLoggingPage : Page
     {
         private DailyLogViewModel ViewModel { get; }
@@ -15,7 +18,7 @@ namespace TeamNut.Views.CalorieLoggingView
         {
             this.InitializeComponent();
 
-            ViewModel = App.Services.GetService<DailyLogViewModel>();
+            ViewModel = App.Services.GetRequiredService<DailyLogViewModel>();
             this.DataContext = ViewModel;
 
             LoadData();

@@ -4,12 +4,14 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using TeamNut.ModelViews;
 using TeamNut.Models;
-using TeamNut.ModelViews;
 using TeamNut.Services.Interfaces;
 using TeamNut.ViewModels;
 
 namespace TeamNut.Views.MealPlanView
 {
+    /// <summary>
+    /// MealPlanPage.
+    /// </summary>
     public sealed partial class MealPlanPage : Page
     {
         public MealPlanViewModel ViewModel { get; }

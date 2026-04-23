@@ -7,6 +7,9 @@ using TeamNut.ViewModels;
 
 namespace TeamNut.Views.UserView
 {
+    /// <summary>
+    /// RegisterPage.
+    /// </summary>
     public sealed partial class RegisterPage : Page
     {
         public UserViewModel ViewModel { get; }

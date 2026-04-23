@@ -33,7 +33,7 @@ namespace TeamNut.Tests.Services
         [Fact]
         public void ValidateUser_WithNullUser_ReturnsError()
         {
-            var errors = service.ValidateUser(null);
+            var errors = service.ValidateUser(null!);
 
             errors.Should().NotBeEmpty();
             errors.Should().Contain(e => e.Contains("cannot be null"));
@@ -74,7 +74,7 @@ namespace TeamNut.Tests.Services
         [Fact]
         public void ValidateUserData_WithNullData_ReturnsError()
         {
-            var errors = service.ValidateUserData(null);
+            var errors = service.ValidateUserData(null!);
 
             errors.Should().NotBeEmpty();
             errors.Should().Contain(e => e.Contains("cannot be null"));
@@ -114,7 +114,7 @@ namespace TeamNut.Tests.Services
         [InlineData("")]
         [InlineData("   ")]
         [InlineData(null)]
-        public void IsValidTextInput_WithEmptyOrWhitespace_ReturnsFalse(string input)
+        public void IsValidTextInput_WithEmptyOrWhitespace_ReturnsFalse(string? input)
         {
             var result = service.IsValidTextInput(input);
 
@@ -147,7 +147,7 @@ namespace TeamNut.Tests.Services
         [Theory]
         [InlineData("")]
         [InlineData(null)]
-        public void IsNumericOnly_WithEmptyOrNull_ReturnsTrue(string input)
+        public void IsNumericOnly_WithEmptyOrNull_ReturnsTrue(string? input)
         {
             var result = service.IsNumericOnly(input);
 
@@ -182,7 +182,7 @@ namespace TeamNut.Tests.Services
         [InlineData("")]
         [InlineData("   ")]
         [InlineData(null)]
-        public void IsValidReminderName_WithEmptyOrWhitespace_ReturnsFalse(string name)
+        public void IsValidReminderName_WithEmptyOrWhitespace_ReturnsFalse(string? name)
         {
             var result = service.IsValidReminderName(name);
 

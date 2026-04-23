@@ -10,6 +10,9 @@ using TeamNut.Views;
 
 namespace TeamNut.Views
 {
+    /// <summary>
+    /// MainPage.
+    /// </summary>
     public sealed partial class MainPage : Page
     {
         private readonly Microsoft.UI.Dispatching.DispatcherQueue dispatcher;

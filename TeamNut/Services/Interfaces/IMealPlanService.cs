@@ -11,9 +11,9 @@ namespace TeamNut.Services.Interfaces
         Task<IEnumerable<MealPlan>> GetAllMealPlansAsync();
         string GetCalorieAdjustmentDescription(string goal, int baseTDEE);
         string GetGoalEmoji(string goal);
-        Task<MealPlan> GetMealPlanByIdAsync(int mealPlanId);
+        Task<MealPlan?> GetMealPlanByIdAsync(int mealPlanId);
         Task<List<Meal>> GetMealsForMealPlanAsync(int mealPlanId);
-        Task<MealPlan> GetTodaysMealPlanAsync(int userId);
+        Task<MealPlan?> GetTodaysMealPlanAsync(int userId);
         Task<string> GetUserGoalAsync(int userId);
         Task SaveMealsToDailyLogAsync(int mealPlanId);
         Task SaveMealToDailyLogAsync(int mealId, int calories);

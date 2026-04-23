@@ -18,7 +18,7 @@ namespace TeamNut.Tests.Services
         [Fact]
         public void FilterMeals_WithNullMeals_ReturnsEmptyList()
         {
-            var result = service.FilterMeals(null, "test");
+            var result = service.FilterMeals(null!, "test");
 
             result.Should().BeEmpty();
         }
@@ -47,7 +47,7 @@ namespace TeamNut.Tests.Services
                 new Meal { Name = "Beef Stew" }
             };
 
-            var result = service.FilterMeals(meals, null);
+            var result = service.FilterMeals(meals, null!);
 
             result.Should().HaveCount(2);
         }
@@ -143,7 +143,7 @@ namespace TeamNut.Tests.Services
         [Fact]
         public void FilterIngredients_WithNullIngredients_ReturnsEmptyList()
         {
-            var result = service.FilterIngredients(null, "test");
+            var result = service.FilterIngredients(null!, "test");
 
             result.Should().BeEmpty();
         }

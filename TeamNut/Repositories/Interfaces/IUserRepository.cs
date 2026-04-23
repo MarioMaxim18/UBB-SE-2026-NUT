@@ -10,9 +10,9 @@ namespace TeamNut.Repositories.Interfaces
         Task AddUserData(UserData data);
         Task Delete(int id);
         Task<IEnumerable<User>> GetAll();
-        Task<User> GetById(int id);
-        Task<User> GetByUsernameAndPassword(string username, string password);
-        Task<UserData> GetUserDataByUserId(int userId);
+        Task<User?> GetById(int id);
+        Task<User?> GetByUsernameAndPassword(string username, string password);
+        Task<UserData?> GetUserDataByUserId(int userId);
         Task Update(User entity);
         Task UpdateUserData(UserData data);
     }

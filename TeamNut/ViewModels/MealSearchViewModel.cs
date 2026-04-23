@@ -9,6 +9,9 @@ using TeamNut.Services.Interfaces;
 
 namespace TeamNut.ViewModels
 {
+    /// <summary>
+    /// MealSearchViewModel.
+    /// </summary>
     public partial class MealSearchViewModel : ObservableObject
     {
         private readonly IMealService mealService;

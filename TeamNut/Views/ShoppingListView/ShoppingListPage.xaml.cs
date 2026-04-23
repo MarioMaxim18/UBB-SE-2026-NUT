@@ -8,6 +8,9 @@ namespace TeamNut.Views.ShoppingListView
     using TeamNut.ViewModels;
     using Microsoft.Extensions.DependencyInjection;
 
+    /// <summary>
+    /// ShoppingListPage.
+    /// </summary>
     public sealed partial class ShoppingListPage : Page
     {
         private const string RootPageName = "RootPage";
@@ -25,7 +28,7 @@ namespace TeamNut.Views.ShoppingListView
         public ShoppingListPage()
         {
             this.InitializeComponent();
-            ViewModel = App.Services.GetService<ShoppingListViewModel>();
+            ViewModel = App.Services.GetRequiredService<ShoppingListViewModel>();
             this.Name = RootPageName;
         }
 

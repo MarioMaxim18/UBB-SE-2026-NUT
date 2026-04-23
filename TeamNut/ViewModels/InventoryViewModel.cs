@@ -9,6 +9,9 @@ using TeamNut.Services;
 using TeamNut.Services.Interfaces;
 namespace TeamNut.ViewModels
 {
+    /// <summary>
+    /// InventoryViewModel.
+    /// </summary>
     public partial class InventoryViewModel : ObservableObject
     {
         private readonly IInventoryService inventoryService;

@@ -6,6 +6,9 @@ using TeamNut.ViewModels;
 
 namespace TeamNut.Views.InventoryView
 {
+    /// <summary>
+    /// InventoryPage.
+    /// </summary>
     public sealed partial class InventoryPage : Page
     {
         public InventoryViewModel ViewModel { get; }

@@ -9,7 +9,7 @@ namespace TeamNut.Repositories.Interfaces
         Task Add(Meal entity);
         Task Delete(int id);
         Task<IEnumerable<Meal>> GetAll();
-        Task<Meal> GetById(int id);
+        Task<Meal?> GetById(int id);
         Task<IEnumerable<Meal>> GetFilteredMeals(MealFilter filter);
         Task<List<string>> GetIngredientLinesForMealAsync(int mealId);
         List<Meal> GetMeals();

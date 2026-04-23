@@ -76,7 +76,13 @@ CREATE TABLE IF NOT EXISTS MealPlan (
             }
             finally
             {
-                try { File.Delete(new SqliteConnectionStringBuilder(connStr).DataSource); } catch { }
+                try
+                {
+                    File.Delete(new SqliteConnectionStringBuilder(connStr).DataSource);
+                }
+                catch
+                {
+                }
             }
         }
 
@@ -110,7 +116,13 @@ CREATE TABLE IF NOT EXISTS MealPlan (
             }
             finally
             {
-                try { File.Delete(new SqliteConnectionStringBuilder(connStr).DataSource); } catch { }
+                try
+                {
+                    File.Delete(new SqliteConnectionStringBuilder(connStr).DataSource);
+                }
+                catch
+                {
+                }
             }
         }
 
@@ -237,7 +249,6 @@ CREATE TABLE IF NOT EXISTS MealPlan (
         [Fact]
         public async Task GetIngredientsForMeal_NullName_ProducesEmptyStringName()
         {
-
             string connString = $"Data Source=file:memdb_{Guid.NewGuid()}?mode=memory&cache=shared";
             using var keeper = new SqliteConnection(connString);
             await keeper.OpenAsync();
@@ -278,26 +289,20 @@ CREATE TABLE IF NOT EXISTS MealPlan (
 
             var repo = CreateRepository(connString);
 
-
             var result = await repo.GetIngredientsForMeal(mealId);
-
 
             result.Should().HaveCount(1);
             result[0].IngredientId.Should().Be(10);
-
 
             result[0].Name.Should().Be(string.Empty);
         }
         [Fact]
         public void MealPlanRepository_WithValidDbConfig_DoesNotThrowAndCreatesInstance()
         {
-
             var mockConfig = new Mock<IDbConfig>();
             mockConfig.SetupGet(m => m.ConnectionString).Returns("Data Source=:memory:");
 
-
             Action act = () => _ = new MealPlanRepository(mockConfig.Object);
-
 
             act.Should().NotThrow();
         }
@@ -305,9 +310,7 @@ CREATE TABLE IF NOT EXISTS MealPlan (
         [Fact]
         public void MealPlanRepository_NullDbConfig_ThrowsNullReferenceException()
         {
-
             Action act = () => _ = new MealPlanRepository(null!);
-
 
             act.Should().Throw<NullReferenceException>();
         }
@@ -316,32 +319,24 @@ CREATE TABLE IF NOT EXISTS MealPlan (
         [MemberData(nameof(ConnectionStringTestData))]
         public void MealPlanRepository_VariousConnectionStrings_DoesNotThrow(string? connectionString)
         {
-
             var mockConfig = new Mock<IDbConfig>();
 
             mockConfig.SetupGet(m => m.ConnectionString).Returns(connectionString!);
 
-
             Action act = () => _ = new MealPlanRepository(mockConfig.Object);
-
 
             act.Should().NotThrow();
         }
 
         public static IEnumerable<object?[]> ConnectionStringTestData()
         {
-
             yield return new object?[] { null };
-
 
             yield return new object?[] { string.Empty };
 
-
             yield return new object?[] { "   " };
 
-
             yield return new object?[] { "Data Source=weird;Pwd=pä$$w0rd\n\t\0;Mode=ReadWrite" };
-
 
             yield return new object?[] { new string('a', 5000) };
         }
@@ -349,14 +344,12 @@ CREATE TABLE IF NOT EXISTS MealPlan (
         [Fact]
         public async Task Delete_ExistingId_RemovesRowAsync()
         {
-
             const int existingId = 42;
 
             string connectionString = "Data Source=MealPlan_Delete_Existing_Db;Mode=Memory;Cache=Shared";
 
             await using var keeper = new SqliteConnection(connectionString);
             await keeper.OpenAsync();
-
 
             string createTableSql = @"CREATE TABLE MealPlan (
                                         mealplan_id INTEGER PRIMARY KEY,
@@ -376,7 +369,6 @@ CREATE TABLE IF NOT EXISTS MealPlan (
                 await insertCmd.ExecuteNonQueryAsync();
             }
 
-
             long countBefore;
             await using (var checkCmd = new SqliteCommand("SELECT COUNT(*) FROM MealPlan WHERE mealplan_id = @id", keeper))
             {
@@ -386,15 +378,12 @@ CREATE TABLE IF NOT EXISTS MealPlan (
             }
             countBefore.Should().Be(1);
 
-
             var dbConfigMock = new Mock<IDbConfig>();
             dbConfigMock.SetupGet(d => d.ConnectionString).Returns(connectionString);
             var repo = new MealPlanRepository(dbConfigMock.Object);
 
-
             Func<Task> act = async () => await repo.Delete(existingId);
             await act.Should().NotThrowAsync();
-
 
             long countAfter;
             await using (var checkAfterCmd = new SqliteCommand("SELECT COUNT(*) FROM MealPlan WHERE mealplan_id = @id", keeper))
@@ -412,12 +401,10 @@ CREATE TABLE IF NOT EXISTS MealPlan (
         [InlineData(int.MaxValue)]
         public async Task Delete_NonExistingId_DoesNotThrowAndDoesNotAffectOtherRowsAsync(int idToDelete)
         {
-
             const int existingId = 1;
             string connectionString = "Data Source=MealPlan_Delete_NonExisting_Db;Mode=Memory;Cache=Shared";
             await using var keeper = new SqliteConnection(connectionString);
             await keeper.OpenAsync();
-
 
             string createTableSql = @"CREATE TABLE MealPlan (
                                         mealplan_id INTEGER PRIMARY KEY,
@@ -437,7 +424,6 @@ CREATE TABLE IF NOT EXISTS MealPlan (
                 await insertCmd.ExecuteNonQueryAsync();
             }
 
-
             long countBefore;
             await using (var countCmd = new SqliteCommand("SELECT COUNT(*) FROM MealPlan", keeper))
             {
@@ -450,12 +436,9 @@ CREATE TABLE IF NOT EXISTS MealPlan (
             dbConfigMock.SetupGet(d => d.ConnectionString).Returns(connectionString);
             var repo = new MealPlanRepository(dbConfigMock.Object);
 
-
             Func<Task> act = async () => await repo.Delete(idToDelete);
 
-
             await act.Should().NotThrowAsync();
-
 
             long countAfter;
             await using (var countAfterCmd = new SqliteCommand("SELECT COUNT(*) FROM MealPlan WHERE mealplan_id = @id", keeper))
@@ -475,7 +458,6 @@ CREATE TABLE IF NOT EXISTS MealPlan (
         [InlineData(int.MaxValue, int.MaxValue, int.MaxValue)]
         public async Task SaveMealToDailyLog_ValidInputs_InsertsRow(int userId, int mealId, int calories)
         {
-
             string memDbName = $"file:memdb_{Guid.NewGuid()}?mode=memory&cache=shared";
             string connectionString = memDbName;
 
@@ -483,7 +465,6 @@ CREATE TABLE IF NOT EXISTS MealPlan (
             dbConfigMock.SetupGet(x => x.ConnectionString).Returns(connectionString);
 
             var repository = new MealPlanRepository(dbConfigMock.Object);
-
 
             await using var ownerConn = new SqliteConnection(connectionString);
             await ownerConn.OpenAsync();
@@ -501,10 +482,8 @@ CREATE TABLE IF NOT EXISTS MealPlan (
                 await createCmd.ExecuteNonQueryAsync();
             }
 
-
             Func<Task> act = async () => await repository.SaveMealToDailyLog(userId, mealId, calories);
             await act.Should().NotThrowAsync();
-
 
             await using (var queryCmd = new SqliteCommand("SELECT user_id, mealId, calories, created_at FROM DailyLogs", ownerConn))
             await using (var reader = await queryCmd.ExecuteReaderAsync())
@@ -525,7 +504,6 @@ CREATE TABLE IF NOT EXISTS MealPlan (
                 dbMealId.Should().Be(mealId);
                 dbCalories.Should().Be(calories);
 
-
                 DateTime loggedAt = DateTime.MinValue;
                 if (rawLoggedAt is DateTime dt)
                 {
@@ -537,17 +515,14 @@ CREATE TABLE IF NOT EXISTS MealPlan (
                 }
                 else
                 {
-
                     try
                     {
                         loggedAt = Convert.ToDateTime(rawLoggedAt);
                     }
                     catch
                     {
-
                     }
                 }
-
 
                 loggedAt.Should().BeAfter(DateTime.Now.AddMinutes(-1)).And.BeBefore(DateTime.Now.AddMinutes(1));
             }
@@ -556,7 +531,6 @@ CREATE TABLE IF NOT EXISTS MealPlan (
         [Fact]
         public async Task SaveMealToDailyLog_WithoutDailyLogsTable_ThrowsSqliteException()
         {
-
             string memDbName = $"file:memdb_{Guid.NewGuid()}?mode=memory&cache=shared";
             string connectionString = $"Data Source={memDbName}";
 
@@ -566,7 +540,6 @@ CREATE TABLE IF NOT EXISTS MealPlan (
             var repository = new MealPlanRepository(dbConfigMock.Object);
 
             Func<Task> act = async () => await repository.SaveMealToDailyLog(1, 1, 100);
-
 
             await act.Should().ThrowAsync<SqliteException>();
         }
@@ -597,11 +570,9 @@ CREATE TABLE IF NOT EXISTS MealPlan (
         [InlineData(int.MinValue)]
         public async Task SaveMealsToDailyLog_EmptyList_NoRowsInserted(int userId)
         {
-
             string connectionString = $"Data Source=file:mem_empty_{Guid.NewGuid():N}?mode=memory&cache=shared";
             await using var keeper = new SqliteConnection(connectionString);
             await keeper.OpenAsync();
-
 
             await using (var createCmd = keeper.CreateCommand())
             {
@@ -619,9 +590,7 @@ CREATE TABLE IF NOT EXISTS MealPlan (
 
             var repository = new MealPlanRepository(dbConfigMock.Object);
 
-
             await repository.SaveMealsToDailyLog(userId, new List<Meal>());
-
 
             await using (var countCmd = keeper.CreateCommand())
             {
@@ -635,11 +604,9 @@ CREATE TABLE IF NOT EXISTS MealPlan (
         [Fact]
         public async Task SaveMealsToDailyLog_WithMeals_InsertsRowsAndPersistsValues()
         {
-
             string connectionString = $"Data Source=file:mem_insert_{Guid.NewGuid():N}?mode=memory&cache=shared";
             await using var keeper = new SqliteConnection(connectionString);
             await keeper.OpenAsync();
-
 
             await using (var createCmd = keeper.CreateCommand())
             {
@@ -666,9 +633,7 @@ CREATE TABLE IF NOT EXISTS MealPlan (
 
             int userId = 42;
 
-
             await repository.SaveMealsToDailyLog(userId, meals);
-
 
             var readResults = new List<(int mealId, int userId, int calories)>();
             await using (var selectCmd = keeper.CreateCommand())
@@ -686,7 +651,6 @@ CREATE TABLE IF NOT EXISTS MealPlan (
 
             readResults.Count.Should().Be(meals.Count, "one row should be inserted per provided meal");
 
-
             var expectedOrdered = meals.OrderBy(m => m.Id).ToList();
             for (int i = 0; i < expectedOrdered.Count; i++)
             {
@@ -699,14 +663,11 @@ CREATE TABLE IF NOT EXISTS MealPlan (
         [MemberData(nameof(Add_VariousUserIdsAndGoalTypes_Data))]
         public async Task Add_WithVariousUserIdsAndGoalTypes_InsertsRow(int userId, string goalType)
         {
-
             string memName = $"memdb_{Guid.NewGuid():N}";
             string connectionString = $"Data Source=file:{memName}?mode=memory&cache=shared";
 
-
             await using var persistent = new SqliteConnection(connectionString);
             await persistent.OpenAsync();
-
 
             await using (var createCmd = persistent.CreateCommand())
             {
@@ -732,9 +693,7 @@ CREATE TABLE IF NOT EXISTS MealPlan (
                 GoalType = goalType
             };
 
-
             await repo.Add(entity);
-
 
             await using (var verifyCmd = persistent.CreateCommand())
             {
@@ -759,7 +718,6 @@ CREATE TABLE IF NOT EXISTS MealPlan (
 
         public static IEnumerable<object[]> Add_VariousUserIdsAndGoalTypes_Data()
         {
-
             yield return new object[] { int.MinValue, string.Empty };
             yield return new object[] { -1, " " };
             yield return new object[] { 0, "maintenance" };
@@ -770,7 +728,6 @@ CREATE TABLE IF NOT EXISTS MealPlan (
         [Fact]
         public async Task Add_WithEmptyGoal_InsertsEmptyStringAsGoalType()
         {
-
             string memName = $"memdb_{Guid.NewGuid():N}";
             string connectionString = $"Data Source=file:{memName}?mode=memory&cache=shared";
 
@@ -801,9 +758,7 @@ CREATE TABLE IF NOT EXISTS MealPlan (
                 GoalType = string.Empty
             };
 
-
             await repo.Add(entity);
-
 
             await using (var verifyCmd = persistent.CreateCommand())
             {
@@ -817,15 +772,12 @@ CREATE TABLE IF NOT EXISTS MealPlan (
         [Fact]
         public async Task GetMealsForMealPlan_ExistingPlanWithIngredients_ReturnsMappedMeals()
         {
-
             string dbName = "memdb_" + Guid.NewGuid().ToString("N");
             string connectionString = $"Data Source=file:{dbName}?mode=memory&cache=shared";
-
 
             using (var keeper = new SqliteConnection(connectionString))
             {
                 await keeper.OpenAsync();
-
 
                 string createSql = @"
                     CREATE TABLE Meals (
@@ -867,8 +819,6 @@ CREATE TABLE IF NOT EXISTS MealPlan (
                     await cmd.ExecuteNonQueryAsync();
                 }
 
-
-
                 using (var tx = keeper.BeginTransaction())
                 {
                     using (var cmd = keeper.CreateCommand())
@@ -893,15 +843,12 @@ CREATE TABLE IF NOT EXISTS MealPlan (
                     tx.Commit();
                 }
 
-
                 var mockConfig = new Mock<IDbConfig>();
                 mockConfig.SetupGet(m => m.ConnectionString).Returns(connectionString);
 
                 var repo = new MealPlanRepository(mockConfig.Object);
 
-
                 var result = await repo.GetMealsForMealPlan(42);
-
 
                 result.Should().NotBeNull();
                 result.Should().HaveCount(1, "one meal is linked to the seeded meal plan");
@@ -921,7 +868,6 @@ CREATE TABLE IF NOT EXISTS MealPlan (
                 meal.Protein.Should().Be(15);
                 meal.Carbs.Should().Be(30);
                 meal.Fat.Should().Be(8);
-
 
             }
         }
@@ -987,10 +933,8 @@ CREATE TABLE IF NOT EXISTS MealPlan (
 
                 var result = await repo.GetMealsForMealPlan(planId);
 
-
                 result.Should().NotBeNull();
                 result.Should().BeEmpty("no MealPlanMeal rows exist that reference the provided plan id");
-
 
             }
         }
@@ -999,15 +943,12 @@ CREATE TABLE IF NOT EXISTS MealPlan (
         [MemberData(nameof(UpdateCases))]
         public async Task Update_WithVariousIdsAndGoalTypes_UpdatesDatabase(int id, string goalType)
         {
-
             string connString = "Data Source=mealplan_update_shared;Mode=Memory;Cache=Shared";
             var dbConfigMock = new Mock<IDbConfig>();
             dbConfigMock.SetupGet(d => d.ConnectionString).Returns(connString);
 
-
             using var keepAlive = new SqliteConnection(connString);
             await keepAlive.OpenAsync();
-
 
             using (var createCmd = keepAlive.CreateCommand())
             {
@@ -1043,12 +984,9 @@ CREATE TABLE IF NOT EXISTS MealPlan (
                 GoalType = goalType
             };
 
-
             Func<Task> act = async () => await repo.Update(entity);
 
-
             await act.Should().NotThrowAsync();
-
 
             using (var verifyCmd = keepAlive.CreateCommand())
             {
@@ -1069,11 +1007,9 @@ CREATE TABLE IF NOT EXISTS MealPlan (
         [Fact]
         public async Task Update_WhenTableMissing_ThrowsSqliteException()
         {
-
             string connString = "Data Source=mealplan_missing_table;Mode=Memory;Cache=Shared";
             var dbConfigMock = new Mock<IDbConfig>();
             dbConfigMock.SetupGet(d => d.ConnectionString).Returns(connString);
-
 
             using var keepAlive = new SqliteConnection(connString);
             await keepAlive.OpenAsync();
@@ -1088,24 +1024,19 @@ CREATE TABLE IF NOT EXISTS MealPlan (
                 GoalType = "goal"
             };
 
-
             Func<Task> act = async () => await repo.Update(entity);
-
 
             await act.Should().ThrowAsync<SqliteException>();
         }
         private static string CreateSharedInMemoryDatabase(Func<SqliteConnection, Task> initializer, out SqliteConnection masterConnection, string dbName = "TestDb")
         {
-
             var connectionString = $"Data Source={dbName};Mode=Memory;Cache=Shared";
             masterConnection = new SqliteConnection(connectionString);
             masterConnection.Open();
 
-
             using var cmd = masterConnection.CreateCommand();
             cmd.CommandText = "PRAGMA foreign_keys = ON;";
             cmd.ExecuteNonQuery();
-
 
             initializer(masterConnection).GetAwaiter().GetResult();
 
@@ -1210,7 +1141,6 @@ CREATE TABLE IF NOT EXISTS MealPlan (
         [Fact]
         public async Task GeneratePersonalizedDailyMealPlan_NoMeals_ThrowsGenerationFailedException()
         {
-
             var connectionString = CreateSharedInMemoryDatabase(async conn =>
             {
                 await InitializeSchemaAsync(conn);
@@ -1221,9 +1151,7 @@ CREATE TABLE IF NOT EXISTS MealPlan (
             {
                 var repo = CreateRepositoryWithConnectionString(connectionString);
 
-
                 Func<Task> act = async () => await repo.GeneratePersonalizedDailyMealPlan(1);
-
 
                 await act.Should()
                     .ThrowAsync<Exception>()
@@ -1238,15 +1166,12 @@ CREATE TABLE IF NOT EXISTS MealPlan (
         [Fact]
         public async Task GeneratePersonalizedDailyMealPlan_TwoMeals_ThrowsNotEnoughMealsException()
         {
-
             var connectionString = CreateSharedInMemoryDatabase(async conn =>
             {
                 await InitializeSchemaAsync(conn);
 
-
                 await InsertMealWithIngredientAsync(conn, mealId: 1, foodId: 101, caloriesPer100g: 500, proteinPer100g: 10, carbsPer100g: 20, fatPer100g: 5, quantity: 100);
                 await InsertMealWithIngredientAsync(conn, mealId: 2, foodId: 102, caloriesPer100g: 600, proteinPer100g: 12, carbsPer100g: 25, fatPer100g: 6, quantity: 100);
-
 
             }, out var masterConn, dbName: Guid.NewGuid().ToString());
 
@@ -1254,9 +1179,7 @@ CREATE TABLE IF NOT EXISTS MealPlan (
             {
                 var repo = CreateRepositoryWithConnectionString(connectionString);
 
-
                 Func<Task> act = async () => await repo.GeneratePersonalizedDailyMealPlan(userId: 1);
-
 
                 await act.Should()
                     .ThrowAsync<Exception>()
@@ -1272,14 +1195,12 @@ CREATE TABLE IF NOT EXISTS MealPlan (
         [Trait("Category", "ProductionBugSuspected")]
         public async Task GeneratePersonalizedDailyMealPlan_ThreeMeals_SucceedsAndInsertsMealPlanMeals()
         {
-
             var connectionString = CreateSharedInMemoryDatabase(async conn =>
             {
                 await InitializeSchemaAsync(conn);
                 await InsertMealWithIngredientAsync(conn, mealId: 1, foodId: 201, caloriesPer100g: 700, proteinPer100g: 10, carbsPer100g: 20, fatPer100g: 5, quantity: 100);
                 await InsertMealWithIngredientAsync(conn, mealId: 2, foodId: 202, caloriesPer100g: 600, proteinPer100g: 12, carbsPer100g: 25, fatPer100g: 6, quantity: 100);
                 await InsertMealWithIngredientAsync(conn, mealId: 3, foodId: 203, caloriesPer100g: 800, proteinPer100g: 15, carbsPer100g: 30, fatPer100g: 8, quantity: 100);
-
 
                 using var udCmd = conn.CreateCommand();
                 udCmd.CommandText = "INSERT INTO UserData (user_id, calorie_needs, protein_needs, carb_needs, fat_needs, goal) VALUES (@uid, 0, 0, 0, 0, NULL);";
@@ -1291,12 +1212,9 @@ CREATE TABLE IF NOT EXISTS MealPlan (
             {
                 var repo = CreateRepositoryWithConnectionString(connectionString);
 
-
                 var resultId = await repo.GeneratePersonalizedDailyMealPlan(userId: 42);
 
-
                 resultId.Should().BeGreaterThan(0);
-
 
                 using var verifyConn = new SqliteConnection(connectionString);
                 await verifyConn.OpenAsync();
@@ -1306,7 +1224,6 @@ CREATE TABLE IF NOT EXISTS MealPlan (
                 var countScalar = await verifyCmd.ExecuteScalarAsync();
                 var insertedCount = Convert.ToInt32(countScalar);
                 insertedCount.Should().Be(3);
-
 
                 using var planCmd = verifyConn.CreateCommand();
                 planCmd.CommandText = "SELECT goal_type, user_id FROM MealPlan WHERE mealplan_id = @pid;";
@@ -1329,12 +1246,9 @@ CREATE TABLE IF NOT EXISTS MealPlan (
         [InlineData(2)]
         public async Task GetAll_VariousRowCounts_ReturnsExpectedResults(int rowCount)
         {
-
-
             const string connectionString = "Data Source=MealPlanRepoTests_InMemory;Mode=Memory;Cache=Shared";
             using var keeper = new SqliteConnection(connectionString);
             await keeper.OpenAsync();
-
 
             using (var createCmd = keeper.CreateCommand())
             {
@@ -1353,7 +1267,6 @@ CREATE TABLE IF NOT EXISTS MealPlan (
 
             if (rowCount == 2)
             {
-
                 using (var ins = keeper.CreateCommand())
                 {
                     ins.CommandText = "INSERT INTO MealPlan (mealplan_id, user_id, created_at, goal_type) VALUES (@id, @uid, @created, @goal);";
@@ -1380,18 +1293,14 @@ CREATE TABLE IF NOT EXISTS MealPlan (
 
             var repository = new MealPlanRepository(dbConfigMock.Object);
 
-
             var result = (await repository.GetAll()).ToList();
-
 
             if (rowCount == 0)
             {
-
                 result.Should().BeEmpty();
             }
             else
             {
-
                 result.Should().HaveCount(2);
 
                 var expected = new List<MealPlan>
@@ -1415,13 +1324,11 @@ CREATE TABLE IF NOT EXISTS MealPlan (
                 result.Should().BeEquivalentTo(expected, options => options.WithoutStrictOrdering());
             }
 
-
         }
 
         [Fact]
         public async Task GetAll_RowWithNullOrEmptyGoalType_MapsGoalTypeToEmptyString()
         {
-
             const string connectionString = "Data Source=MealPlanRepoTests_GoalType;Mode=Memory;Cache=Shared";
             using var keeper = new SqliteConnection(connectionString);
             await keeper.OpenAsync();
@@ -1456,9 +1363,7 @@ CREATE TABLE IF NOT EXISTS MealPlan (
 
             var repository = new MealPlanRepository(dbConfigMock.Object);
 
-
             var result = (await repository.GetAll()).ToList();
-
 
             result.Should().HaveCount(1);
             var single = result.Single();
@@ -1466,7 +1371,6 @@ CREATE TABLE IF NOT EXISTS MealPlan (
             single.UserId.Should().Be(7);
 
             single.CreatedAt.Should().Be(createdAt);
-
 
             single.GoalType.Should().Be(string.Empty);
         }
@@ -1477,12 +1381,10 @@ CREATE TABLE IF NOT EXISTS MealPlan (
         [InlineData(int.MaxValue)]
         public async Task GetTodaysMealPlan_WithMultipleTodayEntries_ReturnsMostRecentMealPlan(int userId)
         {
-
             string connectionString = "Data Source=:memory:;Cache=Shared";
 
             await using var persistent = new SqliteConnection(connectionString);
             await persistent.OpenAsync();
-
 
             var createTableCmd = persistent.CreateCommand();
             createTableCmd.CommandText = @"
@@ -1494,11 +1396,9 @@ CREATE TABLE IF NOT EXISTS MealPlan (
                 );";
             await createTableCmd.ExecuteNonQueryAsync();
 
-
             DateTime now = DateTime.Now;
             string older = now.AddHours(-2).ToString("yyyy-MM-dd HH:mm:ss");
             string newer = now.AddHours(-1).ToString("yyyy-MM-dd HH:mm:ss");
-
 
             var insertOlder = persistent.CreateCommand();
             insertOlder.CommandText = "INSERT INTO MealPlan (user_id, created_at, goal_type) VALUES ($uid, $created, $goal);";
@@ -1507,7 +1407,6 @@ CREATE TABLE IF NOT EXISTS MealPlan (
             insertOlder.Parameters.AddWithValue("$goal", "olderGoal");
             await insertOlder.ExecuteNonQueryAsync();
 
-
             var insertNewer = persistent.CreateCommand();
             insertNewer.CommandText = "INSERT INTO MealPlan (user_id, created_at, goal_type) VALUES ($uid, $created, $goal);";
             insertNewer.Parameters.AddWithValue("$uid", userId);
@@ -1515,15 +1414,12 @@ CREATE TABLE IF NOT EXISTS MealPlan (
             insertNewer.Parameters.AddWithValue("$goal", "newerGoal");
             await insertNewer.ExecuteNonQueryAsync();
 
-
             var dbConfigMock = new Mock<IDbConfig>(MockBehavior.Strict);
             dbConfigMock.SetupGet(m => m.ConnectionString).Returns(connectionString);
 
             var repo = new MealPlanRepository(dbConfigMock.Object);
 
-
             MealPlan? result = await repo.GetTodaysMealPlan(userId);
-
 
             result.Should().NotBeNull();
             result!.UserId.Should().Be(userId);
@@ -1533,7 +1429,6 @@ CREATE TABLE IF NOT EXISTS MealPlan (
 
             result.Id.Should().BeGreaterThan(0);
 
-
         }
 
         [Theory]
@@ -1542,7 +1437,6 @@ CREATE TABLE IF NOT EXISTS MealPlan (
         [InlineData(int.MaxValue)]
         public async Task GetTodaysMealPlan_NoEntryForToday_ReturnsNull(int userId)
         {
-
             string connectionString = "Data Source=:memory:;Cache=Shared";
             await using var persistent = new SqliteConnection(connectionString);
             await persistent.OpenAsync();
@@ -1556,7 +1450,6 @@ CREATE TABLE IF NOT EXISTS MealPlan (
                     goal_type TEXT
                 );";
             await createTableCmd.ExecuteNonQueryAsync();
-
 
             DateTime yesterday = DateTime.Now.AddDays(-1);
             string yesterdayStr = yesterday.ToString("yyyy-MM-dd HH:mm:ss");

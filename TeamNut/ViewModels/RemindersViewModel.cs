@@ -10,6 +10,9 @@ using TeamNut.Services;
 using TeamNut.Services.Interfaces;
 namespace TeamNut.ViewModels
 {
+    /// <summary>
+    /// RemindersViewModel.
+    /// </summary>
     public partial class RemindersViewModel : ObservableObject, IDisposable
     {
         private bool disposed;

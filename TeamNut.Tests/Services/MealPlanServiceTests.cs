@@ -15,7 +15,7 @@ namespace TeamNut.Tests.Services
 
         public MealPlanServiceTests()
         {
-            service = new MealPlanService(null, null, null);
+            service = new MealPlanService(null!, null!, null!);
         }
 
         [Fact]
@@ -52,7 +52,7 @@ namespace TeamNut.Tests.Services
         [Fact]
         public void CalculateTotalNutrition_WithNullList_ReturnsZeros()
         {
-            var result = service.CalculateTotalNutrition(null);
+            var result = service.CalculateTotalNutrition(null!);
 
             result.totalCalories.Should().Be(0);
             result.totalProtein.Should().Be(0);
@@ -161,7 +161,7 @@ namespace TeamNut.Tests.Services
         [InlineData("well-being", "🧘")]
         [InlineData("invalid", "🎯")]
         [InlineData(null, "🎯")]
-        public void GetGoalEmoji_WithVariousGoals_ReturnsCorrectEmoji(string goal, string expected)
+        public void GetGoalEmoji_WithVariousGoals_ReturnsCorrectEmoji(string? goal, string expected)
         {
             var result = service.GetGoalEmoji(goal);
 
@@ -241,7 +241,7 @@ namespace TeamNut.Tests.Services
         [Fact]
         public void GetCalorieAdjustmentDescription_WithNullGoal_ReturnsNoAdjustment()
         {
-            var result = service.GetCalorieAdjustmentDescription(null, 2000);
+            var result = service.GetCalorieAdjustmentDescription(null!, 2000);
 
             result.Should().Contain("No adjustment");
         }

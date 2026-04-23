@@ -9,6 +9,9 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace TeamNut
 {
+    /// <summary>
+    /// MealsPage.
+    /// </summary>
     public sealed partial class MealsPage : Page
     {
         private MealSearchViewModel ViewModel { get; }
@@ -28,7 +31,7 @@ namespace TeamNut
         public MealsPage()
         {
             InitializeComponent();
-            ViewModel = App.Services.GetService<MealSearchViewModel>();
+            ViewModel = App.Services.GetRequiredService<MealSearchViewModel>();
             DataContext = ViewModel;
 
             Loaded += (s, e) => BtnSearch_Click(this, new RoutedEventArgs());

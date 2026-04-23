@@ -10,6 +10,9 @@ using TeamNut.Services.Interfaces;
 
 namespace TeamNut.ViewModels
 {
+    /// <summary>
+    /// UserViewModel.
+    /// </summary>
     public partial class UserViewModel : ObservableObject
     {
         private const string RoleNutritionist = "Nutritionist";

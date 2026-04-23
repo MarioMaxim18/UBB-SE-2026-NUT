@@ -12,6 +12,9 @@ using TeamNut.Services;
 
 namespace TeamNut.ViewModels
 {
+    /// <summary>
+    /// NutritionistChatViewModel.
+    /// </summary>
     public partial class NutritionistChatViewModel : ObservableObject
     {
         private readonly IChatService chatService;

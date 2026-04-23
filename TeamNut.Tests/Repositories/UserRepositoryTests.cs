@@ -419,7 +419,7 @@ LIMIT 1;";
                     {
                         cmd.CommandText = "SELECT COUNT(1) FROM Users WHERE id = @id;";
                         cmd.Parameters.AddWithValue("@id", 42);
-                        var result = (long)await cmd.ExecuteScalarAsync();
+                        var result = (long)(await cmd.ExecuteScalarAsync() ?? 0L);
                         result.Should().Be(0);
                     }
                 }
@@ -483,7 +483,7 @@ LIMIT 1;";
                     {
                         cmd.CommandText = "SELECT COUNT(1) FROM Users WHERE id = @id;";
                         cmd.Parameters.AddWithValue("@id", 1);
-                        var result = (long)await cmd.ExecuteScalarAsync();
+                        var result = (long)(await cmd.ExecuteScalarAsync() ?? 0L);
                         result.Should().Be(1);
                     }
                 }
@@ -587,7 +587,7 @@ LIMIT 1;";
         public static IEnumerable<object[]> InvalidCredentialsData()
         {
             yield return new object[] { "jdoe", "wrong" };
-            yield return new object[] { "", "secret" };
+            yield return new object[] { string.Empty, "secret" };
             yield return new object[] { "   ", "secret" };
             yield return new object[] { new string('a', 1000), "secret" };
             yield return new object[] { "jdoe", "' OR '1'='1" };
@@ -699,7 +699,7 @@ LIMIT 1;";
                 insertCmd.ExecuteNonQuery();
 
                 insertCmd.CommandText = "SELECT last_insert_rowid();";
-                insertedId = (long)insertCmd.ExecuteScalar();
+                insertedId = (long)(insertCmd.ExecuteScalar() ?? 0L);
             }
 
             var dbConfigMock = new Mock<IDbConfig>();
@@ -775,7 +775,7 @@ LIMIT 1;";
         public async Task GetAll_ConnectionStringNullOrEmpty_ThrowsInvalidOperationException(string? connectionString)
         {
             var dbConfigMock = new Mock<IDbConfig>();
-            dbConfigMock.Setup(c => c.ConnectionString).Returns(connectionString);
+            dbConfigMock.Setup(c => c.ConnectionString).Returns(connectionString ?? string.Empty);
             var repo = new UserRepository(dbConfigMock.Object);
 
             Func<Task> act = async () => await repo.GetAll();
@@ -937,9 +937,9 @@ LIMIT 1;";
         public static IEnumerable<object[]> UserRecords()
         {
             yield return new object[] { 0, "normalUser", "p@ssw0rd", "admin" };
-            yield return new object[] { int.MinValue, "user\nnewline", "", " " };
+            yield return new object[] { int.MinValue, "user\nnewline", string.Empty, " " };
             yield return new object[] { int.MaxValue, new string('x', 1001), "pässwörd", "role-with-special-©" };
-            yield return new object[] { -42, "", "\u0001control", "user" };
+            yield return new object[] { -42, string.Empty, "\u0001control", "user" };
         }
 
         [Theory]

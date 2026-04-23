@@ -18,7 +18,7 @@ namespace TeamNut.Tests.Services
         [Fact]
         public void GetPage_WithNullItems_ReturnsEmptyList()
         {
-            var result = service.GetPage<int>(null, 1, 10);
+            var result = service.GetPage<int>(null!, 1, 10);
 
             result.Should().BeEmpty();
         }

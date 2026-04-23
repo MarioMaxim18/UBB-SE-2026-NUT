@@ -211,7 +211,7 @@ namespace TeamNut.Tests.Services
                 Goal = "maintenance"
             };
 
-            service.ApplyCalculations(userData, null);
+            service.ApplyCalculations(userData, null!);
 
             userData.Bmi.Should().Be(23);
             userData.CalorieNeeds.Should().BeGreaterThan(0);
@@ -240,7 +240,7 @@ namespace TeamNut.Tests.Services
         [Fact]
         public void ApplyCalculations_WithNullUserData_DoesNotThrow()
         {
-            Action act = () => service.ApplyCalculations(null, null);
+            Action act = () => service.ApplyCalculations(null!, null!);
 
             act.Should().NotThrow();
         }

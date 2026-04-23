@@ -6,7 +6,7 @@ namespace TeamNut.Services.Interfaces
 {
     public interface IShoppingListService
     {
-        Task<ShoppingItem> AddItemAsync(string itemName, int userId, double quantity = 0);
+        Task<ShoppingItem?> AddItemAsync(string itemName, int userId, double quantity = 0);
         Task<int> GenerateListAsync(int userId);
         Task<List<ShoppingItem>> GetShoppingItemsAsync(int userId);
         Task<bool> MoveToPantryAsync(ShoppingItem item);
