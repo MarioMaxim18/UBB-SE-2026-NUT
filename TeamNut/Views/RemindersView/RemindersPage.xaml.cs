@@ -1,7 +1,3 @@
-// <copyright file="RemindersPage.xaml.cs" company="TeamNut">
-// Copyright (c) TeamNut. All rights reserved.
-// </copyright>
-
 namespace TeamNut.Views.RemindersView
 {
     using System;

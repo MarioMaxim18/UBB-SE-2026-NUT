@@ -1,7 +1,3 @@
-// <copyright file="InventoryService.cs" company="TeamNut">
-// Copyright (c) TeamNut. All rights reserved.
-// </copyright>
-
 namespace TeamNut.Services
 {
     using System;

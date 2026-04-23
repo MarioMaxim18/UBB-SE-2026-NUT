@@ -1,7 +1,3 @@
-// <copyright file="Reminder.cs" company="TeamNut">
-// Copyright (c) TeamNut. All rights reserved.
-// </copyright>
-
 namespace TeamNut.Models
 {
     using System;

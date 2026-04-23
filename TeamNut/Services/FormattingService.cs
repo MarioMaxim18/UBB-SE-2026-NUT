@@ -1,7 +1,3 @@
-// <copyright file="FormattingService.cs" company="TeamNut">
-// Copyright (c) TeamNut. All rights reserved.
-// </copyright>
-
 namespace TeamNut.Services
 {
     using TeamNut.Services.Interfaces;

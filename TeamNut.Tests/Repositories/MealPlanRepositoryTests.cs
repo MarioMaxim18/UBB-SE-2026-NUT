@@ -1,7 +1,3 @@
-﻿// <copyright file="MealPlanRepositoryTests.cs" company="TeamNut">
-// Copyright (c) TeamNut. All rights reserved.
-// </copyright>
-
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;

@@ -1,7 +1,3 @@
-// <copyright file="App.xaml.cs" company="TeamNut">
-// Copyright (c) TeamNut. All rights reserved.
-// </copyright>
-
 namespace TeamNut
 {
     using System;

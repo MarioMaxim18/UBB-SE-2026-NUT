@@ -1,7 +1,3 @@
-// <copyright file="CalorieLoggingPage.xaml.cs" company="TeamNut">
-// Copyright (c) TeamNut. All rights reserved.
-// </copyright>
-
 namespace TeamNut.Views.CalorieLoggingView
 {
     using Microsoft.UI.Xaml;

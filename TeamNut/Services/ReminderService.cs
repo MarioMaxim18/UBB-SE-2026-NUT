@@ -1,7 +1,3 @@
-// <copyright file="ReminderService.cs" company="TeamNut">
-// Copyright (c) TeamNut. All rights reserved.
-// </copyright>
-
 namespace TeamNut.Services
 {
     using System;

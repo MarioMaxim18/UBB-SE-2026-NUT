@@ -1,7 +1,3 @@
-// <copyright file="MealViewModel.cs" company="TeamNut">
-// Copyright (c) TeamNut. All rights reserved.
-// </copyright>
-
 namespace TeamNut.Views.MealPlanView
 {
     using System.Collections.Generic;

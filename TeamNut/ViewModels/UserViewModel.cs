@@ -1,7 +1,3 @@
-// <copyright file="UserViewModel.cs" company="TeamNut">
-// Copyright (c) TeamNut. All rights reserved.
-// </copyright>
-
 namespace TeamNut.ViewModels
 {
     using System;

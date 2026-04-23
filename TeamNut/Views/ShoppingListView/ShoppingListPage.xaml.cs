@@ -1,7 +1,3 @@
-// <copyright file="ShoppingListPage.xaml.cs" company="TeamNut">
-// Copyright (c) TeamNut. All rights reserved.
-// </copyright>
-
 namespace TeamNut.Views.ShoppingListView
 {
     using System;

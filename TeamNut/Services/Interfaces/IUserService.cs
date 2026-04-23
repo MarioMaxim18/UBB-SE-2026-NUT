@@ -1,7 +1,3 @@
-// <copyright file="IUserService.cs" company="TeamNut">
-// Copyright (c) TeamNut. All rights reserved.
-// </copyright>
-
 ﻿using System;
 using System.Threading.Tasks;
 using TeamNut.Models;

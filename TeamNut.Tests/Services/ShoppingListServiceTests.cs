@@ -1,7 +1,3 @@
-// <copyright file="ShoppingListServiceTests.cs" company="TeamNut">
-// Copyright (c) TeamNut. All rights reserved.
-// </copyright>
-
 ﻿namespace TeamNut.Tests.Services
 {
     using System.Collections.Generic;

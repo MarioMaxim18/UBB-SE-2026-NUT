@@ -1,7 +1,3 @@
-// <copyright file="NutritionistChatPage.xaml.cs" company="TeamNut">
-// Copyright (c) TeamNut. All rights reserved.
-// </copyright>
-
 namespace TeamNut.Views.NutritionistChat
 {
     using System;

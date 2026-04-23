@@ -1,7 +1,3 @@
-// <copyright file="UserView.xaml.cs" company="TeamNut">
-// Copyright (c) TeamNut. All rights reserved.
-// </copyright>
-
 namespace TeamNut.Views.UserView
 {
     using Microsoft.UI.Xaml.Controls;

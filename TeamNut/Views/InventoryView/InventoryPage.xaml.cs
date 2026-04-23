@@ -1,7 +1,3 @@
-// <copyright file="InventoryPage.xaml.cs" company="TeamNut">
-// Copyright (c) TeamNut. All rights reserved.
-// </copyright>
-
 namespace TeamNut.Views.InventoryView
 {
     using Microsoft.Extensions.DependencyInjection;

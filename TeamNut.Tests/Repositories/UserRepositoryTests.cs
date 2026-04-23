@@ -1,7 +1,3 @@
-﻿// <copyright file="UserRepositoryTests.cs" company="TeamNut">
-// Copyright (c) TeamNut. All rights reserved.
-// </copyright>
-
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;

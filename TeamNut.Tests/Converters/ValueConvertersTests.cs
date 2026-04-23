@@ -1,7 +1,3 @@
-// <copyright file="ValueConvertersTests.cs" company="TeamNut">
-// Copyright (c) TeamNut. All rights reserved.
-// </copyright>
-
 using FluentAssertions;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;

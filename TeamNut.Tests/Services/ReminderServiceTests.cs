@@ -1,7 +1,3 @@
-// <copyright file="ReminderServiceTests.cs" company="TeamNut">
-// Copyright (c) TeamNut. All rights reserved.
-// </copyright>
-
 ﻿using System.Threading.Tasks;
 using FluentAssertions;
 using NSubstitute;

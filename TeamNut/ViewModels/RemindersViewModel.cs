@@ -1,7 +1,3 @@
-// <copyright file="RemindersViewModel.cs" company="TeamNut">
-// Copyright (c) TeamNut. All rights reserved.
-// </copyright>
-
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Linq;

@@ -1,7 +1,3 @@
-// <copyright file="MainViewModel.cs" company="TeamNut">
-// Copyright (c) TeamNut. All rights reserved.
-// </copyright>
-
 ﻿using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using TeamNut.Models;

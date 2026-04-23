@@ -1,7 +1,3 @@
-// <copyright file="UserDataTests.cs" company="TeamNut">
-// Copyright (c) TeamNut. All rights reserved.
-// </copyright>
-
 ﻿using System;
 using FluentAssertions;
 using TeamNut.Models;

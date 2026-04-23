@@ -1,7 +1,3 @@
-// <copyright file="UserDataNutritionPersistenceIntegrationTests.cs" company="TeamNut">
-// Copyright (c) TeamNut. All rights reserved.
-// </copyright>
-
 using System;
 using System.IO;
 using System.Threading.Tasks;

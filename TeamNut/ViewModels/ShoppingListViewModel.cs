@@ -1,7 +1,3 @@
-// <copyright file="ShoppingListViewModel.cs" company="TeamNut">
-// Copyright (c) TeamNut. All rights reserved.
-// </copyright>
-
 namespace TeamNut.ViewModels
 {
     using System.Collections.Generic;

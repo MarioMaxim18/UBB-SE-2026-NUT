@@ -1,7 +1,3 @@
-// <copyright file="FormattingServiceTests.cs" company="TeamNut">
-// Copyright (c) TeamNut. All rights reserved.
-// </copyright>
-
 ﻿using FluentAssertions;
 using TeamNut.Services;
 using Xunit;

@@ -1,7 +1,3 @@
-// <copyright file="MealFilter.cs" company="TeamNut">
-// Copyright (c) TeamNut. All rights reserved.
-// </copyright>
-
 namespace TeamNut.Models
 {
     using CommunityToolkit.Mvvm.ComponentModel;

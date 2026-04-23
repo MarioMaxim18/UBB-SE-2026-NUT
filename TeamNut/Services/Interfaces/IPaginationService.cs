@@ -1,7 +1,3 @@
-// <copyright file="IPaginationService.cs" company="TeamNut">
-// Copyright (c) TeamNut. All rights reserved.
-// </copyright>
-
 namespace TeamNut.Services.Interfaces
 {
     using System.Collections.Generic;

@@ -1,7 +1,3 @@
-// <copyright file="PaginationServiceTests.cs" company="TeamNut">
-// Copyright (c) TeamNut. All rights reserved.
-// </copyright>
-
 ﻿using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;

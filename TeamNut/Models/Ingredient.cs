@@ -1,7 +1,3 @@
-// <copyright file="Ingredient.cs" company="TeamNut">
-// Copyright (c) TeamNut. All rights reserved.
-// </copyright>
-
 namespace TeamNut.Models
 {
     /// <summary>Represents a food ingredient with nutritional values per 100g.</summary>
