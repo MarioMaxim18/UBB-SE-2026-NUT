@@ -569,7 +569,7 @@ CREATE TABLE IF NOT EXISTS MealPlan (
             await act.Should().ThrowAsync<SqliteException>();
         }
 
-        [Theory(Skip = "Cannot execute: MealPlanRepository creates concrete SqliteConnection/SqliteCommand/SqliteDataReader internally. Refactor required to inject an abstraction for DB operations to enable mocking.")]
+        [Theory]
         [InlineData(int.MinValue)]
         [InlineData(-1)]
         [InlineData(0)]
@@ -577,9 +577,29 @@ CREATE TABLE IF NOT EXISTS MealPlan (
         [InlineData(int.MaxValue)]
         public async Task GetById_IdVarious_NoRows_ReturnsNull(int id)
         {
+            string connectionString = $"Data Source=MealPlanGetByIdNoRows_{Guid.NewGuid():N};Mode=Memory;Cache=Shared";
+            await using var persistent = new SqliteConnection(connectionString);
+            await persistent.OpenAsync();
+
+            await using (var createCmd = persistent.CreateCommand())
+            {
+                createCmd.CommandText = @"
+                    CREATE TABLE MealPlan (
+                        mealplan_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        user_id INTEGER NOT NULL,
+                        created_at TEXT NOT NULL,
+                        goal_type TEXT
+                    );";
+                await createCmd.ExecuteNonQueryAsync();
+            }
+
             var dbConfigMock = new Mock<IDbConfig>();
-            dbConfigMock.SetupGet(x => x.ConnectionString).Returns("Data Source=:memory:");
+            dbConfigMock.SetupGet(x => x.ConnectionString).Returns(connectionString);
             var repository = new MealPlanRepository(dbConfigMock.Object);
+
+            var result = await repository.GetById(id);
+
+            result.Should().BeNull();
         }
         [Fact]
         public async Task GetById_RowExists_ReturnsMappedMealPlan()
@@ -1266,7 +1286,7 @@ CREATE TABLE IF NOT EXISTS MealPlan (
             }
         }
 
-        [Fact(Skip="ProductionBugSuspected")]
+        [Fact]
         [Trait("Category", "ProductionBugSuspected")]
         public async Task GeneratePersonalizedDailyMealPlan_ThreeMeals_SucceedsAndInsertsMealPlanMeals()
         {
