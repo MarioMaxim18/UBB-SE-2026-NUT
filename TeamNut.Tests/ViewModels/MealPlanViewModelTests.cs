@@ -25,18 +25,20 @@
             var existingPlan = new MealPlan { Id = 15 };
             var meals = new List<Meal>
             {
-                new Meal { Calories = 400, Protein = 30, Carbs = 40, Fat = 15 },
+                new Meal { Id = 1, Name = "Breakfast", Calories = 400, Protein = 30, Carbs = 40, Fat = 15 },
             };
 
             UserSession.Login(1, "TestUser", "User");
 
-            mealPlanService.GetTodaysMealPlanAsync(Arg.Any<int>()).Returns(Task.FromResult<MealPlan?>(existingPlan));
-            mealPlanService.GetMealsForMealPlanAsync(15).Returns(Task.FromResult(meals));
+            mealPlanService.GetTodaysMealPlanAsync(Arg.Any<int>()).Returns(Task.FromResult(existingPlan));
+            mealPlanService.GetMealsForMealPlanAsync(Arg.Any<int>()).Returns(Task.FromResult(new List<Meal>(meals)));
             mealPlanService.GetUserGoalAsync(Arg.Any<int>()).Returns(Task.FromResult("maintenance"));
 
             await vm.LoadOrGenerateTodaysMealPlanAsync();
 
-            Assert.True(vm.HasMeals);
+            await mealPlanService.Received(1).GetTodaysMealPlanAsync(Arg.Any<int>());
+            await mealPlanService.Received(1).GetMealsForMealPlanAsync(15);
+            await mealPlanService.Received(1).GetUserGoalAsync(Arg.Any<int>());
             Assert.Equal(15, vm.CurrentMealPlanId);
             Assert.Single(vm.GeneratedMeals);
             Assert.Equal(400, vm.TotalCalories);
@@ -51,10 +53,10 @@
             var generatedMeals = new List<Meal> { new Meal { Id = 5 } };
 
             UserSession.Login(1, "TestUser", "User");
-            mealPlanService.GetTodaysMealPlanAsync(1).Returns(Task.FromResult<MealPlan?>(null));
+            mealPlanService.GetTodaysMealPlanAsync(1).Returns(Task.FromResult<MealPlan>(null!));
             mealPlanService.GeneratePersonalizedMealPlanAsync(1).Returns(20);
-            mealPlanService.GetMealsForMealPlanAsync(20).Returns(generatedMeals);
-            mealPlanService.GetUserGoalAsync(1).Returns("muscle");
+            mealPlanService.GetMealsForMealPlanAsync(20).Returns(Task.FromResult(new List<Meal>(generatedMeals)));
+            mealPlanService.GetUserGoalAsync(1).Returns(Task.FromResult("muscle"));
 
             await vm.LoadOrGenerateTodaysMealPlanAsync();
 
@@ -74,8 +76,8 @@
 
             UserSession.Login(1, "TestUser", "User");
             mealPlanService.GeneratePersonalizedMealPlanAsync(1).Returns(25);
-            mealPlanService.GetMealsForMealPlanAsync(25).Returns(generatedMeals);
-            mealPlanService.GetUserGoalAsync(1).Returns("cut");
+            mealPlanService.GetMealsForMealPlanAsync(25).Returns(Task.FromResult(new List<Meal>(generatedMeals)));
+            mealPlanService.GetUserGoalAsync(1).Returns(Task.FromResult("cut"));
 
             await vm.ForceRegenerateMealPlanAsync();
 

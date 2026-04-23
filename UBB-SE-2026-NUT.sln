@@ -6,6 +6,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TeamNut", "TeamNut\TeamNut.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TeamNut.IntegrationTests", "TeamNut.IntegrationTests\TeamNut.IntegrationTests.csproj", "{9CA6E063-7EA6-4F4C-9578-454A6F68599C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TeamNut.Tests", "TeamNut.Tests\TeamNut.Tests.csproj", "{3B45691F-8976-4272-B4F8-6DBCD2E76D32}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -20,6 +22,10 @@ Global
 		{9CA6E063-7EA6-4F4C-9578-454A6F68599C}.Debug|x64.Build.0 = Debug|x64
 		{9CA6E063-7EA6-4F4C-9578-454A6F68599C}.Release|x64.ActiveCfg = Release|x64
 		{9CA6E063-7EA6-4F4C-9578-454A6F68599C}.Release|x64.Build.0 = Release|x64
+		{3B45691F-8976-4272-B4F8-6DBCD2E76D32}.Debug|x64.ActiveCfg = Debug|x64
+		{3B45691F-8976-4272-B4F8-6DBCD2E76D32}.Debug|x64.Build.0 = Debug|x64
+		{3B45691F-8976-4272-B4F8-6DBCD2E76D32}.Release|x64.ActiveCfg = Release|x64
+		{3B45691F-8976-4272-B4F8-6DBCD2E76D32}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

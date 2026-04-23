@@ -14,7 +14,7 @@
     <EnableWindowsTargeting>true</EnableWindowsTargeting>
     <WinUISDKReferences>false</WinUISDKReferences>
     <Nullable>enable</Nullable>
-	<CodeAnalysisRuleSet></CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>SE.ruleset</CodeAnalysisRuleSet>
     <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
     <WindowsPackageType>None</WindowsPackageType>
   </PropertyGroup>
