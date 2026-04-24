@@ -30,12 +30,12 @@ namespace TeamNut.Tests.Services
         {
             var users = new List<User>
             {
-                new User { Username = "JohnDoe" },
-                new User { Username = "JaneDoe" }
+                new User { Username = "PopescuIon" },
+                new User { Username = "MarinescuAna" }
             };
             mockUserRepo.GetAll().Returns(users);
 
-            var result = await service.CheckIfUsernameExistsAsync("JohnDoe");
+            var result = await service.CheckIfUsernameExistsAsync("PopescuIon");
 
             result.Should().BeTrue();
         }
@@ -45,11 +45,11 @@ namespace TeamNut.Tests.Services
         {
             var users = new List<User>
             {
-                new User { Username = "JohnDoe" }
+                new User { Username = "PopescuIon" }
             };
             mockUserRepo.GetAll().Returns(users);
 
-            var result = await service.CheckIfUsernameExistsAsync("Alice");
+            var result = await service.CheckIfUsernameExistsAsync("GheorghescuMaria");
 
             result.Should().BeFalse();
         }
@@ -59,11 +59,11 @@ namespace TeamNut.Tests.Services
         {
             var users = new List<User>
             {
-                new User { Username = "JohnDoe" }
+                new User { Username = "PopescuIon" }
             };
             mockUserRepo.GetAll().Returns(users);
 
-            var result = await service.CheckIfUsernameExistsAsync("johndoe");
+            var result = await service.CheckIfUsernameExistsAsync("popescuion");
 
             result.Should().BeTrue();
         }
@@ -74,26 +74,26 @@ namespace TeamNut.Tests.Services
             var expectedUser = new User
             {
                 Id = 1,
-                Username = "JohnDoe",
-                Password = "Password123",
+                Username = "PopescuIon",
+                Password = "Parola123",
                 Role = "User"
             };
-            mockUserRepo.GetByUsernameAndPassword("JohnDoe", "Password123")
+            mockUserRepo.GetByUsernameAndPassword("PopescuIon", "Parola123")
                 .Returns(expectedUser);
 
-            var result = await service.LoginAsync("JohnDoe", "Password123");
+            var result = await service.LoginAsync("PopescuIon", "Parola123");
 
             result.Should().NotBeNull();
-            result.Username.Should().Be("JohnDoe");
+            result.Username.Should().Be("PopescuIon");
         }
 
         [Fact]
         public async Task LoginAsync_WithInvalidCredentials_ReturnsNull()
         {
-            mockUserRepo.GetByUsernameAndPassword("JohnDoe", "WrongPassword")
+            mockUserRepo.GetByUsernameAndPassword("PopescuIon", "ParolaGresita")
                 .Returns((User?)null);
 
-            var result = await service.LoginAsync("JohnDoe", "WrongPassword");
+            var result = await service.LoginAsync("PopescuIon", "ParolaGresita");
 
             result.Should().BeNull();
         }
@@ -104,8 +104,8 @@ namespace TeamNut.Tests.Services
             var newUser = new User
             {
                 Id = 1,
-                Username = "NewUser",
-                Password = "Password123",
+                Username = "GigelNoul",
+                Password = "Parola123",
                 Role = "User"
             };
             mockUserRepo.GetAll().Returns(new List<User>());
@@ -113,7 +113,7 @@ namespace TeamNut.Tests.Services
             var result = await service.RegisterUserAsync(newUser);
 
             result.Should().NotBeNull();
-            result.Username.Should().Be("NewUser");
+            result.Username.Should().Be("GigelNoul");
             await mockUserRepo.Received(1).Add(Arg.Any<User>());
         }
 
@@ -122,11 +122,11 @@ namespace TeamNut.Tests.Services
         {
             var existingUsers = new List<User>
             {
-                new User { Username = "ExistingUser" }
+                new User { Username = "DorelExistent" }
             };
             mockUserRepo.GetAll().Returns(existingUsers);
 
-            var newUser = new User { Username = "ExistingUser" };
+            var newUser = new User { Username = "DorelExistent" };
 
             var result = await service.RegisterUserAsync(newUser);
 
@@ -186,6 +186,35 @@ namespace TeamNut.Tests.Services
 
             result.Should().NotBeNull();
             result.Weight.Should().Be(75);
+        }
+
+        [Fact]
+        public async Task CheckIfUsernameExistsAsync_WithNullUsernameInDb_DoesNotCrash()
+        {
+            var users = new List<User>
+            {
+                new User { Username = null! },
+                new User { Username = "PopescuIon" }
+            };
+            mockUserRepo.GetAll().Returns(users);
+
+            var result = await service.CheckIfUsernameExistsAsync("PopescuIon");
+
+            result.Should().BeTrue();
+        }
+
+        [Fact]
+        public async Task CheckIfUsernameExistsAsync_WithNullQuery_ReturnsFalse()
+        {
+            var users = new List<User>
+            {
+                new User { Username = "PopescuIon" }
+            };
+            mockUserRepo.GetAll().Returns(users);
+
+            var result = await service.CheckIfUsernameExistsAsync(null!);
+
+            result.Should().BeFalse();
         }
     }
 }

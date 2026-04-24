@@ -20,8 +20,8 @@ namespace TeamNut.Tests.Services
         {
             var user = new User
             {
-                Username = "JohnDoe",
-                Password = "Password123",
+                Username = "PopescuIon",
+                Password = "Parola123",
                 Role = "User"
             };
 
@@ -45,7 +45,7 @@ namespace TeamNut.Tests.Services
             var user = new User
             {
                 Username = "ab",
-                Password = "Password123",
+                Password = "Parola123",
                 Role = "User"
             };
 
