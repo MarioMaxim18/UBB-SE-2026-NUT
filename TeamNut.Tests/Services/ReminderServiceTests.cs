@@ -52,7 +52,7 @@ namespace TeamNut.Tests.Services
 
             var result = await service.SaveReminder(reminder);
 
-            result.Should().Contain("Error");
+            result.Should().Be("Error: Name must be between 1 and 50 characters.");
             await mockRepo.DidNotReceive().Add(Arg.Any<Reminder>());
         }
 
@@ -68,8 +68,7 @@ namespace TeamNut.Tests.Services
 
             var result = await service.SaveReminder(reminder);
 
-            result.Should().Contain("Error");
-            result.Should().Contain("50 characters");
+            result.Should().Be("Error: Name must be between 1 and 50 characters.");
             await mockRepo.DidNotReceive().Add(Arg.Any<Reminder>());
         }
 
