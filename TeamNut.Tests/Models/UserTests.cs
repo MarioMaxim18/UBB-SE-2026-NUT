@@ -12,8 +12,8 @@ namespace TeamNut.Tests.Models
         {
             var user = new User
             {
-                Username = "JohnDoe",
-                Password = "Password123",
+                Username = "PopescuIon",
+                Password = "Parola123",
                 Role = "User"
             };
 
@@ -28,7 +28,7 @@ namespace TeamNut.Tests.Models
             var user = new User
             {
                 Username = string.Empty,
-                Password = "Password123",
+                Password = "Parola123",
                 Role = "User"
             };
 
@@ -44,7 +44,7 @@ namespace TeamNut.Tests.Models
             var user = new User
             {
                 Username = "ab",
-                Password = "Password123",
+                Password = "Parola123",
                 Role = "User"
             };
 
@@ -60,7 +60,7 @@ namespace TeamNut.Tests.Models
             var user = new User
             {
                 Username = new string('a', 31),
-                Password = "Password123",
+                Password = "Parola123",
                 Role = "User"
             };
 
@@ -75,8 +75,8 @@ namespace TeamNut.Tests.Models
         {
             var user = new User
             {
-                Username = "John@Doe",
-                Password = "Password123",
+                Username = "Ion@Popescu",
+                Password = "Parola123",
                 Role = "User"
             };
 
@@ -91,7 +91,7 @@ namespace TeamNut.Tests.Models
         {
             var user = new User
             {
-                Username = "JohnDoe",
+                Username = "PopescuIon",
                 Password = string.Empty,
                 Role = "User"
             };
@@ -107,8 +107,8 @@ namespace TeamNut.Tests.Models
         {
             var user = new User
             {
-                Username = "JohnDoe",
-                Password = "Pass123",
+                Username = "PopescuIon",
+                Password = "Par123",
                 Role = "User"
             };
 
@@ -123,7 +123,7 @@ namespace TeamNut.Tests.Models
         {
             var user = new User
             {
-                Username = "JohnDoe",
+                Username = "PopescuIon",
                 Password = new string('a', 31),
                 Role = "User"
             };
@@ -139,8 +139,8 @@ namespace TeamNut.Tests.Models
         {
             var user = new User
             {
-                Username = "JohnDoe",
-                Password = "Password123",
+                Username = "PopescuIon",
+                Password = "Parola123",
                 Role = "InvalidRole"
             };
 
@@ -157,8 +157,8 @@ namespace TeamNut.Tests.Models
         {
             var user = new User
             {
-                Username = "JohnDoe",
-                Password = "Password123",
+                Username = "PopescuIon",
+                Password = "Parola123",
                 Role = role
             };
 
@@ -184,15 +184,15 @@ namespace TeamNut.Tests.Models
 
         [Theory]
         [InlineData("abc")]
-        [InlineData("JohnDoe123")]
-        [InlineData("User1")]
-        [InlineData("test123")]
+        [InlineData("PopescuIon123")]
+        [InlineData("Nelu1")]
+        [InlineData("gigel123")]
         public void ValidateAndReturnErrors_WithValidAlphanumericUsernames_ReturnsEmptyList(string username)
         {
             var user = new User
             {
                 Username = username,
-                Password = "Password123",
+                Password = "Parola123",
                 Role = "User"
             };
 
