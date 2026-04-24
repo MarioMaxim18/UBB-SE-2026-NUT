@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using FluentAssertions;
 using NSubstitute;
 using TeamNut.Models;
@@ -11,11 +13,17 @@ namespace TeamNut.Tests.Services
 {
     public class MealPlanServiceTests
     {
+        private readonly IMealPlanRepository mockMealPlanRepo;
+        private readonly IUserRepository mockUserRepo;
+        private readonly IReminderService mockReminderService;
         private readonly MealPlanService service;
 
         public MealPlanServiceTests()
         {
-            service = new MealPlanService(null!, null!, null!);
+            mockMealPlanRepo = Substitute.For<IMealPlanRepository>();
+            mockUserRepo = Substitute.For<IUserRepository>();
+            mockReminderService = Substitute.For<IReminderService>();
+            service = new MealPlanService(mockMealPlanRepo, mockUserRepo, mockReminderService);
         }
 
         [Fact]
@@ -295,6 +303,99 @@ namespace TeamNut.Tests.Services
             var result = service.ValidateMealPlan(meals, 2000, 150, 200, 70);
 
             result.Should().BeTrue();
+        }
+
+        [Fact]
+        public async Task GetUserGoalAsync_WithValidGoal_ReturnsNormalizedGoal()
+        {
+            var userData = new UserData { Goal = "Bulk" };
+            mockUserRepo.GetUserDataByUserId(1).Returns(userData);
+
+            var result = await service.GetUserGoalAsync(1);
+
+            result.Should().Be("bulk");
+        }
+
+        [Fact]
+        public async Task GetUserGoalAsync_WithNullUserData_ReturnsMaintenanceDefault()
+        {
+            mockUserRepo.GetUserDataByUserId(1).Returns((UserData?)null);
+
+            var result = await service.GetUserGoalAsync(1);
+
+            result.Should().Be("maintenance");
+        }
+
+        [Fact]
+        public async Task GetUserGoalAsync_WithEmptyStringGoal_ReturnsMaintenanceDefault()
+        {
+            var userData = new UserData { Goal = string.Empty };
+            mockUserRepo.GetUserDataByUserId(1).Returns(userData);
+
+            var result = await service.GetUserGoalAsync(1);
+
+            result.Should().Be("maintenance");
+        }
+
+        [Fact]
+        public async Task GetUserGoalAsync_WithWhitespaceGoal_ReturnsMaintenanceDefault()
+        {
+            var userData = new UserData { Goal = "   " };
+            mockUserRepo.GetUserDataByUserId(1).Returns(userData);
+
+            var result = await service.GetUserGoalAsync(1);
+
+            result.Should().Be("maintenance");
+        }
+
+        [Fact]
+        public async Task GetUserGoalAsync_WithNullGoalProperty_ReturnsMaintenanceDefault()
+        {
+            var userData = new UserData { Goal = null };
+            mockUserRepo.GetUserDataByUserId(1).Returns(userData);
+
+            var result = await service.GetUserGoalAsync(1);
+
+            result.Should().Be("maintenance");
+        }
+
+        [Fact]
+        public async Task GetMealsForMealPlanAsync_WithInvalidId_ThrowsArgumentException()
+        {
+            Func<Task> act = async () => await service.GetMealsForMealPlanAsync(0);
+
+            await act.Should().ThrowAsync<ArgumentException>();
+        }
+
+        [Fact]
+        public async Task GetMealsForMealPlanAsync_WithValidId_ReturnsRepoResult()
+        {
+            var meals = new List<Meal>
+            {
+                new Meal { Id = 1, Name = "Sarmale", Calories = 400 }
+            };
+            mockMealPlanRepo.GetMealsForMealPlan(5).Returns(meals);
+
+            var result = await service.GetMealsForMealPlanAsync(5);
+
+            result.Should().HaveCount(1);
+            result[0].Name.Should().Be("Sarmale");
+        }
+
+        [Fact]
+        public async Task GetMealPlanByIdAsync_WithInvalidId_ReturnsNull()
+        {
+            var result = await service.GetMealPlanByIdAsync(0);
+
+            result.Should().BeNull();
+        }
+
+        [Fact]
+        public void GetCalorieAdjustmentDescription_WithEmptyStringGoal_ReturnsNoAdjustment()
+        {
+            var result = service.GetCalorieAdjustmentDescription(string.Empty, 2000);
+
+            result.Should().Contain("No adjustment");
         }
     }
 }
