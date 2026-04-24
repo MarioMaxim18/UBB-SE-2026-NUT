@@ -17,7 +17,7 @@
             var vm = new MainViewModel(reminderService);
             var reminder = new Reminder { Name = "Breakfast", Time = new TimeSpan(8, 30, 0) };
 
-            UserSession.Login(1, "TestUser", "User");
+            UserSession.Login(1, "MarcelCroitoru", "User");
             reminderService.GetNextReminder(1).Returns(reminder);
 
             await vm.UpdateHeaderReminder();
@@ -32,7 +32,7 @@
         {
             var reminderService = Substitute.For<IReminderService>();
             var vm = new MainViewModel(reminderService);
-            UserSession.Login(1, "TestUser", "User");
+            UserSession.Login(1, "MarcelCroitoru", "User");
 
             reminderService.GetNextReminder(Arg.Any<int>()).Returns(Task.FromResult<Reminder?>(null));
 

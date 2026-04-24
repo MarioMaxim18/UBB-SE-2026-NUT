@@ -16,7 +16,7 @@ namespace TeamNut.Tests.ViewModels
         public void InputText_Setter_WhenNutritionistWithoutConversation_SetsCannotSend()
         {
             var chatService = Substitute.For<IChatService>();
-            UserSession.Login(1, "TestNut", "Nutritionist");
+            UserSession.Login(1, "DrGigel", "Nutritionist");
             var vm = new NutritionistChatViewModel(chatService);
 
             vm.InputText = "Hello";
@@ -31,7 +31,7 @@ namespace TeamNut.Tests.ViewModels
         public void InputText_Setter_WhenMessageTooLong_SetsCannotSend()
         {
             var chatService = Substitute.For<IChatService>();
-            UserSession.Login(1, "TestUser", "User");
+            UserSession.Login(1, "MarcelCroitoru", "User");
             var vm = new NutritionistChatViewModel(chatService);
 
             vm.InputText = new string('A', 1001);
@@ -46,7 +46,7 @@ namespace TeamNut.Tests.ViewModels
         public void InputText_Setter_WhenInvalidCharacters_SetsCannotSend()
         {
             var chatService = Substitute.For<IChatService>();
-            UserSession.Login(1, "TestUser", "User");
+            UserSession.Login(1, "MarcelCroitoru", "User");
             var vm = new NutritionistChatViewModel(chatService);
 
             vm.InputText = "Hello <script>!";
@@ -61,7 +61,7 @@ namespace TeamNut.Tests.ViewModels
         public void InputText_Setter_WhenValid_SetsCanSend()
         {
             var chatService = Substitute.For<IChatService>();
-            UserSession.Login(1, "TestUser", "User");
+            UserSession.Login(1, "MarcelCroitoru", "User");
             var vm = new NutritionistChatViewModel(chatService);
 
             vm.InputText = "Hello, this is a valid message!";
@@ -76,7 +76,7 @@ namespace TeamNut.Tests.ViewModels
         public async Task LoadConversationsAsync_WhenNutritionistInGlobalView_LoadsAllMessages()
         {
             var chatService = Substitute.For<IChatService>();
-            UserSession.Login(1, "TestNut", "Nutritionist");
+            UserSession.Login(1, "DrGigel", "Nutritionist");
             var vm = new NutritionistChatViewModel(chatService) { IsNutritionistView = true };
             var convs = new List<Conversation> { new Conversation { Id = 1 } };
 
@@ -94,7 +94,7 @@ namespace TeamNut.Tests.ViewModels
         public async Task LoadConversationsAsync_WhenStandardUser_LoadsSingleConversation()
         {
             var chatService = Substitute.For<IChatService>();
-            UserSession.Login(2, "TestUser", "User");
+            UserSession.Login(2, "MarcelCroitoru", "User");
             var vm = new NutritionistChatViewModel(chatService);
             var conv = new Conversation { Id = 5 };
 
@@ -113,7 +113,7 @@ namespace TeamNut.Tests.ViewModels
         public async Task SendMessageCommand_WhenNutritionistAndNoConversation_SetsStatusMessage()
         {
             var chatService = Substitute.For<IChatService>();
-            UserSession.Login(1, "TestNut", "Nutritionist");
+            UserSession.Login(1, "DrGigel", "Nutritionist");
             var vm = new NutritionistChatViewModel(chatService);
             vm.InputText = "Hello";
 
@@ -128,7 +128,7 @@ namespace TeamNut.Tests.ViewModels
         public async Task SendMessageCommand_WhenUserAndNoConversation_CreatesConversationAndSends()
         {
             var chatService = Substitute.For<IChatService>();
-            UserSession.Login(2, "TestUser", "User");
+            UserSession.Login(2, "MarcelCroitoru", "User");
             var vm = new NutritionistChatViewModel(chatService);
             var newConv = new Conversation { Id = 10 };
 

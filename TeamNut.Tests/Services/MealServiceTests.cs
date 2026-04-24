@@ -68,7 +68,7 @@
             var service = new MealService(fakeRepo);
             var validMeal = new Meal { Id = 5, IsFavorite = true };
 
-            UserSession.Login(99, "TestUser", "User");
+            UserSession.Login(99, "MarcelCroitoru", "User");
 
             await service.ToggleFavoriteAsync(validMeal);
 

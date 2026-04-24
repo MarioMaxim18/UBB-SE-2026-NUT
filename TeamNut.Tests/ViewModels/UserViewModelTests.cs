@@ -196,9 +196,9 @@
             var calcService = Substitute.For<INutritionCalculationService>();
             var vm = new UserViewModel(userService, validationService, calcService);
 
-            vm.CurrentUser.Username = "TestUser";
-            vm.CurrentUser.Password = "TestPass";
-            userService.LoginAsync("TestUser", "TestPass").Returns((User?)null);
+            vm.CurrentUser.Username = "MarcelCroitoru";
+            vm.CurrentUser.Password = "Parola123";
+            userService.LoginAsync("MarcelCroitoru", "Parola123").Returns((User?)null);
 
             await vm.LoginCommand.ExecuteAsync(null);
 
@@ -212,11 +212,11 @@
             var validationService = Substitute.For<IValidationService>();
             var calcService = Substitute.For<INutritionCalculationService>();
             var vm = new UserViewModel(userService, validationService, calcService);
-            var loggedInUser = new User { Id = 1, Username = "TestUser" };
+            var loggedInUser = new User { Id = 1, Username = "MarcelCroitoru" };
 
-            vm.CurrentUser.Username = "TestUser";
-            vm.CurrentUser.Password = "TestPass";
-            userService.LoginAsync("TestUser", "TestPass").Returns(loggedInUser);
+            vm.CurrentUser.Username = "MarcelCroitoru";
+            vm.CurrentUser.Password = "Parola123";
+            userService.LoginAsync("MarcelCroitoru", "Parola123").Returns(loggedInUser);
 
             bool eventRaised = false;
             vm.LoginSuccess += (s, e) => eventRaised = true;
@@ -235,9 +235,9 @@
             var calcService = Substitute.For<INutritionCalculationService>();
             var vm = new UserViewModel(userService, validationService, calcService);
 
-            vm.CurrentUser.Username = "TestUser";
-            vm.CurrentUser.Password = "TestPass";
-            userService.LoginAsync("TestUser", "TestPass").Returns(_ => Task.FromException<User?>(new Exception("Timeout")));
+            vm.CurrentUser.Username = "MarcelCroitoru";
+            vm.CurrentUser.Password = "Parola123";
+            userService.LoginAsync("MarcelCroitoru", "Parola123").Returns(_ => Task.FromException<User?>(new Exception("Timeout")));
 
             await vm.LoginCommand.ExecuteAsync(null);
 

@@ -35,7 +35,7 @@ namespace TeamNut.Tests.ViewModels
             var reminder = new Reminder { Id = 1 };
             var loadedReminders = new List<Reminder> { reminder };
 
-            UserSession.Login(1, "TestUser", "User");
+            UserSession.Login(1, "MarcelCroitoru", "User");
             reminderService.SaveReminder(reminder).Returns("Success");
             reminderService.GetUserReminders(1).Returns(loadedReminders);
             reminderService.GetNextReminder(1).Returns(Task.FromResult<Reminder?>(null));
@@ -67,7 +67,7 @@ namespace TeamNut.Tests.ViewModels
             var vm = new RemindersViewModel(reminderService);
             vm.IsBusy = true;
 
-            UserSession.Login(1, "TestUser", "User");
+            UserSession.Login(1, "MarcelCroitoru", "User");
 
             await vm.LoadRemindersCommand.ExecuteAsync(null);
 
@@ -83,7 +83,7 @@ namespace TeamNut.Tests.ViewModels
             var reminders = new List<Reminder> { new Reminder { Id = 1 }, new Reminder { Id = 2 } };
             var nextReminder = new Reminder { Id = 2 };
 
-            UserSession.Login(1, "TestUser", "User");
+            UserSession.Login(1, "MarcelCroitoru", "User");
             reminderService.GetUserReminders(1).Returns(reminders);
             reminderService.GetNextReminder(1).Returns(nextReminder);
 
@@ -100,7 +100,7 @@ namespace TeamNut.Tests.ViewModels
             var reminderService = Substitute.For<IReminderService>();
             var vm = new RemindersViewModel(reminderService);
 
-            UserSession.Login(99, "TestUser", "User");
+            UserSession.Login(99, "MarcelCroitoru", "User");
 
             vm.PrepareNewReminderCommand.Execute(null);
 
@@ -116,7 +116,7 @@ namespace TeamNut.Tests.ViewModels
             var reminder = new Reminder { Id = 5 };
             vm.Reminders.Add(reminder);
 
-            UserSession.Login(1, "TestUser", "User");
+            UserSession.Login(1, "MarcelCroitoru", "User");
 
             await vm.DeleteReminderCommand.ExecuteAsync(reminder);
 

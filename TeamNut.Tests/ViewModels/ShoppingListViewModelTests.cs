@@ -27,7 +27,7 @@
             var shoppingListService = Substitute.For<IShoppingListService>();
             var vm = new ShoppingListViewModel(shoppingListService);
 
-            UserSession.Login(1, "TestUser", "User");
+            UserSession.Login(1, "MarcelCroitoru", "User");
             shoppingListService.AddItemAsync("Apple", 1, 100).Returns((ShoppingItem?)null);
 
             await vm.AddItemCommand.ExecuteAsync("Apple");
@@ -45,7 +45,7 @@
             var vm = new ShoppingListViewModel(shoppingListService);
             var newItem = new ShoppingItem { Id = 1, IngredientName = "Apple" };
 
-            UserSession.Login(1, "TestUser", "User");
+            UserSession.Login(1, "MarcelCroitoru", "User");
             shoppingListService.AddItemAsync("Apple", 1, 100).Returns(newItem);
 
             await vm.AddItemCommand.ExecuteAsync("Apple");
@@ -68,7 +68,7 @@
 
             vm.Items.Add(existingItem);
 
-            UserSession.Login(1, "TestUser", "User");
+            UserSession.Login(1, "MarcelCroitoru", "User");
             shoppingListService.AddItemAsync("Apple", 1, 100).Returns(returnedItem);
 
             await vm.AddItemCommand.ExecuteAsync("Apple");
@@ -155,7 +155,7 @@
             var shoppingListService = Substitute.For<IShoppingListService>();
             var vm = new ShoppingListViewModel(shoppingListService);
 
-            UserSession.Login(1, "TestUser", "User");
+            UserSession.Login(1, "MarcelCroitoru", "User");
             shoppingListService.GenerateListAsync(1).Returns(5);
             shoppingListService.GetShoppingItemsAsync(1).Returns(new List<ShoppingItem>());
 
@@ -173,7 +173,7 @@
             var shoppingListService = Substitute.For<IShoppingListService>();
             var vm = new ShoppingListViewModel(shoppingListService);
 
-            UserSession.Login(1, "TestUser", "User");
+            UserSession.Login(1, "MarcelCroitoru", "User");
             shoppingListService.GenerateListAsync(1).Returns(0);
 
             await vm.GenerateList();
@@ -190,7 +190,7 @@
             var shoppingListService = Substitute.For<IShoppingListService>();
             var vm = new ShoppingListViewModel(shoppingListService);
 
-            UserSession.Login(1, "TestUser", "User");
+            UserSession.Login(1, "MarcelCroitoru", "User");
 
             shoppingListService.GenerateListAsync(Arg.Any<int>()).Returns(Task.FromResult(-1));
 

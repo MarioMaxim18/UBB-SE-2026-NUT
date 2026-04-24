@@ -97,7 +97,7 @@
                             .Returns(new List<Ingredient>());
             inventoryService.GetUserInventory(Arg.Any<int>()).Returns(new List<Inventory>());
 
-            UserSession.Login(99, "Test", "User");
+            UserSession.Login(99, "CostelBoboc", "User");
             var vm = new InventoryViewModel(inventoryService, filteringService);
 
             vm.SelectedIngredient = new Ingredient { FoodId = 5, Name = "Apple" };
