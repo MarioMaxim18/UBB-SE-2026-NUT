@@ -192,14 +192,6 @@ namespace TeamNut.Tests.Services
         }
 
         [Fact]
-        public void CalculateCarbNeeds_WhenProteinAndFatExceedCalories_ReturnsZero()
-        {
-            var result = service.CalculateCarbNeeds(1000, 200, 100);
-
-            result.Should().BeGreaterThanOrEqualTo(0);
-        }
-
-        [Fact]
         public void ApplyCalculations_WithValidUserData_CalculatesAllMetrics()
         {
             var userData = new UserData
@@ -243,6 +235,56 @@ namespace TeamNut.Tests.Services
             Action act = () => service.ApplyCalculations(null!, null!);
 
             act.Should().NotThrow();
+        }
+
+        [Fact]
+        public void CalculateCarbNeeds_WhenProteinAndFatExceedCalories_ReturnsZero()
+        {
+            var result = service.CalculateCarbNeeds(100, 50, 50);
+
+            result.Should().Be(0);
+        }
+
+        [Fact]
+        public void CalculateCalorieNeeds_WithNullGoal_DoesNotThrow()
+        {
+            var result = service.CalculateCalorieNeeds(75, 180, 25, "male", null!);
+
+            result.Should().BeGreaterThan(0);
+        }
+
+        [Fact]
+        public void CalculateProteinNeeds_WithNullGoal_DoesNotThrow()
+        {
+            var result = service.CalculateProteinNeeds(75, null!);
+
+            result.Should().BeGreaterThan(0);
+        }
+
+        [Fact]
+        public void CalculateFatNeeds_WithNullGoal_DoesNotThrow()
+        {
+            var result = service.CalculateFatNeeds(2000, null!);
+
+            result.Should().BeGreaterThan(0);
+        }
+
+        [Fact]
+        public void ApplyCalculations_WithNullGoal_CarbsNeverNegative()
+        {
+            var userData = new UserData
+            {
+                Weight = 60,
+                Height = 160,
+                Age = 22,
+                Gender = "female",
+                Goal = null!
+            };
+
+            service.ApplyCalculations(userData);
+
+            userData.CarbNeeds.Should().BeGreaterThanOrEqualTo(0);
+            userData.CalorieNeeds.Should().BeGreaterThan(0);
         }
     }
 }
