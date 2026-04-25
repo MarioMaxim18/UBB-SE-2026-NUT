@@ -4,7 +4,6 @@ namespace TeamNut.Services
     using System.Linq;
     using System.Threading.Tasks;
     using TeamNut.Models;
-    using TeamNut.Repositories;
     using TeamNut.Repositories.Interfaces;
     using TeamNut.Services.Interfaces;
 
@@ -12,9 +11,9 @@ namespace TeamNut.Services
     {
         private readonly IMealRepository mealRepository;
 
-        public MealService(IMealRepository mmealRepository)
+        public MealService(IMealRepository mealRepository)
         {
-            mealRepository = mmealRepository;
+            this.mealRepository = mealRepository;
         }
 
         public async Task<List<Meal>> GetMealsAsync(MealFilter? filter = null)

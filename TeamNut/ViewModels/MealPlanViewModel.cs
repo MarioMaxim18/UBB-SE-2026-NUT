@@ -20,53 +20,29 @@ namespace TeamNut.ModelViews
         private readonly IMealPlanService mealPlanService;
 
         private const int InvalidId = 0;
-
         private const string StatusLoadingMealPlan = "Loading your meal plan...";
-
         private const string StatusLoadingTodayMealPlan = "Loading your meal plan for today...";
-
         private const string StatusGeneratingMealPlan = "Generating your personalized meal plan for today...";
-
         private const string StatusMealPlanExists = "Meal plan already generated for today. New plan tomorrow!";
-
         private const string StatusLoginRequired = "Please log in to view your meal plan.";
-
         private const string StatusMealPlanGenerated = "New meal plan generated for today!";
-
         private const string StatusRegeneratingTest = "Regenerating meal plan (test)...";
-
         private const string ErrorUserNotLoggedTitle = "User Not Logged In";
-
         private const string ErrorUserNotLoggedMessage = "You need to be logged in to view your meal plan.\n\nPlease create an account or log in to continue.";
-
         private const string ErrorMealPlanExistsTitle = "Meal Plan Already Exists";
-
         private const string ErrorMealPlanExistsMessage = "You already have a meal plan for today.\n\nYour meal plan will automatically regenerate tomorrow based on your latest preferences.\n\nIf you changed your settings, the new preferences will apply to tomorrow's meal plan.";
-
         private const string ErrorNoMealsFound = "No meals found in your plan. Please try regenerating tomorrow.";
-
         private const string ErrorGeneratingMealPlanTitle = "Error Generating Meal Plan";
-
         private const string ErrorUnexpectedTitle = "Unexpected Error";
-
         private const string ErrorUnexpectedMessageFormat = "An unexpected error occurred:\n\n{0}";
-
         private const string ErrorSavingLogTitle = "Save Failed";
-
         private const string ErrorSavingLogMessageFormat = "Failed to save to daily log:\n\n{0}";
-
         private const string ErrorNoMealPlanTitle = "No Meal Plan";
-
         private const string ErrorNoMealPlanMessage = "No meal plan is currently loaded. Please generate a meal plan first.";
-
         private const string ErrorMealNotFound = "Meal not found in current meal plan.";
-
         private const string GoalSuffix = " Goal";
-
         private const string StatusMealPlanTitleFormat = "Your meal plan for today ({0} goal)";
-
         private const string NutritionSummaryFormat = "Daily Total: {0} kcal | {1}g protein | {2}g carbs | {3}g fat";
-
         private const string MealSavedSuccessFormat = "All {0} meals saved to daily log!";
 
         private static readonly Dictionary<int, string> MealTypes = new Dictionary<int, string>
@@ -86,51 +62,45 @@ namespace TeamNut.ModelViews
         public partial ObservableCollection<MealViewModel> GeneratedMeals { get; set; }
 
         private int currentMealPlanId;
-
         public int CurrentMealPlanId
         {
-            get => this.currentMealPlanId;
-            set => SetProperty(ref this.currentMealPlanId, value);
+            get => currentMealPlanId;
+            set => SetProperty(ref currentMealPlanId, value);
         }
 
         private int totalCalories;
-
         public int TotalCalories
         {
-            get => this.totalCalories;
-            set => SetProperty(ref this.totalCalories, value);
+            get => totalCalories;
+            set => SetProperty(ref totalCalories, value);
         }
 
         private int totalProtein;
-
         public int TotalProtein
         {
-            get => this.totalProtein;
-            set => SetProperty(ref this.totalProtein, value);
+            get => totalProtein;
+            set => SetProperty(ref totalProtein, value);
         }
 
         private int totalCarbs;
-
         public int TotalCarbs
         {
-            get => this.totalCarbs;
-            set => SetProperty(ref this.totalCarbs, value);
+            get => totalCarbs;
+            set => SetProperty(ref totalCarbs, value);
         }
 
         private int totalFat;
-
         public int TotalFat
         {
-            get => this.totalFat;
-            set => SetProperty(ref this.totalFat, value);
+            get => totalFat;
+            set => SetProperty(ref totalFat, value);
         }
 
         private bool hasMeals;
-
         public bool HasMeals
         {
-            get => this.hasMeals;
-            set => SetProperty(ref this.hasMeals, value);
+            get => hasMeals;
+            set => SetProperty(ref hasMeals, value);
         }
 
         [ObservableProperty]
@@ -148,15 +118,15 @@ namespace TeamNut.ModelViews
         [ObservableProperty]
         public partial string ErrorDialogMessage { get; set; }
 
-        public MealPlanViewModel(IMealPlanService mmealPlanService)
+        public MealPlanViewModel(IMealPlanService mealPlanService)
         {
-            this.GeneratedMeals = new ObservableCollection<MealViewModel>();
-            this.StatusMessage = string.Empty;
-            this.TotalNutritionSummary = string.Empty;
-            this.GoalDescription = string.Empty;
-            this.ErrorDialogTitle = string.Empty;
-            this.ErrorDialogMessage = string.Empty;
-            this.mealPlanService = mmealPlanService;
+            GeneratedMeals = new ObservableCollection<MealViewModel>();
+            StatusMessage = string.Empty;
+            TotalNutritionSummary = string.Empty;
+            GoalDescription = string.Empty;
+            ErrorDialogTitle = string.Empty;
+            ErrorDialogMessage = string.Empty;
+            this.mealPlanService = mealPlanService;
         }
 
         [RelayCommand]
@@ -166,35 +136,35 @@ namespace TeamNut.ModelViews
 
             if (userId == null || userId <= InvalidId)
             {
-                this.ErrorDialogTitle = ErrorUserNotLoggedTitle;
-                this.ErrorDialogMessage = ErrorUserNotLoggedMessage;
-                this.ShowErrorDialog = true;
-                this.StatusMessage = StatusLoginRequired;
+                ErrorDialogTitle = ErrorUserNotLoggedTitle;
+                ErrorDialogMessage = ErrorUserNotLoggedMessage;
+                ShowErrorDialog = true;
+                StatusMessage = StatusLoginRequired;
                 return;
             }
 
-            var todaysPlan = await this.mealPlanService.GetTodaysMealPlanAsync(userId.Value);
+            var todaysPlan = await mealPlanService.GetTodaysMealPlanAsync(userId.Value);
 
             if (todaysPlan != null)
             {
-                this.ErrorDialogTitle = ErrorMealPlanExistsTitle;
-                this.ErrorDialogMessage = ErrorMealPlanExistsMessage;
-                this.ShowErrorDialog = true;
-                this.StatusMessage = StatusMealPlanExists;
+                ErrorDialogTitle = ErrorMealPlanExistsTitle;
+                ErrorDialogMessage = ErrorMealPlanExistsMessage;
+                ShowErrorDialog = true;
+                StatusMessage = StatusMealPlanExists;
             }
             else
             {
-                await this.LoadOrGenerateTodaysMealPlanAsync();
+                await LoadOrGenerateTodaysMealPlanAsync();
             }
         }
 
         public async Task ForceRegenerateMealPlanAsync()
         {
-            this.IsBusy = true;
-            this.StatusMessage = StatusRegeneratingTest;
-            this.GeneratedMeals.Clear();
-            this.TotalNutritionSummary = string.Empty;
-            this.GoalDescription = string.Empty;
+            IsBusy = true;
+            StatusMessage = StatusRegeneratingTest;
+            GeneratedMeals.Clear();
+            TotalNutritionSummary = string.Empty;
+            GoalDescription = string.Empty;
 
             try
             {
@@ -202,26 +172,26 @@ namespace TeamNut.ModelViews
 
                 if (userId == null || userId <= InvalidId)
                 {
-                    this.StatusMessage = StatusLoginRequired;
+                    StatusMessage = StatusLoginRequired;
                     HasMeals = false;
                     return;
                 }
 
-                await this.GenerateNewMealPlanAsync(userId.Value);
+                await GenerateNewMealPlanAsync(userId.Value);
             }
             finally
             {
-                this.IsBusy = false;
+                IsBusy = false;
             }
         }
 
         public async Task LoadOrGenerateTodaysMealPlanAsync()
         {
-            this.IsBusy = true;
-            this.StatusMessage = StatusLoadingMealPlan;
-            this.GeneratedMeals.Clear();
-            this.TotalNutritionSummary = string.Empty;
-            this.GoalDescription = string.Empty;
+            IsBusy = true;
+            StatusMessage = StatusLoadingMealPlan;
+            GeneratedMeals.Clear();
+            TotalNutritionSummary = string.Empty;
+            GoalDescription = string.Empty;
 
             try
             {
@@ -229,27 +199,27 @@ namespace TeamNut.ModelViews
 
                 if (userId == null || userId <= InvalidId)
                 {
-                    this.StatusMessage = StatusLoginRequired;
+                    StatusMessage = StatusLoginRequired;
                     HasMeals = false;
                     return;
                 }
 
-                var todaysPlan = await this.mealPlanService.GetTodaysMealPlanAsync(userId.Value);
+                var todaysPlan = await mealPlanService.GetTodaysMealPlanAsync(userId.Value);
 
                 if (todaysPlan != null)
                 {
-                    this.StatusMessage = StatusLoadingTodayMealPlan;
-                    await this.LoadMealPlanByIdAsync(todaysPlan.Id, userId.Value);
+                    StatusMessage = StatusLoadingTodayMealPlan;
+                    await LoadMealPlanByIdAsync(todaysPlan.Id, userId.Value);
                 }
                 else
                 {
-                    this.StatusMessage = StatusGeneratingMealPlan;
-                    await this.GenerateNewMealPlanAsync(userId.Value);
+                    StatusMessage = StatusGeneratingMealPlan;
+                    await GenerateNewMealPlanAsync(userId.Value);
                 }
             }
             finally
             {
-                this.IsBusy = false;
+                IsBusy = false;
             }
         }
 
@@ -257,15 +227,15 @@ namespace TeamNut.ModelViews
         {
             CurrentMealPlanId = mealPlanId;
 
-            var meals = await this.mealPlanService.GetMealsForMealPlanAsync(mealPlanId);
+            var meals = await mealPlanService.GetMealsForMealPlanAsync(mealPlanId);
             if (meals == null || meals.Count == 0)
             {
-                this.StatusMessage = ErrorNoMealsFound;
+                StatusMessage = ErrorNoMealsFound;
                 HasMeals = false;
                 return;
             }
 
-            string userGoal = await this.mealPlanService.GetUserGoalAsync(userId);
+            string userGoal = await mealPlanService.GetUserGoalAsync(userId);
             string goalName = char.ToUpper(userGoal[0]) + userGoal[1..];
 
             int index = 0;
@@ -275,21 +245,21 @@ namespace TeamNut.ModelViews
                     ? type
                     : "MEAL";
 
-                this.GeneratedMeals.Add(MealViewModel.FromMeal(meal, mealType));
+                GeneratedMeals.Add(MealViewModel.FromMeal(meal, mealType));
                 index++;
             }
 
-            this.CalculateTotals();
+            CalculateTotals();
 
-            this.TotalNutritionSummary = string.Format(
+            TotalNutritionSummary = string.Format(
                 NutritionSummaryFormat,
                 TotalCalories,
                 TotalProtein,
                 TotalCarbs,
                 TotalFat);
 
-            this.GoalDescription = goalName + GoalSuffix;
-            this.StatusMessage = string.Format(StatusMealPlanTitleFormat, goalName);
+            GoalDescription = goalName + GoalSuffix;
+            StatusMessage = string.Format(StatusMealPlanTitleFormat, goalName);
             HasMeals = true;
         }
 
@@ -297,25 +267,25 @@ namespace TeamNut.ModelViews
         {
             try
             {
-                int mealPlanId = await this.mealPlanService.GeneratePersonalizedMealPlanAsync(userId);
-                await this.LoadMealPlanByIdAsync(mealPlanId, userId);
-                this.StatusMessage = StatusMealPlanGenerated;
+                int mealPlanId = await mealPlanService.GeneratePersonalizedMealPlanAsync(userId);
+                await LoadMealPlanByIdAsync(mealPlanId, userId);
+                StatusMessage = StatusMealPlanGenerated;
             }
             catch (Exception ex)
             {
-                this.ErrorDialogTitle = ErrorGeneratingMealPlanTitle;
-                this.ErrorDialogMessage = ex.Message;
-                this.ShowErrorDialog = true;
+                ErrorDialogTitle = ErrorGeneratingMealPlanTitle;
+                ErrorDialogMessage = ex.Message;
+                ShowErrorDialog = true;
                 HasMeals = false;
             }
         }
 
         private void CalculateTotals()
         {
-            TotalCalories = this.GeneratedMeals.Sum(m => m.Calories);
-            TotalProtein = this.GeneratedMeals.Sum(m => m.Protein);
-            TotalCarbs = this.GeneratedMeals.Sum(m => m.Carbs);
-            TotalFat = this.GeneratedMeals.Sum(m => m.Fat);
+            TotalCalories = GeneratedMeals.Sum(m => m.Calories);
+            TotalProtein = GeneratedMeals.Sum(m => m.Protein);
+            TotalCarbs = GeneratedMeals.Sum(m => m.Carbs);
+            TotalFat = GeneratedMeals.Sum(m => m.Fat);
         }
 
         [RelayCommand]
@@ -323,19 +293,19 @@ namespace TeamNut.ModelViews
         {
             if (CurrentMealPlanId <= InvalidId)
             {
-                this.ErrorDialogTitle = ErrorNoMealPlanTitle;
-                this.ErrorDialogMessage = ErrorNoMealPlanMessage;
-                this.ShowErrorDialog = true;
+                ErrorDialogTitle = ErrorNoMealPlanTitle;
+                ErrorDialogMessage = ErrorNoMealPlanMessage;
+                ShowErrorDialog = true;
                 return;
             }
 
-            await this.mealPlanService.SaveMealsToDailyLogAsync(CurrentMealPlanId);
-            this.StatusMessage = string.Format(MealSavedSuccessFormat, this.GeneratedMeals.Count);
+            await mealPlanService.SaveMealsToDailyLogAsync(CurrentMealPlanId);
+            StatusMessage = string.Format(MealSavedSuccessFormat, GeneratedMeals.Count);
         }
 
         internal async Task SaveToDailyLogAsync()
         {
-            await this.SaveToDailyLog();
+            await SaveToDailyLog();
         }
     }
 }

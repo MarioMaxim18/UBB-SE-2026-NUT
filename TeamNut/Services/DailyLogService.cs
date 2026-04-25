@@ -10,73 +10,60 @@ namespace TeamNut.Services
     public class DailyLogService : IDailyLogService
     {
         private readonly IDailyLogRepository repository;
-
         private readonly IUserRepository userRepository;
-
         private readonly IMealService mealService;
 
         private const int DaysInWeek = 7;
-
         private const int OneDay = 1;
-
         private const DayOfWeek StartOfWeek = DayOfWeek.Monday;
-
         private const double DefaultBurnedCalories = 500d;
-
         private const string EmptySearchTerm = "";
-
         private const string ErrorUserNotLoggedIn = "User is not logged in.";
 
-        public DailyLogService(IDailyLogRepository dailyLogRepo, IUserRepository userRepo, IMealService mmealService)
+        public DailyLogService(
+            IDailyLogRepository repository,
+            IUserRepository userRepository,
+            IMealService mealService)
         {
-            this.repository = dailyLogRepo;
-            this.userRepository = userRepo;
-            this.mealService = mmealService;
+            this.repository = repository;
+            this.userRepository = userRepository;
+            this.mealService = mealService;
         }
 
         private int GetUserId()
         {
-            return UserSession.UserId
-                ?? throw new InvalidOperationException(ErrorUserNotLoggedIn);
+            return UserSession.UserId ?? throw new InvalidOperationException(ErrorUserNotLoggedIn);
         }
 
         public async Task<bool> HasAnyLogsAsync()
         {
-            return await this.repository.HasAnyLogs(this.GetUserId());
+            return await repository.HasAnyLogs(GetUserId());
         }
 
         public async Task<DailyLog> GetTodayTotalsAsync()
         {
-            var userId = this.GetUserId();
+            var userId = GetUserId();
             var start = DateTime.Today;
             var end = start.AddDays(OneDay);
 
-            return await this.repository
-                .GetNutritionTotalsForRange(userId, start, end);
+            return await repository.GetNutritionTotalsForRange(userId, start, end);
         }
 
         public async Task<DailyLog> GetCurrentWeekTotalsAsync()
         {
-            var userId = this.GetUserId();
+            var userId = GetUserId();
             var today = DateTime.Today;
 
-            int diff =
-                (DaysInWeek + (today.DayOfWeek - StartOfWeek)) % DaysInWeek;
-
+            int diff = (DaysInWeek + (today.DayOfWeek - StartOfWeek)) % DaysInWeek;
             var startOfWeek = today.AddDays(-diff);
             var endOfWeek = startOfWeek.AddDays(DaysInWeek);
 
-            return await this.repository
-                .GetNutritionTotalsForRange(
-                    userId,
-                    startOfWeek,
-                    endOfWeek);
+            return await repository.GetNutritionTotalsForRange(userId, startOfWeek, endOfWeek);
         }
 
         public async Task<UserData?> GetCurrentUserNutritionTargetsAsync()
         {
-            return await this.userRepository
-                .GetUserDataByUserId(this.GetUserId());
+            return await userRepository.GetUserDataByUserId(GetUserId());
         }
 
         public Task<double> GetTodayBurnedCaloriesAsync()
@@ -91,14 +78,12 @@ namespace TeamNut.Services
                 SearchTerm = searchTerm ?? EmptySearchTerm,
             };
 
-            return await this.mealService
-                .GetFilteredMealsAsync(filter);
+            return await mealService.GetFilteredMealsAsync(filter);
         }
 
         public async Task<List<Meal>> GetMealsForAutocompleteAsync()
         {
-            return await this.mealService
-                .GetFilteredMealsAsync(new MealFilter());
+            return await mealService.GetFilteredMealsAsync(new MealFilter());
         }
 
         public async Task LogMealAsync(Meal meal)
@@ -108,14 +93,13 @@ namespace TeamNut.Services
                 throw new ArgumentNullException(nameof(meal));
             }
 
-            await this.repository.Add(
-                new DailyLog
-                {
-                    UserId = this.GetUserId(),
-                    MealId = meal.Id,
-                    Calories = meal.Calories,
-                    LoggedAt = DateTime.Now,
-                });
+            await repository.Add(new DailyLog
+            {
+                UserId = GetUserId(),
+                MealId = meal.Id,
+                Calories = meal.Calories,
+                LoggedAt = DateTime.Now,
+            });
         }
     }
 }

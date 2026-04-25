@@ -25,9 +25,7 @@ namespace TeamNut.Services
                 return meals.ToList();
             }
 
-            return meals
-                .Where(m => m.Name?.Contains(query, comparison) == true)
-                .ToList();
+            return meals.Where(m => m.Name?.Contains(query, comparison) == true).ToList();
         }
 
         public List<Ingredient> FilterIngredients(
@@ -47,9 +45,7 @@ namespace TeamNut.Services
                 return ingredients.ToList();
             }
 
-            return ingredients
-                .Where(i => i.Name.Contains(query, comparison))
-                .ToList();
+            return ingredients.Where(i => i.Name.Contains(query, comparison)).ToList();
         }
     }
 }

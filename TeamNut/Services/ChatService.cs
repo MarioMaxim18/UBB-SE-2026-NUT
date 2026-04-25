@@ -9,9 +9,9 @@ namespace TeamNut.Services
     {
         private readonly IChatRepository repo;
 
-        public ChatService(IChatRepository rrepo)
+        public ChatService(IChatRepository repo)
         {
-            repo = rrepo;
+            this.repo = repo;
         }
 
         public Task<IEnumerable<Conversation>> GetAllConversationsAsync() => repo.GetAllConversationsAsync();
