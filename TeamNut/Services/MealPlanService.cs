@@ -268,7 +268,7 @@ namespace TeamNut.Services
             }
         }
 
-        public (int totalCalories, int totalProtein, int totalCarbs, int totalFat)
+        public (int totalCalories, int totalProtein, int totalCarbohydrates, int totalFat)
             CalculateTotalNutrition(List<Meal> meals)
         {
             if (meals == null || meals.Count == 0)
@@ -276,34 +276,34 @@ namespace TeamNut.Services
                 return (0, 0, 0, 0);
             }
 
-            int calories = 0, protein = 0, carbs = 0, fat = 0;
+            int calories = 0, protein = 0, carbohydrates = 0, fat = 0;
 
             foreach (var meal in meals)
             {
                 calories += meal.Calories;
                 protein += meal.Protein;
-                carbs += meal.Carbs;
+                carbohydrates += meal.Carbohydrates;
                 fat += meal.Fat;
             }
 
-            return (totalCalories: calories, totalProtein: protein, totalCarbs: carbs, totalFat: fat);
+            return (totalCalories: calories, totalProtein: protein, totalCarbohydrates: carbohydrates, totalFat: fat);
         }
 
         public bool ValidateMealPlan(
             List<Meal> meals,
             int targetCalories,
             int targetProtein,
-            int targetCarbs,
+            int targetCarbohydrates,
             int targetFat,
             double tolerance = DefaultTolerance)
         {
-            var (calories, protein, carbs, fat) =
+            var (calories, protein, carbohydrates, fat) =
                 CalculateTotalNutrition(meals);
 
             return
                 Math.Abs(calories - targetCalories) <= targetCalories * tolerance &&
                 Math.Abs(protein - targetProtein) <= targetProtein * tolerance &&
-                Math.Abs(carbs - targetCarbs) <= targetCarbs * tolerance &&
+                Math.Abs(carbohydrates - targetCarbohydrates) <= targetCarbohydrates * tolerance &&
                 Math.Abs(fat - targetFat) <= targetFat * tolerance;
         }
 

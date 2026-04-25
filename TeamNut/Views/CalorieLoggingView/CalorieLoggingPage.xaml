@@ -55,9 +55,9 @@
                     <TextBlock Text="Protein"/>
                     <TextBlock Text="{Binding DailyProteinText}" FontWeight="SemiBold"/>
                     <ProgressBar Minimum="0" Maximum="{Binding DailyProteinGoal}" Value="{Binding DailyTotals.Protein}" Height="16"/>
-                    <TextBlock Text="Carbs"/>
-                    <TextBlock Text="{Binding DailyCarbsText}" FontWeight="SemiBold"/>
-                    <ProgressBar Minimum="0" Maximum="{Binding DailyCarbsGoal}" Value="{Binding DailyTotals.Carbs}" Height="16"/>
+                    <TextBlock Text="Carbohydrates"/>
+                    <TextBlock Text="{Binding DailyCarbohydratesText}" FontWeight="SemiBold"/>
+                    <ProgressBar Minimum="0" Maximum="{Binding DailyCarbohydratesGoal}" Value="{Binding DailyTotals.Carbohydrates}" Height="16"/>
                     <TextBlock Text="Fats"/>
                     <TextBlock Text="{Binding DailyFatsText}" FontWeight="SemiBold"/>
                     <ProgressBar Minimum="0" Maximum="{Binding DailyFatsGoal}" Value="{Binding DailyTotals.Fats}" Height="16"/>
@@ -75,9 +75,9 @@
                     <TextBlock Text="Protein"/>
                     <TextBlock Text="{Binding WeeklyProteinText}" FontWeight="SemiBold"/>
                     <ProgressBar Minimum="0" Maximum="{Binding WeeklyProteinGoal}" Value="{Binding WeeklyTotals.Protein}" Height="16"/>
-                    <TextBlock Text="Carbs"/>
-                    <TextBlock Text="{Binding WeeklyCarbsText}" FontWeight="SemiBold"/>
-                    <ProgressBar Minimum="0" Maximum="{Binding WeeklyCarbsGoal}" Value="{Binding WeeklyTotals.Carbs}" Height="16"/>
+                    <TextBlock Text="Carbohydrates"/>
+                    <TextBlock Text="{Binding WeeklyCarbohydratesText}" FontWeight="SemiBold"/>
+                    <ProgressBar Minimum="0" Maximum="{Binding WeeklyCarbohydratesGoal}" Value="{Binding WeeklyTotals.Carbohydrates}" Height="16"/>
                     <TextBlock Text="Fats"/>
                     <TextBlock Text="{Binding WeeklyFatsText}" FontWeight="SemiBold"/>
                     <ProgressBar Minimum="0" Maximum="{Binding WeeklyFatsGoal}" Value="{Binding WeeklyTotals.Fats}" Height="16"/>

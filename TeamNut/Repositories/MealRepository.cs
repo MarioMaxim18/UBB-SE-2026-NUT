@@ -43,7 +43,7 @@ namespace TeamNut.Repositories
             MAX(CASE WHEN f.id IS NOT NULL THEN 1 ELSE 0 END) AS isFavorite,
             CAST(IFNULL(SUM(i.calories_per_100g * mi.quantity / 100.0), 0) AS INT) AS calories,
             CAST(IFNULL(SUM(i.protein_per_100g * mi.quantity / 100.0), 0) AS INT) AS protein,
-            CAST(IFNULL(SUM(i.carbs_per_100g * mi.quantity / 100.0), 0) AS INT) AS carbs,
+            CAST(IFNULL(SUM(i.carbs_per_100g * mi.quantity / 100.0), 0) AS INT) AS carbohydrates,
             CAST(IFNULL(SUM(i.fat_per_100g * mi.quantity / 100.0), 0) AS INT) AS fat
         FROM Meals m
         LEFT JOIN Favorites f ON f.mealId = m.meal_id AND f.userId = @userId
@@ -193,7 +193,7 @@ namespace TeamNut.Repositories
 
                 Calories = (int)Math.Round(Convert.ToDouble(reader["calories"])),
                 Protein = (int)Math.Round(Convert.ToDouble(reader["protein"])),
-                Carbs = (int)Math.Round(Convert.ToDouble(reader["carbs"])),
+                Carbohydrates = (int)Math.Round(Convert.ToDouble(reader["carbohydrates"])),
                 Fat = (int)Math.Round(Convert.ToDouble(reader["fat"])),
 
                 IsKeto = Convert.ToInt64(reader["isKeto"]) == 1,

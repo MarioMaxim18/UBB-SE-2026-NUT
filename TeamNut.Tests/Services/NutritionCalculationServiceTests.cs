@@ -172,21 +172,21 @@ namespace TeamNut.Tests.Services
         [InlineData(3020, 150, 84, 416)]
         [InlineData(2420, 165, 67, 289)]
         [InlineData(2720, 135, 85, 354)]
-        public void CalculateCarbNeeds_WithValidInputs_ReturnsCorrectCarbs(
+        public void CalculateCarbohydrateNeeds_WithValidInputs_ReturnsCorrectCarbohydrates(
             int calories,
             int protein,
             int fat,
             int expected)
         {
-            var result = service.CalculateCarbNeeds(calories, protein, fat);
+            var result = service.CalculateCarbohydrateNeeds(calories, protein, fat);
 
             result.Should().Be(expected);
         }
 
         [Fact]
-        public void CalculateCarbNeeds_WithZeroCalories_ReturnsZero()
+        public void CalculateCarbohydrateNeeds_WithZeroCalories_ReturnsZero()
         {
-            var result = service.CalculateCarbNeeds(0, 150, 56);
+            var result = service.CalculateCarbohydrateNeeds(0, 150, 56);
 
             result.Should().Be(0);
         }
@@ -208,7 +208,7 @@ namespace TeamNut.Tests.Services
             userData.Bmi.Should().Be(23);
             userData.CalorieNeeds.Should().BeGreaterThan(0);
             userData.ProteinNeeds.Should().BeGreaterThan(0);
-            userData.CarbNeeds.Should().BeGreaterThan(0);
+            userData.CarbohydrateNeeds.Should().BeGreaterThan(0);
             userData.FatNeeds.Should().BeGreaterThan(0);
         }
 
@@ -238,9 +238,9 @@ namespace TeamNut.Tests.Services
         }
 
         [Fact]
-        public void CalculateCarbNeeds_WhenProteinAndFatExceedCalories_ReturnsZero()
+        public void CalculateCarbohydrateNeeds_WhenProteinAndFatExceedCalories_ReturnsZero()
         {
-            var result = service.CalculateCarbNeeds(100, 50, 50);
+            var result = service.CalculateCarbohydrateNeeds(100, 50, 50);
 
             result.Should().Be(0);
         }
@@ -270,7 +270,7 @@ namespace TeamNut.Tests.Services
         }
 
         [Fact]
-        public void ApplyCalculations_WithNullGoal_CarbsNeverNegative()
+        public void ApplyCalculations_WithNullGoal_CarbohydratesNeverNegative()
         {
             var userData = new UserData
             {
@@ -283,7 +283,7 @@ namespace TeamNut.Tests.Services
 
             service.ApplyCalculations(userData);
 
-            userData.CarbNeeds.Should().BeGreaterThanOrEqualTo(0);
+            userData.CarbohydrateNeeds.Should().BeGreaterThanOrEqualTo(0);
             userData.CalorieNeeds.Should().BeGreaterThan(0);
         }
     }

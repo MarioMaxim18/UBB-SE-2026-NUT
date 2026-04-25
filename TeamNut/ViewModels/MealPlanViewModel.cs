@@ -65,7 +65,7 @@ namespace TeamNut.ModelViews
 
         private const string StatusMealPlanTitleFormat = "Your meal plan for today ({0} goal)";
 
-        private const string NutritionSummaryFormat = "Daily Total: {0} kcal | {1}g protein | {2}g carbs | {3}g fat";
+        private const string NutritionSummaryFormat = "Daily Total: {0} kcal | {1}g protein | {2}g carbohydrates | {3}g fat";
 
         private const string MealSavedSuccessFormat = "All {0} meals saved to daily log!";
 
@@ -109,12 +109,12 @@ namespace TeamNut.ModelViews
             set => SetProperty(ref this.totalProtein, value);
         }
 
-        private int totalCarbs;
+        private int totalCarbohydrates;
 
-        public int TotalCarbs
+        public int TotalCarbohydrates
         {
-            get => this.totalCarbs;
-            set => SetProperty(ref this.totalCarbs, value);
+            get => this.totalCarbohydrates;
+            set => SetProperty(ref this.totalCarbohydrates, value);
         }
 
         private int totalFat;
@@ -285,7 +285,7 @@ namespace TeamNut.ModelViews
                 NutritionSummaryFormat,
                 TotalCalories,
                 TotalProtein,
-                TotalCarbs,
+                TotalCarbohydrates,
                 TotalFat);
 
             this.GoalDescription = goalName + GoalSuffix;
@@ -314,7 +314,7 @@ namespace TeamNut.ModelViews
         {
             TotalCalories = this.GeneratedMeals.Sum(m => m.Calories);
             TotalProtein = this.GeneratedMeals.Sum(m => m.Protein);
-            TotalCarbs = this.GeneratedMeals.Sum(m => m.Carbs);
+            TotalCarbohydrates = this.GeneratedMeals.Sum(m => m.Carbohydrates);
             TotalFat = this.GeneratedMeals.Sum(m => m.Fat);
         }
 

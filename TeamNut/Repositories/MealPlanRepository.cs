@@ -148,7 +148,7 @@ namespace TeamNut.Repositories
                 using var userDataCmd = new SqliteCommand(getUserDataSql, conn, transaction);
                 userDataCmd.Parameters.AddWithValue("@userId", userId);
 
-                int calorieNeeds = 2000, proteinNeeds = 150, carbNeeds = 200, fatNeeds = 65;
+                int calorieNeeds = 2000, proteinNeeds = 150, carbohydrateNeeds = 200, fatNeeds = 65;
                 string goal = "general";
 
                 using (var udReader = await userDataCmd.ExecuteReaderAsync())
@@ -157,11 +157,11 @@ namespace TeamNut.Repositories
                     {
                         int rawCalories = udReader["calorie_needs"] != DBNull.Value ? Convert.ToInt32(udReader["calorie_needs"]) : 0;
                         int rawProtein = udReader["protein_needs"] != DBNull.Value ? Convert.ToInt32(udReader["protein_needs"]) : 0;
-                        int rawCarbs = udReader["carb_needs"] != DBNull.Value ? Convert.ToInt32(udReader["carb_needs"]) : 0;
+                        int rawCarbohydrates = udReader["carb_needs"] != DBNull.Value ? Convert.ToInt32(udReader["carb_needs"]) : 0;
                         int rawFat = udReader["fat_needs"] != DBNull.Value ? Convert.ToInt32(udReader["fat_needs"]) : 0;
                         calorieNeeds = rawCalories > 0 ? rawCalories : 2000;
                         proteinNeeds = rawProtein > 0 ? rawProtein : 150;
-                        carbNeeds = rawCarbs > 0 ? rawCarbs : 200;
+                        carbohydrateNeeds = rawCarbohydrates > 0 ? rawCarbohydrates : 200;
                         fatNeeds = rawFat > 0 ? rawFat : 65;
                         goal = udReader["goal"]?.ToString() ?? "general";
                     }
@@ -204,12 +204,12 @@ namespace TeamNut.Repositories
                 }
 
                 const string poolSql = @"
-                    SELECT meal_id, total_calories, total_protein, total_carbs, total_fat
+                    SELECT meal_id, total_calories, total_protein, total_carbohydrates, total_fat
                     FROM (
                         SELECT m.meal_id,
                                CAST(COALESCE(SUM(i.calories_per_100g * mi.quantity / 100), 0) AS INT) AS total_calories,
                                CAST(COALESCE(SUM(i.protein_per_100g  * mi.quantity / 100), 0) AS INT) AS total_protein,
-                               CAST(COALESCE(SUM(i.carbs_per_100g    * mi.quantity / 100), 0) AS INT) AS total_carbs,
+                               CAST(COALESCE(SUM(i.carbs_per_100g    * mi.quantity / 100), 0) AS INT) AS total_carbohydrates,
                                CAST(COALESCE(SUM(i.fat_per_100g      * mi.quantity / 100), 0) AS INT) AS total_fat
                         FROM Meals m
                         LEFT JOIN MealsIngredients mi ON m.meal_id = mi.meal_id
@@ -219,7 +219,7 @@ namespace TeamNut.Repositories
                     ORDER BY RANDOM()
                     LIMIT 50";
 
-                var pool = new List<(int id, int calories, int protein, int carbs, int fat)>();
+                var pool = new List<(int id, int calories, int protein, int carbohydrates, int fat)>();
                 using (var poolCmd = new SqliteCommand(poolSql, conn, transaction))
                 using (var poolReader = await poolCmd.ExecuteReaderAsync())
                 {
@@ -229,7 +229,7 @@ namespace TeamNut.Repositories
                             Convert.ToInt32(poolReader["meal_id"]),
                             Convert.ToInt32(poolReader["total_calories"]),
                             Convert.ToInt32(poolReader["total_protein"]),
-                            Convert.ToInt32(poolReader["total_carbs"]),
+                            Convert.ToInt32(poolReader["total_carbohydrates"]),
                             Convert.ToInt32(poolReader["total_fat"])));
                     }
                 }
@@ -315,7 +315,7 @@ namespace TeamNut.Repositories
                     mpm.isConsumed,
                     COALESCE(SUM(i.calories_per_100g * mi.quantity / 100), 0) as total_calories,
                     COALESCE(SUM(i.protein_per_100g * mi.quantity / 100), 0) as total_protein,
-                    COALESCE(SUM(i.carbs_per_100g * mi.quantity / 100), 0) as total_carbs,
+                    COALESCE(SUM(i.carbs_per_100g * mi.quantity / 100), 0) as total_carbohydrates,
                     COALESCE(SUM(i.fat_per_100g * mi.quantity / 100), 0) as total_fat
                 FROM Meals m
                 INNER JOIN MealPlanMeal mpm ON m.meal_id = mpm.mealId
@@ -353,7 +353,7 @@ namespace TeamNut.Repositories
                     Description = reader["description"]?.ToString() ?? string.Empty,
                     Calories = Convert.ToInt32(reader["total_calories"]),
                     Protein = Convert.ToInt32(reader["total_protein"]),
-                    Carbs = Convert.ToInt32(reader["total_carbs"]),
+                    Carbohydrates = Convert.ToInt32(reader["total_carbohydrates"]),
                     Fat = Convert.ToInt32(reader["total_fat"]),
                 });
             }
@@ -392,7 +392,7 @@ namespace TeamNut.Repositories
                 double quantity = Convert.ToDouble(reader["quantity"]);
                 double caloriesPer100g = Convert.ToDouble(reader["calories_per_100g"]);
                 double proteinPer100g = Convert.ToDouble(reader["protein_per_100g"]);
-                double carbsPer100g = Convert.ToDouble(reader["carbs_per_100g"]);
+                double carbohydratesPer100g = Convert.ToDouble(reader["carbs_per_100g"]);
                 double fatPer100g = Convert.ToDouble(reader["fat_per_100g"]);
 
                 ingredients.Add(new IngredientViewModel
@@ -402,7 +402,7 @@ namespace TeamNut.Repositories
                     Quantity = quantity,
                     Calories = Math.Round(caloriesPer100g * quantity / 100, 1),
                     Protein = Math.Round(proteinPer100g * quantity / 100, 1),
-                    Carbs = Math.Round(carbsPer100g * quantity / 100, 1),
+                    Carbohydrates = Math.Round(carbohydratesPer100g * quantity / 100, 1),
                     Fat = Math.Round(fatPer100g * quantity / 100, 1),
                 });
             }

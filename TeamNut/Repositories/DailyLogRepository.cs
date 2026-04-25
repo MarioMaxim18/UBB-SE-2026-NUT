@@ -54,7 +54,7 @@ namespace TeamNut.Repositories
                 SELECT
                     COALESCE(SUM(i.calories_per_100g * mi.quantity / 100.0), 0) AS total_calories,
                     COALESCE(SUM(i.protein_per_100g * mi.quantity / 100.0), 0) AS total_protein,
-                    COALESCE(SUM(i.carbs_per_100g * mi.quantity / 100.0), 0) AS total_carbs,
+                    COALESCE(SUM(i.carbs_per_100g * mi.quantity / 100.0), 0) AS total_carbohydrates,
                     COALESCE(SUM(i.fat_per_100g * mi.quantity / 100.0), 0) AS total_fats
                 FROM DailyLogs dl
                 INNER JOIN Meals m ON m.meal_id = dl.mealId
@@ -78,7 +78,7 @@ namespace TeamNut.Repositories
                     LoggedAt = startInclusive,
                     Calories = Convert.ToDouble(reader["total_calories"]),
                     Protein = Convert.ToDouble(reader["total_protein"]),
-                    Carbs = Convert.ToDouble(reader["total_carbs"]),
+                    Carbohydrates = Convert.ToDouble(reader["total_carbohydrates"]),
                     Fats = Convert.ToDouble(reader["total_fats"]),
                 };
             }

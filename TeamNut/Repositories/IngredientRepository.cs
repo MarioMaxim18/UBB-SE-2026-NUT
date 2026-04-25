@@ -95,7 +95,7 @@ namespace TeamNut.Repositories
                     Name = reader["name"]?.ToString() ?? string.Empty,
                     CaloriesPer100g = GetDoubleOrZero(reader, "calories_per_100g"),
                     ProteinPer100g = GetDoubleOrZero(reader, "protein_per_100g"),
-                    CarbsPer100g = GetDoubleOrZero(reader, "carbs_per_100g"),
+                    CarbohydratesPer100g = GetDoubleOrZero(reader, "carbs_per_100g"),
                     FatPer100g = GetDoubleOrZero(reader, "fat_per_100g"),
                 });
             }

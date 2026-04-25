@@ -26,7 +26,7 @@ namespace TeamNut
 
         private const string LabelProtein = "Protein";
 
-        private const string LabelCarbs = "Carbs";
+        private const string LabelCarbohydrates = "Carbohydrates";
 
         private const string LabelFat = "Fat";
 
@@ -111,7 +111,7 @@ namespace TeamNut
                 Text =
                     $"{LabelCalories}: {meal.Calories}{LineBreak}" +
                     $"{LabelProtein}: {meal.Protein}{UnitGrams}{LineBreak}" +
-                    $"{LabelCarbs}: {meal.Carbs}{UnitGrams}{LineBreak}" +
+                    $"{LabelCarbohydrates}: {meal.Carbohydrates}{UnitGrams}{LineBreak}" +
                     $"{LabelFat}: {meal.Fat}{UnitGrams}" +
                     $"{DoubleLineBreak}Ingredients:{LineBreak}" +
                     ingredientsText

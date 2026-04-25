@@ -42,7 +42,7 @@ namespace TeamNut.Repositories
                 using var conn = new SqliteConnection(connectionString);
                 using var cmd = new SqliteCommand(@"
                 INSERT INTO UserData (user_id, weight, height, age, gender, goal, bmi, calorie_needs, protein_needs, carb_needs, fat_needs)
-                VALUES (@userId, @weight, @height, @age, @gender, @goal, @bmi, @calories, @protein, @carbs, @fat)", conn);
+                VALUES (@userId, @weight, @height, @age, @gender, @goal, @bmi, @calories, @protein, @carbohydrates, @fat)", conn);
 
                 cmd.Parameters.AddWithValue("@userId", data.UserId);
                 cmd.Parameters.AddWithValue("@weight", data.Weight);
@@ -53,7 +53,7 @@ namespace TeamNut.Repositories
                 cmd.Parameters.AddWithValue("@bmi", data.Bmi);
                 cmd.Parameters.AddWithValue("@calories", data.CalorieNeeds);
                 cmd.Parameters.AddWithValue("@protein", data.ProteinNeeds);
-                cmd.Parameters.AddWithValue("@carbs", data.CarbNeeds);
+                cmd.Parameters.AddWithValue("@carbohydrates", data.CarbohydrateNeeds);
                 cmd.Parameters.AddWithValue("@fat", data.FatNeeds);
 
                 await conn.OpenAsync();
@@ -176,7 +176,7 @@ namespace TeamNut.Repositories
                         Bmi = Convert.ToInt32(reader.GetValue(7)),
                         CalorieNeeds = Convert.ToInt32(reader.GetValue(8)),
                         ProteinNeeds = Convert.ToInt32(reader.GetValue(9)),
-                        CarbNeeds = Convert.ToInt32(reader.GetValue(10)),
+                        CarbohydrateNeeds = Convert.ToInt32(reader.GetValue(10)),
                         FatNeeds = Convert.ToInt32(reader.GetValue(11)),
                     };
                 }
@@ -190,7 +190,7 @@ namespace TeamNut.Repositories
                 UPDATE UserData
                 SET weight = @weight, height = @height, age = @age, gender = @gender, goal = @goal,
                     bmi = @bmi, calorie_needs = @calories, protein_needs = @protein,
-                    carb_needs = @carbs, fat_needs = @fat
+                    carb_needs = @carbohydrates, fat_needs = @fat
                 WHERE user_id = @userId", conn);
 
                 cmd.Parameters.AddWithValue("@userId", data.UserId);
@@ -202,7 +202,7 @@ namespace TeamNut.Repositories
                 cmd.Parameters.AddWithValue("@bmi", data.Bmi);
                 cmd.Parameters.AddWithValue("@calories", data.CalorieNeeds);
                 cmd.Parameters.AddWithValue("@protein", data.ProteinNeeds);
-                cmd.Parameters.AddWithValue("@carbs", data.CarbNeeds);
+                cmd.Parameters.AddWithValue("@carbohydrates", data.CarbohydrateNeeds);
                 cmd.Parameters.AddWithValue("@fat", data.FatNeeds);
 
                 await conn.OpenAsync();

@@ -17,7 +17,7 @@ namespace TeamNut.Models
 
         public double Protein { get; set; }
 
-        public double Carbs { get; set; }
+        public double Carbohydrates { get; set; }
 
         public double Fats { get; set; }
     }

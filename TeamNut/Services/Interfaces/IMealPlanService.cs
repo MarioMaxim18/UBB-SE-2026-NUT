@@ -6,7 +6,7 @@ namespace TeamNut.Services.Interfaces
 {
     public interface IMealPlanService
     {
-        (int totalCalories, int totalProtein, int totalCarbs, int totalFat) CalculateTotalNutrition(List<Meal> meals);
+        (int totalCalories, int totalProtein, int totalCarbohydrates, int totalFat) CalculateTotalNutrition(List<Meal> meals);
         Task<int> GeneratePersonalizedMealPlanAsync(int userId);
         Task<IEnumerable<MealPlan>> GetAllMealPlansAsync();
         string GetCalorieAdjustmentDescription(string goal, int baseTDEE);
@@ -17,6 +17,6 @@ namespace TeamNut.Services.Interfaces
         Task<string> GetUserGoalAsync(int userId);
         Task SaveMealsToDailyLogAsync(int mealPlanId);
         Task SaveMealToDailyLogAsync(int mealId, int calories);
-        bool ValidateMealPlan(List<Meal> meals, int targetCalories, int targetProtein, int targetCarbs, int targetFat, double tolerance = 0.1);
+        bool ValidateMealPlan(List<Meal> meals, int targetCalories, int targetProtein, int targetCarbohydrates, int targetFat, double tolerance = 0.1);
     }
 }

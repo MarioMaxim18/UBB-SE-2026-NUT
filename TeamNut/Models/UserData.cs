@@ -79,7 +79,7 @@ namespace TeamNut.Models
 
         private const int CaloriesPerGramProtein = 4;
 
-        private const int CaloriesPerGramCarbs = 4;
+        private const int CaloriesPerGramCarbohydrates = 4;
 
         private const int CaloriesPerGramFat = 9;
 
@@ -120,7 +120,7 @@ namespace TeamNut.Models
         public partial int ProteinNeeds { get; set; }
 
         [ObservableProperty]
-        public partial int CarbNeeds { get; set; }
+        public partial int CarbohydrateNeeds { get; set; }
 
         [ObservableProperty]
         public partial int FatNeeds { get; set; }
@@ -245,7 +245,7 @@ namespace TeamNut.Models
             return (int)Math.Round(fatCalories / CaloriesPerGramFat);
         }
 
-        public int CalculateCarbNeeds()
+        public int CalculateCarbohydrateNeeds()
         {
             int calories = this.CalculateCalorieNeeds();
             int proteinCalories = this.CalculateProteinNeeds() * CaloriesPerGramProtein;
@@ -256,8 +256,8 @@ namespace TeamNut.Models
                 return 0;
             }
 
-            int carbCalories = Math.Max(0, calories - proteinCalories - fatCalories);
-            return (int)Math.Round(carbCalories / (double)CaloriesPerGramCarbs);
+            int carbohydrateCalories = Math.Max(0, calories - proteinCalories - fatCalories);
+            return (int)Math.Round(carbohydrateCalories / (double)CaloriesPerGramCarbohydrates);
         }
     }
 }

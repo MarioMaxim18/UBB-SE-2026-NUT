@@ -241,7 +241,7 @@ namespace TeamNut.Tests.Models
         [InlineData(75, 180, 25, "male", "bulk", 416)]
         [InlineData(75, 180, 25, "male", "cut", 289)]
         [InlineData(75, 180, 25, "male", "maintenance", 354)]
-        public void CalculateCarbNeeds_WithValidInputs_ReturnsCorrectCarbs(
+        public void CalculateCarbohydrateNeeds_WithValidInputs_ReturnsCorrectCarbohydrates(
             int weight,
             int height,
             int age,
@@ -258,12 +258,12 @@ namespace TeamNut.Tests.Models
                 Goal = goal
             };
 
-            var result = userData.CalculateCarbNeeds();
+            var result = userData.CalculateCarbohydrateNeeds();
 
             result.Should().Be(expected);
         }
         [Fact]
-        public void CalculateCarbNeeds_WithZeroCalories_ReturnsZero()
+        public void CalculateCarbohydrateNeeds_WithZeroCalories_ReturnsZero()
         {
             var userData = new UserData
             {
@@ -274,13 +274,13 @@ namespace TeamNut.Tests.Models
                 Goal = "maintenance"
             };
 
-            var result = userData.CalculateCarbNeeds();
+            var result = userData.CalculateCarbohydrateNeeds();
 
             result.Should().Be(0);
         }
 
         [Fact]
-        public void CalculateCarbNeeds_WhenProteinAndFatExceedCalories_ReturnsZero()
+        public void CalculateCarbohydrateNeeds_WhenProteinAndFatExceedCalories_ReturnsZero()
         {
             var userData = new UserData
             {
@@ -291,7 +291,7 @@ namespace TeamNut.Tests.Models
                 Goal = "cut"
             };
 
-            var result = userData.CalculateCarbNeeds();
+            var result = userData.CalculateCarbohydrateNeeds();
 
             result.Should().BeGreaterThanOrEqualTo(0);
         }

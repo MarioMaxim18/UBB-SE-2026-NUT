@@ -50,7 +50,7 @@ namespace TeamNut.Services
 
         private const int CaloriesPerGramProtein = 4;
 
-        private const int CaloriesPerGramCarbs = 4;
+        private const int CaloriesPerGramCarbohydrates = 4;
 
         private const int CaloriesPerGramFat = 9;
 
@@ -167,7 +167,7 @@ namespace TeamNut.Services
             return (int)Math.Round(fatCalories / CaloriesPerGramFat);
         }
 
-        public int CalculateCarbNeeds(int calorieNeeds, int proteinNeeds, int fatNeeds)
+        public int CalculateCarbohydrateNeeds(int calorieNeeds, int proteinNeeds, int fatNeeds)
         {
             int proteinCalories = proteinNeeds * CaloriesPerGramProtein;
             int fatCalories = fatNeeds * CaloriesPerGramFat;
@@ -177,8 +177,8 @@ namespace TeamNut.Services
                 return 0;
             }
 
-            int carbCalories = Math.Max(0, calorieNeeds - proteinCalories - fatCalories);
-            return (int)Math.Round(carbCalories / (double)CaloriesPerGramCarbs);
+            int carbohydrateCalories = Math.Max(0, calorieNeeds - proteinCalories - fatCalories);
+            return (int)Math.Round(carbohydrateCalories / (double)CaloriesPerGramCarbohydrates);
         }
 
         public void ApplyCalculations(UserData userData, DateTimeOffset? birthDate = null)
@@ -202,7 +202,7 @@ namespace TeamNut.Services
                 userData.Goal);
             userData.ProteinNeeds = CalculateProteinNeeds(userData.Weight, userData.Goal);
             userData.FatNeeds = CalculateFatNeeds(userData.CalorieNeeds, userData.Goal);
-            userData.CarbNeeds = CalculateCarbNeeds(
+            userData.CarbohydrateNeeds = CalculateCarbohydrateNeeds(
                 userData.CalorieNeeds,
                 userData.ProteinNeeds,
                 userData.FatNeeds);
