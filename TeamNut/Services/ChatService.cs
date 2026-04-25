@@ -7,25 +7,25 @@ namespace TeamNut.Services
 
     public class ChatService : IChatService
     {
-        private readonly IChatRepository repo;
+        private readonly IChatRepository chatRepository;
 
-        public ChatService(IChatRepository rrepo)
+        public ChatService(IChatRepository chatRepository)
         {
-            repo = rrepo;
+            this.chatRepository = chatRepository;
         }
 
-        public Task<IEnumerable<Conversation>> GetAllConversationsAsync() => repo.GetAllConversationsAsync();
+        public Task<IEnumerable<Conversation>> GetAllConversationsAsync() => chatRepository.GetAllConversationsAsync();
 
-        public Task<Conversation> GetOrCreateConversationForUserAsync(int userId) => repo.GetOrCreateConversationForUserAsync(userId);
+        public Task<Conversation> GetOrCreateConversationForUserAsync(int userId) => chatRepository.GetOrCreateConversationForUserAsync(userId);
 
-        public Task<IEnumerable<Message>> GetMessagesForConversationAsync(int conversationId) => repo.GetMessagesForConversationAsync(conversationId);
+        public Task<IEnumerable<Message>> GetMessagesForConversationAsync(int conversationId) => chatRepository.GetMessagesForConversationAsync(conversationId);
 
-        public Task<IEnumerable<Conversation>> GetConversationsWithMessagesAsync() => repo.GetConversationsWithMessagesAsync();
+        public Task<IEnumerable<Conversation>> GetConversationsWithMessagesAsync() => chatRepository.GetConversationsWithMessagesAsync();
 
-        public Task<IEnumerable<Conversation>> GetConversationsWhereNutritionistRespondedAsync(int nutritionistId) => repo.GetConversationsWhereNutritionistRespondedAsync(nutritionistId);
+        public Task<IEnumerable<Conversation>> GetConversationsWhereNutritionistRespondedAsync(int nutritionistId) => chatRepository.GetConversationsWhereNutritionistRespondedAsync(nutritionistId);
 
-        public Task AddMessageAsync(int conversationId, int senderId, string text, bool isNutritionist) => repo.AddMessageAsync(conversationId, senderId, text, isNutritionist);
+        public Task AddMessageAsync(int conversationId, int senderId, string text, bool isNutritionist) => chatRepository.AddMessageAsync(conversationId, senderId, text, isNutritionist);
 
-        public Task<IEnumerable<Conversation>> GetConversationsWithUserMessagesAsync() => repo.GetConversationsWithUserMessagesAsync();
+        public Task<IEnumerable<Conversation>> GetConversationsWithUserMessagesAsync() => chatRepository.GetConversationsWithUserMessagesAsync();
     }
 }

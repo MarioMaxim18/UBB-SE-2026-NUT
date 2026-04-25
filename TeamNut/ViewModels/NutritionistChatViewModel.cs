@@ -74,14 +74,14 @@ namespace TeamNut.ViewModels
 
         public bool IsEmptyPlaceholderVisible => !IsNutritionistUser && !HasMessages;
 
-        public NutritionistChatViewModel(IChatService cchatService)
+        public NutritionistChatViewModel(IChatService chatService)
         {
             this.Conversations = new ObservableCollection<Conversation>();
             this.Messages = new ObservableCollection<Message>();
             this.InputText = string.Empty;
             this.StatusMessage = string.Empty;
 
-            this.chatService = cchatService;
+            this.chatService = chatService;
 
             this.IsNutritionistUser = UserSession.Role == NutritionistRole;
 
@@ -149,9 +149,9 @@ namespace TeamNut.ViewModels
             }
 
             this.Conversations.Clear();
-            foreach (var c in convs)
+            foreach (var conversation in convs)
             {
-                this.Conversations.Add(c);
+                this.Conversations.Add(conversation);
             }
 
             if (UserSession.Role != NutritionistRole
@@ -173,7 +173,7 @@ namespace TeamNut.ViewModels
             var msgs = (await this.chatService.GetMessagesForConversationAsync(conversationId)).ToList();
 
             if (this.Messages.Count == msgs.Count
-                && this.Messages.Zip(msgs, (a, b) => a.Id == b.Id).All(eq => eq))
+                && this.Messages.Zip(msgs, (existingMessage, newMessage) => existingMessage.Id == newMessage.Id).All(eq => eq))
             {
                 this.HasMessages = this.Messages.Count > 0;
                 return;
@@ -181,9 +181,9 @@ namespace TeamNut.ViewModels
 
             this.Messages.Clear();
 
-            foreach (var m in msgs)
+            foreach (var message in msgs)
             {
-                this.Messages.Add(m);
+                this.Messages.Add(message);
             }
 
             this.HasMessages = this.Messages.Count > 0;

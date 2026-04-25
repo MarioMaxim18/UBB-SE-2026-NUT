@@ -15,11 +15,11 @@ namespace TeamNut.Services
 
         private readonly IInventoryRepository inventoryRepository;
 
-        public ShoppingListService(IShoppingListRepository sshoppingListRepository, IIngredientRepository iingredientRepository, IInventoryRepository iinventoryRepository)
+        public ShoppingListService(IShoppingListRepository shoppingListRepository, IIngredientRepository ingredientRepository, IInventoryRepository inventoryRepository)
         {
-            this.repository = sshoppingListRepository;
-            this.ingredientRepository = iingredientRepository;
-            this.inventoryRepository = iinventoryRepository;
+            this.repository = shoppingListRepository;
+            this.ingredientRepository = ingredientRepository;
+            this.inventoryRepository = inventoryRepository;
         }
 
         public async Task<List<ShoppingItem>> GetShoppingItemsAsync(int userId)

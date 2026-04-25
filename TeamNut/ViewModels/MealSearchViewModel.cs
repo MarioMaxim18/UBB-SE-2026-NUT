@@ -48,11 +48,11 @@ namespace TeamNut.ViewModels
         public partial bool CanGoToNextPage { get; set; }
 
         public MealSearchViewModel(
-            IMealService mmealService,
-            IPaginationService ppaginationService)
+            IMealService mealService,
+            IPaginationService paginationService)
         {
-            this.mealService = mmealService;
-            this.paginationService = ppaginationService;
+            this.mealService = mealService;
+            this.paginationService = paginationService;
             _ = this.LoadMealsAsync();
         }
 

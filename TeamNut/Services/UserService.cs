@@ -15,11 +15,11 @@ namespace TeamNut.Services
         private readonly INutritionCalculationService nutritionCalculationService;
 
         public UserService(
-            IUserRepository uuserRepository,
-            INutritionCalculationService nnutritionCalculationService)
+            IUserRepository userRepository,
+            INutritionCalculationService nutritionCalculationService)
         {
-            userRepository = uuserRepository;
-            nutritionCalculationService = nnutritionCalculationService;
+            this.userRepository = userRepository;
+            this.nutritionCalculationService = nutritionCalculationService;
         }
 
         public async Task<bool> CheckIfUsernameExistsAsync(string username)

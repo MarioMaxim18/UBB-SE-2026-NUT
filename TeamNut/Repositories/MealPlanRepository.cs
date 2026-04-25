@@ -155,13 +155,13 @@ namespace TeamNut.Repositories
                 {
                     if (await udReader.ReadAsync())
                     {
-                        int rawCal = udReader["calorie_needs"] != DBNull.Value ? Convert.ToInt32(udReader["calorie_needs"]) : 0;
-                        int rawPro = udReader["protein_needs"] != DBNull.Value ? Convert.ToInt32(udReader["protein_needs"]) : 0;
-                        int rawCarb = udReader["carb_needs"] != DBNull.Value ? Convert.ToInt32(udReader["carb_needs"]) : 0;
+                        int rawCalories = udReader["calorie_needs"] != DBNull.Value ? Convert.ToInt32(udReader["calorie_needs"]) : 0;
+                        int rawProtein = udReader["protein_needs"] != DBNull.Value ? Convert.ToInt32(udReader["protein_needs"]) : 0;
+                        int rawCarbs = udReader["carb_needs"] != DBNull.Value ? Convert.ToInt32(udReader["carb_needs"]) : 0;
                         int rawFat = udReader["fat_needs"] != DBNull.Value ? Convert.ToInt32(udReader["fat_needs"]) : 0;
-                        calorieNeeds = rawCal > 0 ? rawCal : 2000;
-                        proteinNeeds = rawPro > 0 ? rawPro : 150;
-                        carbNeeds = rawCarb > 0 ? rawCarb : 200;
+                        calorieNeeds = rawCalories > 0 ? rawCalories : 2000;
+                        proteinNeeds = rawProtein > 0 ? rawProtein : 150;
+                        carbNeeds = rawCarbs > 0 ? rawCarbs : 200;
                         fatNeeds = rawFat > 0 ? rawFat : 65;
                         goal = udReader["goal"]?.ToString() ?? "general";
                     }
@@ -219,7 +219,7 @@ namespace TeamNut.Repositories
                     ORDER BY RANDOM()
                     LIMIT 50";
 
-                var pool = new List<(int id, int cal, int pro, int carb, int fat)>();
+                var pool = new List<(int id, int calories, int protein, int carbs, int fat)>();
                 using (var poolCmd = new SqliteCommand(poolSql, conn, transaction))
                 using (var poolReader = await poolCmd.ExecuteReaderAsync())
                 {
@@ -239,7 +239,7 @@ namespace TeamNut.Repositories
                     throw new Exception("Not enough meals in the database to generate a plan.");
                 }
 
-                int bi = 0, bj = 1, bk = 2;
+                int bestBreakfastIndex = 0, bestLunchIndex = 1, bestDinnerIndex = 2;
                 int bestScore = int.MaxValue;
                 bool bestHasFavourite = false;
 
@@ -249,7 +249,7 @@ namespace TeamNut.Repositories
                     {
                         for (int k = j + 1; k < pool.Count; k++)
                         {
-                            int score = Math.Abs(pool[i].cal + pool[j].cal + pool[k].cal - calorieNeeds);
+                            int score = Math.Abs(pool[i].calories + pool[j].calories + pool[k].calories - calorieNeeds);
                             bool hasFav = favouriteIds.Contains(pool[i].id)
                                        || favouriteIds.Contains(pool[j].id)
                                        || favouriteIds.Contains(pool[k].id);
@@ -261,15 +261,15 @@ namespace TeamNut.Repositories
                             {
                                 bestScore = score;
                                 bestHasFavourite = hasFav;
-                                bi = i;
-                                bj = j;
-                                bk = k;
+                                bestBreakfastIndex = i;
+                                bestLunchIndex = j;
+                                bestDinnerIndex = k;
                             }
                         }
                     }
                 }
 
-                var selected = new[] { pool[bi], pool[bj], pool[bk] };
+                var selected = new[] { pool[bestBreakfastIndex], pool[bestLunchIndex], pool[bestDinnerIndex] };
                 var mealTypes = new[] { "breakfast", "lunch", "dinner" };
 
                 const string insertMealPlanMealSql = @"INSERT INTO MealPlanMeal (mealPlanId, mealId, mealType, assigned_at, isConsumed)

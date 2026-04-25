@@ -40,9 +40,9 @@ namespace TeamNut.ViewModels
         [ObservableProperty]
         public partial Reminder? NextReminder { get; set; }
 
-        public RemindersViewModel(IReminderService rreminderService)
+        public RemindersViewModel(IReminderService reminderService)
         {
-            this.reminderService = rreminderService;
+            this.reminderService = reminderService;
             try
             {
                 this.dispatcher = DispatcherQueue.GetForCurrentThread();

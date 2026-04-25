@@ -24,9 +24,9 @@ namespace TeamNut.Services
 
         private const string ConfirmConsumptionLogFormat = "User {0} confirmed meal {1}. Updating logs...";
 
-        public ReminderService(IReminderRepository rreminderRepository)
+        public ReminderService(IReminderRepository reminderRepository)
         {
-            reminderRepository = rreminderRepository;
+            this.reminderRepository = reminderRepository;
         }
 
         public async Task<Reminder?> GetNextReminder(int userId)

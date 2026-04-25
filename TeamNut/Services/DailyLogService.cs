@@ -27,11 +27,11 @@ namespace TeamNut.Services
 
         private const string ErrorUserNotLoggedIn = "User is not logged in.";
 
-        public DailyLogService(IDailyLogRepository dailyLogRepo, IUserRepository userRepo, IMealService mmealService)
+        public DailyLogService(IDailyLogRepository dailyLogRepository, IUserRepository userRepository, IMealService mealService)
         {
-            this.repository = dailyLogRepo;
-            this.userRepository = userRepo;
-            this.mealService = mmealService;
+            this.repository = dailyLogRepository;
+            this.userRepository = userRepository;
+            this.mealService = mealService;
         }
 
         private int GetUserId()

@@ -92,12 +92,12 @@ namespace TeamNut.ViewModels
 
         public DailyLogViewModel(
             IDailyLogService dailyLogService,
-            IFormattingService fformattingService,
-            IFilteringService ffilteringService)
+            IFormattingService formattingService,
+            IFilteringService filteringService)
         {
             this.service = dailyLogService;
-            this.formattingService = fformattingService;
-            this.filteringService = ffilteringService;
+            this.formattingService = formattingService;
+            this.filteringService = filteringService;
             _ = this.LoadMealsForAutocompleteAsync();
         }
 

@@ -70,11 +70,11 @@ namespace TeamNut.Services
 
         private const string ErrUserMustBeLoggedIn = "User must be logged in to save daily logs.";
 
-        public MealPlanService(IMealPlanRepository mmealPlanRepository, IUserRepository uuserRepository, IReminderService rreminderService)
+        public MealPlanService(IMealPlanRepository mealPlanRepository, IUserRepository userRepository, IReminderService reminderService)
         {
-            this.mealPlanRepository = mmealPlanRepository;
-            this.userRepository = uuserRepository;
-            this.reminderService = rreminderService;
+            this.mealPlanRepository = mealPlanRepository;
+            this.userRepository = userRepository;
+            this.reminderService = reminderService;
         }
 
         public async Task<int> GeneratePersonalizedMealPlanAsync(int userId)
@@ -97,9 +97,9 @@ namespace TeamNut.Services
                         await this.reminderService.GetUserReminders(userId);
 
                     bool alreadyHasTodayReminder = false;
-                    foreach (var r in existing)
+                    foreach (var reminder in existing)
                     {
-                        if (r.ReminderDate == today)
+                        if (reminder.ReminderDate == today)
                         {
                             alreadyHasTodayReminder = true;
                             break;
@@ -297,14 +297,14 @@ namespace TeamNut.Services
             int targetFat,
             double tolerance = DefaultTolerance)
         {
-            var (cal, p, c, f) =
+            var (calories, protein, carbs, fat) =
                 CalculateTotalNutrition(meals);
 
             return
-                Math.Abs(cal - targetCalories) <= targetCalories * tolerance &&
-                Math.Abs(p - targetProtein) <= targetProtein * tolerance &&
-                Math.Abs(c - targetCarbs) <= targetCarbs * tolerance &&
-                Math.Abs(f - targetFat) <= targetFat * tolerance;
+                Math.Abs(calories - targetCalories) <= targetCalories * tolerance &&
+                Math.Abs(protein - targetProtein) <= targetProtein * tolerance &&
+                Math.Abs(carbs - targetCarbs) <= targetCarbs * tolerance &&
+                Math.Abs(fat - targetFat) <= targetFat * tolerance;
         }
 
         public string GetCalorieAdjustmentDescription(

@@ -148,7 +148,7 @@ namespace TeamNut.ModelViews
         [ObservableProperty]
         public partial string ErrorDialogMessage { get; set; }
 
-        public MealPlanViewModel(IMealPlanService mmealPlanService)
+        public MealPlanViewModel(IMealPlanService mealPlanService)
         {
             this.GeneratedMeals = new ObservableCollection<MealViewModel>();
             this.StatusMessage = string.Empty;
@@ -156,7 +156,7 @@ namespace TeamNut.ModelViews
             this.GoalDescription = string.Empty;
             this.ErrorDialogTitle = string.Empty;
             this.ErrorDialogMessage = string.Empty;
-            this.mealPlanService = mmealPlanService;
+            this.mealPlanService = mealPlanService;
         }
 
         [RelayCommand]

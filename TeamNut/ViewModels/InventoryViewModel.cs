@@ -102,11 +102,11 @@ namespace TeamNut.ViewModels
         public ObservableCollection<Ingredient> FilteredIngredients { get; } = new ObservableCollection<Ingredient>();
 
         public InventoryViewModel(
-            IInventoryService iinventoryService,
-            IFilteringService ffilteringService)
+            IInventoryService inventoryService,
+            IFilteringService filteringService)
         {
-            this.inventoryService = iinventoryService;
-            this.filteringService = ffilteringService;
+            this.inventoryService = inventoryService;
+            this.filteringService = filteringService;
             this.currentUserId = Models.UserSession.UserId ?? 0;
 
             _ = this.LoadInventoryAsync();
@@ -181,17 +181,17 @@ namespace TeamNut.ViewModels
 
             try
             {
-                int qty = (int)Math.Round(QuantityToAdd);
+                int roundedQuantity = (int)Math.Round(QuantityToAdd);
                 await this.inventoryService.AddToPantry(
                     this.currentUserId,
                     SelectedIngredient.FoodId,
-                    qty);
+                    roundedQuantity);
 
                 await this.LoadInventoryAsync();
 
                 StatusMessage = string.Format(
                     AddItemSuccessMessage,
-                    qty,
+                    roundedQuantity,
                     SelectedIngredient.Name);
 
                 IngredientSearchText = string.Empty;

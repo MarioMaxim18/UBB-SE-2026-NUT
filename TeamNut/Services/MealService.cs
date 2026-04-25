@@ -12,9 +12,9 @@ namespace TeamNut.Services
     {
         private readonly IMealRepository mealRepository;
 
-        public MealService(IMealRepository mmealRepository)
+        public MealService(IMealRepository mealRepository)
         {
-            mealRepository = mmealRepository;
+            this.mealRepository = mealRepository;
         }
 
         public async Task<List<Meal>> GetMealsAsync(MealFilter? filter = null)

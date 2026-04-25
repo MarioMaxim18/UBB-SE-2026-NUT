@@ -19,11 +19,11 @@ namespace TeamNut.Services
 
         private readonly int ingredientsQuantity = 100;
 
-        public InventoryService(IIngredientRepository iingredientRepository, IInventoryRepository iinventoryRepository, IMealPlanRepository mmealPlanRepository)
+        public InventoryService(IIngredientRepository ingredientRepository, IInventoryRepository inventoryRepository, IMealPlanRepository mealPlanRepository)
         {
-            this.inventoryRepository = iinventoryRepository;
-            this.mealPlanRepository = mmealPlanRepository;
-            this.ingredientRepository = iingredientRepository;
+            this.inventoryRepository = inventoryRepository;
+            this.mealPlanRepository = mealPlanRepository;
+            this.ingredientRepository = ingredientRepository;
         }
 
         public async Task<bool> ConsumeMeal(int userId, int mealId)
@@ -34,14 +34,14 @@ namespace TeamNut.Services
             foreach (var req in requiredIngredients)
             {
                 var stock = inventoryItems.FirstOrDefault(i => i.IngredientId == req.IngredientId);
-                int qtyToRemove = (int)Math.Round(req.Quantity);
+                int quantityToRemove = (int)Math.Round(req.Quantity);
 
-                if (stock == null || stock.QuantityGrams < qtyToRemove)
+                if (stock == null || stock.QuantityGrams < quantityToRemove)
                 {
                     return false;
                 }
 
-                stock.QuantityGrams -= qtyToRemove;
+                stock.QuantityGrams -= quantityToRemove;
 
                 if (stock.QuantityGrams <= 0)
                 {

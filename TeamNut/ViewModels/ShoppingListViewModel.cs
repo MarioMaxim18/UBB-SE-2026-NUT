@@ -56,12 +56,12 @@ namespace TeamNut.ViewModels
         [ObservableProperty]
         public partial double PendingQuantity { get; set; }
 
-        public ShoppingListViewModel(IShoppingListService sshoppingListService)
+        public ShoppingListViewModel(IShoppingListService shoppingListService)
         {
             this.Items = new ObservableCollection<ShoppingItem>();
             this.StatusMessage = string.Empty;
             this.PendingQuantity = DefaultPendingQuantity;
-            this.shoppingListService = sshoppingListService;
+            this.shoppingListService = shoppingListService;
             _ = this.LoadItemsAsync();
         }
 
@@ -80,11 +80,11 @@ namespace TeamNut.ViewModels
 
             foreach (var item in loadedItems)
             {
-                item.PropertyChanged += async (s, e) =>
+                item.PropertyChanged += async (sender, eventArgs) =>
                 {
-                    if (e.PropertyName == nameof(ShoppingItem.IsChecked) && s is ShoppingItem si)
+                    if (eventArgs.PropertyName == nameof(ShoppingItem.IsChecked) && sender is ShoppingItem shoppingItem)
                     {
-                        await this.shoppingListService.UpdateItemAsync(si);
+                        await this.shoppingListService.UpdateItemAsync(shoppingItem);
                     }
                 };
 
@@ -115,11 +115,11 @@ namespace TeamNut.ViewModels
 
             if (existing == null)
             {
-                addedItem.PropertyChanged += async (s, e) =>
+                addedItem.PropertyChanged += async (sender, eventArgs) =>
                 {
-                    if (e.PropertyName == nameof(ShoppingItem.IsChecked) && s is ShoppingItem si)
+                    if (eventArgs.PropertyName == nameof(ShoppingItem.IsChecked) && sender is ShoppingItem shoppingItem)
                     {
-                        bool updated = await this.shoppingListService.UpdateItemAsync(si);
+                        bool updated = await this.shoppingListService.UpdateItemAsync(shoppingItem);
                         if (!updated)
                         {
                             this.ShowStatus(ErrorUpdateChecked, true);

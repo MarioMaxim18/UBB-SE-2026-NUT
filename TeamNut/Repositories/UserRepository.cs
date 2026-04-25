@@ -42,18 +42,18 @@ namespace TeamNut.Repositories
                 using var conn = new SqliteConnection(connectionString);
                 using var cmd = new SqliteCommand(@"
                 INSERT INTO UserData (user_id, weight, height, age, gender, goal, bmi, calorie_needs, protein_needs, carb_needs, fat_needs)
-                VALUES (@userId, @w, @h, @a, @gen, @goal, @bmi, @cal, @pro, @carb, @fat)", conn);
+                VALUES (@userId, @weight, @height, @age, @gender, @goal, @bmi, @calories, @protein, @carbs, @fat)", conn);
 
                 cmd.Parameters.AddWithValue("@userId", data.UserId);
-                cmd.Parameters.AddWithValue("@w", data.Weight);
-                cmd.Parameters.AddWithValue("@h", data.Height);
-                cmd.Parameters.AddWithValue("@a", data.Age);
-                cmd.Parameters.AddWithValue("@gen", data.Gender);
+                cmd.Parameters.AddWithValue("@weight", data.Weight);
+                cmd.Parameters.AddWithValue("@height", data.Height);
+                cmd.Parameters.AddWithValue("@age", data.Age);
+                cmd.Parameters.AddWithValue("@gender", data.Gender);
                 cmd.Parameters.AddWithValue("@goal", data.Goal);
                 cmd.Parameters.AddWithValue("@bmi", data.Bmi);
-                cmd.Parameters.AddWithValue("@cal", data.CalorieNeeds);
-                cmd.Parameters.AddWithValue("@pro", data.ProteinNeeds);
-                cmd.Parameters.AddWithValue("@carb", data.CarbNeeds);
+                cmd.Parameters.AddWithValue("@calories", data.CalorieNeeds);
+                cmd.Parameters.AddWithValue("@protein", data.ProteinNeeds);
+                cmd.Parameters.AddWithValue("@carbs", data.CarbNeeds);
                 cmd.Parameters.AddWithValue("@fat", data.FatNeeds);
 
                 await conn.OpenAsync();
@@ -63,12 +63,12 @@ namespace TeamNut.Repositories
             public async Task Add(User entity)
             {
                 using var conn = new SqliteConnection(connectionString);
-                string sql = "INSERT INTO Users (username, password, role) VALUES (@u, @p, @r); SELECT last_insert_rowid();";
+                string sql = "INSERT INTO Users (username, password, role) VALUES (@username, @password, @role); SELECT last_insert_rowid();";
 
                 using var cmd = new SqliteCommand(sql, conn);
-                cmd.Parameters.AddWithValue("@u", entity.Username);
-                cmd.Parameters.AddWithValue("@p", entity.Password);
-                cmd.Parameters.AddWithValue("@r", entity.Role);
+                cmd.Parameters.AddWithValue("@username", entity.Username);
+                cmd.Parameters.AddWithValue("@password", entity.Password);
+                cmd.Parameters.AddWithValue("@role", entity.Role);
 
                 await conn.OpenAsync();
 
@@ -83,11 +83,11 @@ namespace TeamNut.Repositories
             public async Task Update(User entity)
             {
                 using var conn = new SqliteConnection(connectionString);
-                using var cmd = new SqliteCommand("UPDATE Users SET username=@u, password=@p, role=@r WHERE id=@id", conn);
+                using var cmd = new SqliteCommand("UPDATE Users SET username=@username, password=@password, role=@role WHERE id=@id", conn);
 
-                cmd.Parameters.AddWithValue("@u", entity.Username);
-                cmd.Parameters.AddWithValue("@p", entity.Password);
-                cmd.Parameters.AddWithValue("@r", entity.Role);
+                cmd.Parameters.AddWithValue("@username", entity.Username);
+                cmd.Parameters.AddWithValue("@password", entity.Password);
+                cmd.Parameters.AddWithValue("@role", entity.Role);
                 cmd.Parameters.AddWithValue("@id", entity.Id);
 
                 await conn.OpenAsync();
@@ -107,9 +107,9 @@ namespace TeamNut.Repositories
             public async Task<User?> GetByUsernameAndPassword(string username, string password)
             {
                 using var conn = new SqliteConnection(connectionString);
-                using var cmd = new SqliteCommand("SELECT id, username, password, role FROM Users WHERE username = @u AND password = @p", conn);
-                cmd.Parameters.AddWithValue("@u", username);
-                cmd.Parameters.AddWithValue("@p", password);
+                using var cmd = new SqliteCommand("SELECT id, username, password, role FROM Users WHERE username = @username AND password = @password", conn);
+                cmd.Parameters.AddWithValue("@username", username);
+                cmd.Parameters.AddWithValue("@password", password);
                 await conn.OpenAsync();
                 using var reader = await cmd.ExecuteReaderAsync();
                 if (await reader.ReadAsync())
@@ -188,21 +188,21 @@ namespace TeamNut.Repositories
                 using var conn = new SqliteConnection(connectionString);
                 using var cmd = new SqliteCommand(@"
                 UPDATE UserData
-                SET weight = @w, height = @h, age = @a, gender = @gen, goal = @goal,
-                    bmi = @bmi, calorie_needs = @cal, protein_needs = @pro,
-                    carb_needs = @carb, fat_needs = @fat
+                SET weight = @weight, height = @height, age = @age, gender = @gender, goal = @goal,
+                    bmi = @bmi, calorie_needs = @calories, protein_needs = @protein,
+                    carb_needs = @carbs, fat_needs = @fat
                 WHERE user_id = @userId", conn);
 
                 cmd.Parameters.AddWithValue("@userId", data.UserId);
-                cmd.Parameters.AddWithValue("@w", data.Weight);
-                cmd.Parameters.AddWithValue("@h", data.Height);
-                cmd.Parameters.AddWithValue("@a", data.Age);
-                cmd.Parameters.AddWithValue("@gen", data.Gender);
+                cmd.Parameters.AddWithValue("@weight", data.Weight);
+                cmd.Parameters.AddWithValue("@height", data.Height);
+                cmd.Parameters.AddWithValue("@age", data.Age);
+                cmd.Parameters.AddWithValue("@gender", data.Gender);
                 cmd.Parameters.AddWithValue("@goal", data.Goal);
                 cmd.Parameters.AddWithValue("@bmi", data.Bmi);
-                cmd.Parameters.AddWithValue("@cal", data.CalorieNeeds);
-                cmd.Parameters.AddWithValue("@pro", data.ProteinNeeds);
-                cmd.Parameters.AddWithValue("@carb", data.CarbNeeds);
+                cmd.Parameters.AddWithValue("@calories", data.CalorieNeeds);
+                cmd.Parameters.AddWithValue("@protein", data.ProteinNeeds);
+                cmd.Parameters.AddWithValue("@carbs", data.CarbNeeds);
                 cmd.Parameters.AddWithValue("@fat", data.FatNeeds);
 
                 await conn.OpenAsync();

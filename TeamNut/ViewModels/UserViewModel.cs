@@ -61,13 +61,13 @@ namespace TeamNut.ViewModels
         private readonly INutritionCalculationService nutritionCalculationService;
 
         public UserViewModel(
-            IUserService uuserService,
-            IValidationService vvalidationService,
-            INutritionCalculationService nnutritionCalculationService)
+            IUserService userService,
+            IValidationService validationService,
+            INutritionCalculationService nutritionCalculationService)
         {
-            this.userService = uuserService;
-            this.validationService = vvalidationService;
-            this.nutritionCalculationService = nnutritionCalculationService;
+            this.userService = userService;
+            this.validationService = validationService;
+            this.nutritionCalculationService = nutritionCalculationService;
         }
 
         [RelayCommand]
