@@ -15,15 +15,11 @@ namespace TeamNut.ViewModels
     public partial class MealSearchViewModel : ObservableObject
     {
         private readonly IMealService mealService;
-
         private readonly IPaginationService paginationService;
 
         private const string DefaultSearchTerm = "";
-
         private const string NoIngredientsFoundMessage = "No ingredients found.";
-
         private const string IngredientsLineSeparator = "\n";
-
         private const int DefaultPageSize = 5;
 
         public ObservableCollection<Meal> Meals { get; private set; } = new ObservableCollection<Meal>();
@@ -33,9 +29,7 @@ namespace TeamNut.ViewModels
         public Meal? SelectedMeal { get; set; }
 
         private List<Meal> allMeals = new List<Meal>();
-
         private int currentPage = 1;
-
         private int pageSize = DefaultPageSize;
 
         [ObservableProperty]
@@ -48,74 +42,74 @@ namespace TeamNut.ViewModels
         public partial bool CanGoToNextPage { get; set; }
 
         public MealSearchViewModel(
-            IMealService mmealService,
-            IPaginationService ppaginationService)
+            IMealService mealService,
+            IPaginationService paginationService)
         {
-            this.mealService = mmealService;
-            this.paginationService = ppaginationService;
-            _ = this.LoadMealsAsync();
+            this.mealService = mealService;
+            this.paginationService = paginationService;
+            _ = LoadMealsAsync();
         }
 
         public void SetAllMeals(List<Meal> meals)
         {
-            this.allMeals = meals;
-            this.currentPage = 1;
-            this.UpdatePagedMeals();
+            allMeals = meals;
+            currentPage = 1;
+            UpdatePagedMeals();
         }
 
         public void GoToNextPage()
         {
-            int totalPages = this.paginationService.GetTotalPages(this.allMeals.Count, this.pageSize);
-            if (this.currentPage < totalPages)
+            int totalPages = paginationService.GetTotalPages(allMeals.Count, pageSize);
+            if (currentPage < totalPages)
             {
-                this.currentPage++;
-                this.UpdatePagedMeals();
+                currentPage++;
+                UpdatePagedMeals();
             }
         }
 
         public void GoToPreviousPage()
         {
-            if (this.currentPage > 1)
+            if (currentPage > 1)
             {
-                this.currentPage--;
-                this.UpdatePagedMeals();
+                currentPage--;
+                UpdatePagedMeals();
             }
         }
 
         private void UpdatePagedMeals()
         {
-            var pagedMeals = this.paginationService.GetPage(this.allMeals, this.currentPage, this.pageSize);
-            int totalPages = this.paginationService.GetTotalPages(this.allMeals.Count, this.pageSize);
+            var pagedMeals = paginationService.GetPage(allMeals, currentPage, pageSize);
+            int totalPages = paginationService.GetTotalPages(allMeals.Count, pageSize);
 
-            this.Meals = new ObservableCollection<Meal>(pagedMeals);
-            OnPropertyChanged(nameof(this.Meals));
+            Meals = new ObservableCollection<Meal>(pagedMeals);
+            OnPropertyChanged(nameof(Meals));
 
-            this.PageText = $"{this.currentPage} / {totalPages}";
-            this.CanGoToPreviousPage = this.currentPage > 1;
-            this.CanGoToNextPage = this.currentPage < totalPages;
+            PageText = $"{currentPage} / {totalPages}";
+            CanGoToPreviousPage = currentPage > 1;
+            CanGoToNextPage = currentPage < totalPages;
         }
 
         public async Task LoadMealsAsync(string? filter = null)
         {
-            var list = await this.mealService.GetMealsAsync(
+            var list = await mealService.GetMealsAsync(
                 new MealFilter { SearchTerm = filter ?? string.Empty });
-            this.Meals = new ObservableCollection<Meal>(list);
-            OnPropertyChanged(nameof(this.Meals));
+            Meals = new ObservableCollection<Meal>(list);
+            OnPropertyChanged(nameof(Meals));
         }
 
         public async Task<List<Meal>> SearchMealsAsync(MealFilter filter)
         {
-            var list = await this.mealService.GetFilteredMealsAsync(filter);
+            var list = await mealService.GetFilteredMealsAsync(filter);
 
-            this.Meals = new ObservableCollection<Meal>(list);
-            OnPropertyChanged(nameof(this.Meals));
+            Meals = new ObservableCollection<Meal>(list);
+            OnPropertyChanged(nameof(Meals));
 
             return list;
         }
 
         public async Task<string> GetMealIngredientsTextAsync(int mealId)
         {
-            var lines = await this.mealService.GetMealIngredientLinesAsync(mealId);
+            var lines = await mealService.GetMealIngredientLinesAsync(mealId);
 
             return lines.Count > 0
                 ? string.Join(IngredientsLineSeparator, lines)
@@ -125,7 +119,7 @@ namespace TeamNut.ViewModels
         [RelayCommand]
         public async Task SearchAsync()
         {
-            await this.LoadMealsAsync(this.SearchTerm);
+            await LoadMealsAsync(SearchTerm);
         }
 
         [RelayCommand]
@@ -136,7 +130,7 @@ namespace TeamNut.ViewModels
                 return;
             }
 
-            await this.mealService.ToggleFavoriteAsync(meal);
+            await mealService.ToggleFavoriteAsync(meal);
         }
     }
 }

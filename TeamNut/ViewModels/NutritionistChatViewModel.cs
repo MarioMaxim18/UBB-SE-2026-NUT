@@ -1,44 +1,31 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text.RegularExpressions;
-using System.Threading;
-using System.Threading.Tasks;
-using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
-using TeamNut.Models;
-using TeamNut.Services;
-
-namespace TeamNut.ViewModels
+﻿namespace TeamNut.ViewModels
 {
-    /// <summary>
-    /// NutritionistChatViewModel.
-    /// </summary>
+    using System;
+    using System.Collections.Generic;
+    using System.Collections.ObjectModel;
+    using System.Linq;
+    using System.Text.RegularExpressions;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using CommunityToolkit.Mvvm.ComponentModel;
+    using CommunityToolkit.Mvvm.Input;
+    using TeamNut.Models;
+    using TeamNut.Services;
+
     public partial class NutritionistChatViewModel : ObservableObject
     {
         private readonly IChatService chatService;
-
         private CancellationTokenSource? autoRefreshCts;
-
         private int? currentConversationId;
 
         private const int MaxMessageLength = 1000;
-
         private const int AutoRefreshSeconds = 5;
-
         private const int InvalidUserId = 0;
-
         private const string NutritionistRole = "Nutritionist";
-
         private const string StatusSelectConversation = "Please select a conversation to respond.";
-
         private const string StatusMessageTooLong = "Message too long.";
-
         private const string StatusInvalidCharacters = "Only alphanumeric characters and basic punctuation are allowed.";
-
         private const string StatusNoActiveConversations = "No active user inquiries at this time.";
-
         private const string StatusNutritionistCannotStartConversation = "Nutritionists can only respond to existing conversations.";
 
         private static readonly Regex AllowedMessageRegex = new Regex("^[a-zA-Z0-9 .,!?'\\-()]+$", RegexOptions.Compiled);
@@ -74,55 +61,54 @@ namespace TeamNut.ViewModels
 
         public bool IsEmptyPlaceholderVisible => !IsNutritionistUser && !HasMessages;
 
-        public NutritionistChatViewModel(IChatService cchatService)
+        public NutritionistChatViewModel(IChatService chatService)
         {
-            this.Conversations = new ObservableCollection<Conversation>();
-            this.Messages = new ObservableCollection<Message>();
-            this.InputText = string.Empty;
-            this.StatusMessage = string.Empty;
+            Conversations = new ObservableCollection<Conversation>();
+            Messages = new ObservableCollection<Message>();
+            InputText = string.Empty;
+            StatusMessage = string.Empty;
 
-            this.chatService = cchatService;
+            this.chatService = chatService;
+            IsNutritionistUser = UserSession.Role == NutritionistRole;
 
-            this.IsNutritionistUser = UserSession.Role == NutritionistRole;
+            _ = LoadConversationsAsync();
 
-            _ = this.LoadConversationsAsync();
-
-            this.autoRefreshCts = new CancellationTokenSource();
-            _ = this.AutoRefreshLoop(this.autoRefreshCts.Token);
+            autoRefreshCts = new CancellationTokenSource();
+            _ = AutoRefreshLoop(autoRefreshCts.Token);
         }
 
         partial void OnInputTextChanged(string value)
         {
-            if (UserSession.Role == NutritionistRole && this.currentConversationId == null)
+            if (UserSession.Role == NutritionistRole && currentConversationId == null)
             {
-                this.CanSend = false;
-                this.StatusMessage = StatusSelectConversation;
+                CanSend = false;
+                StatusMessage = StatusSelectConversation;
                 return;
             }
 
             if (string.IsNullOrWhiteSpace(value))
             {
-                this.CanSend = false;
-                this.StatusMessage = string.Empty;
+                CanSend = false;
+                StatusMessage = string.Empty;
                 return;
             }
 
             if (value.Length > MaxMessageLength)
             {
-                this.CanSend = false;
-                this.StatusMessage = StatusMessageTooLong;
+                CanSend = false;
+                StatusMessage = StatusMessageTooLong;
                 return;
             }
 
             if (!AllowedMessageRegex.IsMatch(value))
             {
-                this.CanSend = false;
-                this.StatusMessage = StatusInvalidCharacters;
+                CanSend = false;
+                StatusMessage = StatusInvalidCharacters;
                 return;
             }
 
-            this.CanSend = true;
-            this.StatusMessage = string.Empty;
+            CanSend = true;
+            StatusMessage = string.Empty;
         }
 
         public async Task LoadConversationsAsync()
@@ -131,16 +117,16 @@ namespace TeamNut.ViewModels
 
             if (UserSession.Role == NutritionistRole)
             {
-                convs = this.IsNutritionistView
-                    ? await this.chatService.GetConversationsWithUserMessagesAsync()
-                    : await this.chatService.GetConversationsWhereNutritionistRespondedAsync(
+                convs = IsNutritionistView
+                    ? await chatService.GetConversationsWithUserMessagesAsync()
+                    : await chatService.GetConversationsWhereNutritionistRespondedAsync(
                         UserSession.UserId ?? InvalidUserId);
 
                 convs ??= Enumerable.Empty<Conversation>();
             }
             else
             {
-                var conv = await this.chatService.GetOrCreateConversationForUserAsync(
+                var conv = await chatService.GetOrCreateConversationForUserAsync(
                     UserSession.UserId ?? InvalidUserId);
 
                 convs = conv != null
@@ -148,58 +134,58 @@ namespace TeamNut.ViewModels
                     : Enumerable.Empty<Conversation>();
             }
 
-            this.Conversations.Clear();
+            Conversations.Clear();
             foreach (var c in convs)
             {
-                this.Conversations.Add(c);
+                Conversations.Add(c);
             }
 
             if (UserSession.Role != NutritionistRole
-                && this.currentConversationId == null
-                && this.Conversations.Count > 0)
+                && currentConversationId == null
+                && Conversations.Count > 0)
             {
-                this.SelectedConversation = this.Conversations[0];
+                SelectedConversation = Conversations[0];
             }
 
-            this.StatusMessage = this.Conversations.Any()
+            StatusMessage = Conversations.Any()
                 ? string.Empty
                 : StatusNoActiveConversations;
         }
 
         public async Task LoadMessagesForConversationAsync(int conversationId)
         {
-            this.currentConversationId = conversationId;
+            currentConversationId = conversationId;
 
-            var msgs = (await this.chatService.GetMessagesForConversationAsync(conversationId)).ToList();
+            var msgs = (await chatService.GetMessagesForConversationAsync(conversationId)).ToList();
 
-            if (this.Messages.Count == msgs.Count
-                && this.Messages.Zip(msgs, (a, b) => a.Id == b.Id).All(eq => eq))
+            if (Messages.Count == msgs.Count
+                && Messages.Zip(msgs, (a, b) => a.Id == b.Id).All(eq => eq))
             {
-                this.HasMessages = this.Messages.Count > 0;
+                HasMessages = Messages.Count > 0;
                 return;
             }
 
-            this.Messages.Clear();
+            Messages.Clear();
 
             foreach (var m in msgs)
             {
-                this.Messages.Add(m);
+                Messages.Add(m);
             }
 
-            this.HasMessages = this.Messages.Count > 0;
+            HasMessages = Messages.Count > 0;
         }
 
         partial void OnSelectedConversationChanged(Conversation? value)
         {
             if (value != null)
             {
-                _ = this.LoadMessagesForConversationAsync(value.Id);
+                _ = LoadMessagesForConversationAsync(value.Id);
             }
         }
 
         partial void OnIsNutritionistViewChanged(bool value)
         {
-            _ = this.LoadConversationsAsync();
+            _ = LoadConversationsAsync();
         }
 
         private async Task AutoRefreshLoop(CancellationToken token)
@@ -209,11 +195,11 @@ namespace TeamNut.ViewModels
                 while (!token.IsCancellationRequested)
                 {
                     await Task.Delay(TimeSpan.FromSeconds(AutoRefreshSeconds), token);
-                    await this.LoadConversationsAsync();
+                    await LoadConversationsAsync();
 
-                    if (this.currentConversationId != null)
+                    if (currentConversationId != null)
                     {
-                        await this.LoadMessagesForConversationAsync(this.currentConversationId.Value);
+                        await LoadMessagesForConversationAsync(currentConversationId.Value);
                     }
                 }
             }
@@ -224,34 +210,34 @@ namespace TeamNut.ViewModels
 
         public void StopAutoRefresh()
         {
-            this.autoRefreshCts?.Cancel();
+            autoRefreshCts?.Cancel();
         }
 
         [RelayCommand]
         public async Task SendMessageAsync()
         {
-            if (string.IsNullOrWhiteSpace(this.InputText))
+            if (string.IsNullOrWhiteSpace(InputText))
             {
                 return;
             }
 
-            if (this.InputText.Length > MaxMessageLength)
+            if (InputText.Length > MaxMessageLength)
             {
-                this.StatusMessage = StatusMessageTooLong;
+                StatusMessage = StatusMessageTooLong;
                 return;
             }
 
-            if (!AllowedMessageRegex.IsMatch(this.InputText))
+            if (!AllowedMessageRegex.IsMatch(InputText))
             {
-                this.StatusMessage = StatusInvalidCharacters;
+                StatusMessage = StatusInvalidCharacters;
                 return;
             }
 
-            if (this.currentConversationId == null)
+            if (currentConversationId == null)
             {
                 if (UserSession.Role == NutritionistRole)
                 {
-                    this.StatusMessage = StatusNutritionistCannotStartConversation;
+                    StatusMessage = StatusNutritionistCannotStartConversation;
                     return;
                 }
 
@@ -260,10 +246,10 @@ namespace TeamNut.ViewModels
                     return;
                 }
 
-                var conv = await this.chatService.GetOrCreateConversationForUserAsync(
+                var conv = await chatService.GetOrCreateConversationForUserAsync(
                     UserSession.UserId.Value);
 
-                this.currentConversationId = conv.Id;
+                currentConversationId = conv.Id;
             }
 
             if (UserSession.UserId == null)
@@ -274,14 +260,14 @@ namespace TeamNut.ViewModels
             int senderId = UserSession.UserId.Value;
             bool isNutritionist = UserSession.Role == NutritionistRole;
 
-            await this.chatService.AddMessageAsync(
-                this.currentConversationId.Value,
+            await chatService.AddMessageAsync(
+                currentConversationId.Value,
                 senderId,
-                this.InputText.Trim(),
+                InputText.Trim(),
                 isNutritionist);
 
-            this.InputText = string.Empty;
-            await this.LoadMessagesForConversationAsync(this.currentConversationId.Value);
+            InputText = string.Empty;
+            await LoadMessagesForConversationAsync(currentConversationId.Value);
         }
     }
 }

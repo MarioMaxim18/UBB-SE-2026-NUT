@@ -10,35 +10,21 @@ namespace TeamNut.ViewModels
     using TeamNut.Services;
     using TeamNut.Services.Interfaces;
 
-    /// <summary>
-    /// ShoppingListViewModel.
-    /// </summary>
     public partial class ShoppingListViewModel : ObservableObject
     {
         private readonly IShoppingListService shoppingListService;
 
         private const double DefaultPendingQuantity = 100;
-
         private const int StatusDisplayDurationMs = 3000;
-
         private const string StatusAddSuccessFormat = "Updated '{0}' successfully!";
-
         private const string StatusMoveToPantryFormat = "Moved '{0}' to Pantry.";
-
         private const string StatusItemRemoved = "Item removed from list.";
-
         private const string StatusAlreadyComplete = "You already have everything you need";
-
         private const string StatusGenerateSuccessFormat = "Successfully generated {0} new items from your Meal Plan!";
-
         private const string ErrorAddItem = "Database error: Could not add item.";
-
         private const string ErrorUpdateChecked = "Failed to save checkmark state.";
-
         private const string ErrorMoveToPantry = "Failed to move item to Pantry.";
-
         private const string ErrorDeleteItem = "Failed to delete item from database.";
-
         private const string ErrorGenerateList = "Error analyzing Meal Plan for ingredients.";
 
         [ObservableProperty]
@@ -56,13 +42,13 @@ namespace TeamNut.ViewModels
         [ObservableProperty]
         public partial double PendingQuantity { get; set; }
 
-        public ShoppingListViewModel(IShoppingListService sshoppingListService)
+        public ShoppingListViewModel(IShoppingListService shoppingListService)
         {
-            this.Items = new ObservableCollection<ShoppingItem>();
-            this.StatusMessage = string.Empty;
-            this.PendingQuantity = DefaultPendingQuantity;
-            this.shoppingListService = sshoppingListService;
-            _ = this.LoadItemsAsync();
+            Items = new ObservableCollection<ShoppingItem>();
+            StatusMessage = string.Empty;
+            PendingQuantity = DefaultPendingQuantity;
+            this.shoppingListService = shoppingListService;
+            _ = LoadItemsAsync();
         }
 
         public async Task LoadItemsAsync()
@@ -72,11 +58,10 @@ namespace TeamNut.ViewModels
                 return;
             }
 
-            var loadedItems =
-                await this.shoppingListService.GetShoppingItemsAsync(
-                    UserSession.UserId.Value);
+            var loadedItems = await shoppingListService.GetShoppingItemsAsync(
+                UserSession.UserId.Value);
 
-            this.Items.Clear();
+            Items.Clear();
 
             foreach (var item in loadedItems)
             {
@@ -84,11 +69,11 @@ namespace TeamNut.ViewModels
                 {
                     if (e.PropertyName == nameof(ShoppingItem.IsChecked) && s is ShoppingItem si)
                     {
-                        await this.shoppingListService.UpdateItemAsync(si);
+                        await shoppingListService.UpdateItemAsync(si);
                     }
                 };
 
-                this.Items.Add(item);
+                Items.Add(item);
             }
         }
 
@@ -100,18 +85,18 @@ namespace TeamNut.ViewModels
                 return;
             }
 
-            var addedItem = await this.shoppingListService.AddItemAsync(
+            var addedItem = await shoppingListService.AddItemAsync(
                 itemName.Trim(),
                 UserSession.UserId.Value,
-                this.PendingQuantity);
+                PendingQuantity);
 
             if (addedItem == null)
             {
-                this.ShowStatus(ErrorAddItem, true);
+                ShowStatus(ErrorAddItem, true);
                 return;
             }
 
-            var existing = this.Items.FirstOrDefault(i => i.Id == addedItem.Id);
+            var existing = Items.FirstOrDefault(i => i.Id == addedItem.Id);
 
             if (existing == null)
             {
@@ -119,69 +104,65 @@ namespace TeamNut.ViewModels
                 {
                     if (e.PropertyName == nameof(ShoppingItem.IsChecked) && s is ShoppingItem si)
                     {
-                        bool updated = await this.shoppingListService.UpdateItemAsync(si);
+                        bool updated = await shoppingListService.UpdateItemAsync(si);
                         if (!updated)
                         {
-                            this.ShowStatus(ErrorUpdateChecked, true);
+                            ShowStatus(ErrorUpdateChecked, true);
                         }
                     }
                 };
 
-                this.Items.Add(addedItem);
+                Items.Add(addedItem);
             }
             else
             {
                 existing.QuantityGrams = addedItem.QuantityGrams;
             }
 
-            this.ShowStatus(
-                string.Format(StatusAddSuccessFormat, itemName),
-                false);
+            ShowStatus(string.Format(StatusAddSuccessFormat, itemName), false);
 
-            this.PendingQuantity = DefaultPendingQuantity;
+            PendingQuantity = DefaultPendingQuantity;
         }
 
         [RelayCommand]
         public async Task MoveToPantry(ShoppingItem item)
         {
-            if (item == null || !this.Items.Contains(item))
+            if (item == null || !Items.Contains(item))
             {
                 return;
             }
 
-            bool success = await this.shoppingListService.MoveToPantryAsync(item);
+            bool success = await shoppingListService.MoveToPantryAsync(item);
 
             if (success)
             {
-                this.Items.Remove(item);
-                this.ShowStatus(
-                    string.Format(StatusMoveToPantryFormat, item.IngredientName),
-                    false);
+                Items.Remove(item);
+                ShowStatus(string.Format(StatusMoveToPantryFormat, item.IngredientName), false);
             }
             else
             {
-                this.ShowStatus(ErrorMoveToPantry, true);
+                ShowStatus(ErrorMoveToPantry, true);
             }
         }
 
         [RelayCommand]
         public async Task RemoveItem(ShoppingItem item)
         {
-            if (item == null || !this.Items.Contains(item))
+            if (item == null || !Items.Contains(item))
             {
                 return;
             }
 
-            bool success = await this.shoppingListService.RemoveItemAsync(item);
+            bool success = await shoppingListService.RemoveItemAsync(item);
 
             if (success)
             {
-                this.Items.Remove(item);
-                this.ShowStatus(StatusItemRemoved, false);
+                Items.Remove(item);
+                ShowStatus(StatusItemRemoved, false);
             }
             else
             {
-                this.ShowStatus(ErrorDeleteItem, true);
+                ShowStatus(ErrorDeleteItem, true);
             }
         }
 
@@ -193,41 +174,38 @@ namespace TeamNut.ViewModels
                 return;
             }
 
-            int itemsAdded =
-                await this.shoppingListService.GenerateListAsync(
-                    UserSession.UserId.Value);
+            int itemsAdded = await shoppingListService.GenerateListAsync(
+                UserSession.UserId.Value);
 
             if (itemsAdded > 0)
             {
-                await this.LoadItemsAsync();
-                this.ShowStatus(
-                    string.Format(StatusGenerateSuccessFormat, itemsAdded),
-                    false);
+                await LoadItemsAsync();
+                ShowStatus(string.Format(StatusGenerateSuccessFormat, itemsAdded), false);
             }
             else if (itemsAdded == 0)
             {
-                this.ShowStatus(StatusAlreadyComplete, false);
+                ShowStatus(StatusAlreadyComplete, false);
             }
             else
             {
-                this.ShowStatus(ErrorGenerateList, true);
+                ShowStatus(ErrorGenerateList, true);
             }
         }
 
         public async Task<List<KeyValuePair<int, string>>> SearchIngredientsAsync(string query)
         {
-            return await this.shoppingListService.SearchIngredientsAsync(query);
+            return await shoppingListService.SearchIngredientsAsync(query);
         }
 
         private void ShowStatus(string message, bool error)
         {
-            this.StatusMessage = message;
-            this.IsError = error;
-            this.IsStatusVisible = true;
+            StatusMessage = message;
+            IsError = error;
+            IsStatusVisible = true;
 
             Task.Delay(StatusDisplayDurationMs).ContinueWith(_ =>
             {
-                this.IsStatusVisible = false;
+                IsStatusVisible = false;
             }, TaskScheduler.FromCurrentSynchronizationContext());
         }
     }
