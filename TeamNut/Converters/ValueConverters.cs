@@ -232,8 +232,8 @@ namespace TeamNut
 
             bool visible = value switch
             {
-                int i => i > ConverterConstants.VisibleThreshold,
-                long l => l > ConverterConstants.VisibleThreshold,
+                int integerValue => integerValue > ConverterConstants.VisibleThreshold,
+                long longValue => longValue > ConverterConstants.VisibleThreshold,
                 _ => false
             };
 

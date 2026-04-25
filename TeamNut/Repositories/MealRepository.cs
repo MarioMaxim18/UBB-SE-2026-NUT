@@ -54,8 +54,8 @@ namespace TeamNut.Repositories
             var sql = new StringBuilder(baseSql);
 
             using var conn = new SqliteConnection(connectionString);
-            using var cmd = new SqliteCommand();
-            cmd.Connection = conn;
+            using var command = new SqliteCommand();
+            command.Connection = conn;
 
             if (filter.IsKeto)
             {
@@ -85,19 +85,19 @@ namespace TeamNut.Repositories
             if (!string.IsNullOrWhiteSpace(filter.SearchTerm))
             {
                 sql.Append(" AND m.name LIKE @search");
-                cmd.Parameters.AddWithValue("@search", $"%{filter.SearchTerm}%");
+                command.Parameters.AddWithValue("@search", $"%{filter.SearchTerm}%");
             }
 
             sql.Append(@" GROUP BY
                 m.meal_id, m.imageUrl, m.name, m.isKeto, m.isLactoseFree,
                 m.isNutFree, m.isVegan, m.isGlutenFree, m.description");
 
-            cmd.CommandText = sql.ToString();
-            cmd.Parameters.AddWithValue("@userId", userId);
+            command.CommandText = sql.ToString();
+            command.Parameters.AddWithValue("@userId", userId);
 
             await conn.OpenAsync();
 
-            using (var reader = await cmd.ExecuteReaderAsync())
+            using (var reader = await command.ExecuteReaderAsync())
             {
                 while (await reader.ReadAsync())
                 {
@@ -157,10 +157,10 @@ namespace TeamNut.Repositories
             using var conn = new SqliteConnection(connectionString);
             await conn.OpenAsync();
 
-            using (var cmd = new SqliteCommand(sql, conn))
+            using (var command = new SqliteCommand(sql, conn))
             {
-                AddMealParameters(cmd, entity);
-                await cmd.ExecuteNonQueryAsync();
+                AddMealParameters(command, entity);
+                await command.ExecuteNonQueryAsync();
             }
         }
 
@@ -175,11 +175,11 @@ namespace TeamNut.Repositories
             using var conn = new SqliteConnection(connectionString);
             await conn.OpenAsync();
 
-            using (var cmd = new SqliteCommand(sql, conn))
+            using (var command = new SqliteCommand(sql, conn))
             {
-                cmd.Parameters.AddWithValue("@id", entity.Id);
-                AddMealParameters(cmd, entity);
-                await cmd.ExecuteNonQueryAsync();
+                command.Parameters.AddWithValue("@id", entity.Id);
+                AddMealParameters(command, entity);
+                await command.ExecuteNonQueryAsync();
             }
         }
 
@@ -190,23 +190,23 @@ namespace TeamNut.Repositories
             using var conn = new SqliteConnection(connectionString);
             await conn.OpenAsync();
 
-            using (var cmd = new SqliteCommand(sql, conn))
+            using (var command = new SqliteCommand(sql, conn))
             {
-                cmd.Parameters.AddWithValue("@id", id);
-                await cmd.ExecuteNonQueryAsync();
+                command.Parameters.AddWithValue("@id", id);
+                await command.ExecuteNonQueryAsync();
             }
         }
 
-        private void AddMealParameters(SqliteCommand cmd, Meal meal)
+        private void AddMealParameters(SqliteCommand command, Meal meal)
         {
-            cmd.Parameters.AddWithValue("@name", meal.Name);
-            cmd.Parameters.AddWithValue("@img", meal.ImageUrl ?? (object)DBNull.Value);
-            cmd.Parameters.AddWithValue("@keto", meal.IsKeto ? 1 : 0);
-            cmd.Parameters.AddWithValue("@vegan", meal.IsVegan ? 1 : 0);
-            cmd.Parameters.AddWithValue("@nut", meal.IsNutFree ? 1 : 0);
-            cmd.Parameters.AddWithValue("@lac", meal.IsLactoseFree ? 1 : 0);
-            cmd.Parameters.AddWithValue("@glu", meal.IsGlutenFree ? 1 : 0);
-            cmd.Parameters.AddWithValue("@desc", meal.Description ?? (object)DBNull.Value);
+            command.Parameters.AddWithValue("@name", meal.Name);
+            command.Parameters.AddWithValue("@img", meal.ImageUrl ?? (object)DBNull.Value);
+            command.Parameters.AddWithValue("@keto", meal.IsKeto ? 1 : 0);
+            command.Parameters.AddWithValue("@vegan", meal.IsVegan ? 1 : 0);
+            command.Parameters.AddWithValue("@nut", meal.IsNutFree ? 1 : 0);
+            command.Parameters.AddWithValue("@lac", meal.IsLactoseFree ? 1 : 0);
+            command.Parameters.AddWithValue("@glu", meal.IsGlutenFree ? 1 : 0);
+            command.Parameters.AddWithValue("@desc", meal.Description ?? (object)DBNull.Value);
         }
 
         private Meal MapReaderToMeal(SqliteDataReader reader)
@@ -244,11 +244,11 @@ namespace TeamNut.Repositories
             using var conn = new SqliteConnection(connectionString);
             await conn.OpenAsync();
 
-            using (var cmd = new SqliteCommand(sql, conn))
+            using (var command = new SqliteCommand(sql, conn))
             {
-                cmd.Parameters.AddWithValue("@mealId", mealId);
+                command.Parameters.AddWithValue("@mealId", mealId);
 
-                using (var reader = await cmd.ExecuteReaderAsync())
+                using (var reader = await command.ExecuteReaderAsync())
                 {
                     while (await reader.ReadAsync())
                     {

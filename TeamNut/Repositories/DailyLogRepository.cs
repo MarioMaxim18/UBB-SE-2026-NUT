@@ -22,15 +22,15 @@ namespace TeamNut.Repositories
                 VALUES (@userId, @mealId, @calories, @loggedAt)";
 
             using var conn = new SqliteConnection(connectionString);
-            using var cmd = new SqliteCommand(query, conn);
+            using var command = new SqliteCommand(query, conn);
 
-            cmd.Parameters.AddWithValue("@userId", log.UserId);
-            cmd.Parameters.AddWithValue("@mealId", log.MealId);
-            cmd.Parameters.AddWithValue("@calories", log.Calories);
-            cmd.Parameters.AddWithValue("@loggedAt", log.LoggedAt);
+            command.Parameters.AddWithValue("@userId", log.UserId);
+            command.Parameters.AddWithValue("@mealId", log.MealId);
+            command.Parameters.AddWithValue("@calories", log.Calories);
+            command.Parameters.AddWithValue("@loggedAt", log.LoggedAt);
 
             await conn.OpenAsync();
-            await cmd.ExecuteNonQueryAsync();
+            await command.ExecuteNonQueryAsync();
         }
 
         public async Task<bool> HasAnyLogs(int userId)
@@ -38,12 +38,12 @@ namespace TeamNut.Repositories
             const string query = "SELECT COUNT(1) FROM DailyLogs WHERE user_id = @userId";
 
             using var conn = new SqliteConnection(connectionString);
-            using var cmd = new SqliteCommand(query, conn);
+            using var command = new SqliteCommand(query, conn);
 
-            cmd.Parameters.AddWithValue("@userId", userId);
+            command.Parameters.AddWithValue("@userId", userId);
 
             await conn.OpenAsync();
-            var countResult = await cmd.ExecuteScalarAsync();
+            var countResult = await command.ExecuteScalarAsync();
             int count = Convert.ToInt32(countResult);
 
             return count > 0;
@@ -66,14 +66,14 @@ namespace TeamNut.Repositories
                   AND dl.created_at < @endDate";
 
             using var conn = new SqliteConnection(connectionString);
-            using var cmd = new SqliteCommand(query, conn);
+            using var command = new SqliteCommand(query, conn);
 
-            cmd.Parameters.AddWithValue("@userId", userId);
-            cmd.Parameters.AddWithValue("@startDate", startInclusive);
-            cmd.Parameters.AddWithValue("@endDate", endExclusive);
+            command.Parameters.AddWithValue("@userId", userId);
+            command.Parameters.AddWithValue("@startDate", startInclusive);
+            command.Parameters.AddWithValue("@endDate", endExclusive);
 
             await conn.OpenAsync();
-            using var reader = await cmd.ExecuteReaderAsync();
+            using var reader = await command.ExecuteReaderAsync();
 
             if (await reader.ReadAsync())
             {

@@ -24,11 +24,11 @@ namespace TeamNut.Repositories
             using var conn = new SqliteConnection(connectionString);
             await conn.OpenAsync();
 
-            using (var cmd = new SqliteCommand(sql, conn))
+            using (var selectByIdCommand = new SqliteCommand(sql, conn))
             {
-                cmd.Parameters.AddWithValue("@id", id);
+                selectByIdCommand.Parameters.AddWithValue("@id", id);
 
-                using (var reader = await cmd.ExecuteReaderAsync())
+                using (var reader = await selectByIdCommand.ExecuteReaderAsync())
                 {
                     if (await reader.ReadAsync())
                     {
@@ -51,11 +51,11 @@ namespace TeamNut.Repositories
             using var conn = new SqliteConnection(connectionString);
             await conn.OpenAsync();
 
-            using (var cmd = new SqliteCommand(sql, conn))
+            using (var latestPlanCommand = new SqliteCommand(sql, conn))
             {
-                cmd.Parameters.AddWithValue("@userId", userId);
+                latestPlanCommand.Parameters.AddWithValue("@userId", userId);
 
-                using (var reader = await cmd.ExecuteReaderAsync())
+                using (var reader = await latestPlanCommand.ExecuteReaderAsync())
                 {
                     if (await reader.ReadAsync())
                     {
@@ -75,9 +75,9 @@ namespace TeamNut.Repositories
             using var conn = new SqliteConnection(connectionString);
             await conn.OpenAsync();
 
-            using (var cmd = new SqliteCommand(sql, conn))
+            using (var selectAllPlansCommand = new SqliteCommand(sql, conn))
             {
-                using (var reader = await cmd.ExecuteReaderAsync())
+                using (var reader = await selectAllPlansCommand.ExecuteReaderAsync())
                 {
                     while (await reader.ReadAsync())
                     {
@@ -98,13 +98,13 @@ namespace TeamNut.Repositories
             using var conn = new SqliteConnection(connectionString);
             await conn.OpenAsync();
 
-            using (var cmd = new SqliteCommand(sql, conn))
+            using (var insertMealPlanCommand = new SqliteCommand(sql, conn))
             {
-                cmd.Parameters.AddWithValue("@uid", entity.UserId);
-                cmd.Parameters.AddWithValue("@created", entity.CreatedAt);
-                cmd.Parameters.AddWithValue("@goal", entity.GoalType ?? (object)DBNull.Value);
+                insertMealPlanCommand.Parameters.AddWithValue("@uid", entity.UserId);
+                insertMealPlanCommand.Parameters.AddWithValue("@created", entity.CreatedAt);
+                insertMealPlanCommand.Parameters.AddWithValue("@goal", entity.GoalType ?? (object)DBNull.Value);
 
-                await cmd.ExecuteNonQueryAsync();
+                await insertMealPlanCommand.ExecuteNonQueryAsync();
             }
         }
 
@@ -118,12 +118,12 @@ namespace TeamNut.Repositories
             using var conn = new SqliteConnection(connectionString);
             await conn.OpenAsync();
 
-            using (var cmd = new SqliteCommand(sql, conn))
+            using (var updateMealPlanCommand = new SqliteCommand(sql, conn))
             {
-                cmd.Parameters.AddWithValue("@id", entity.Id);
-                cmd.Parameters.AddWithValue("@goal", entity.GoalType);
+                updateMealPlanCommand.Parameters.AddWithValue("@id", entity.Id);
+                updateMealPlanCommand.Parameters.AddWithValue("@goal", entity.GoalType);
 
-                await cmd.ExecuteNonQueryAsync();
+                await updateMealPlanCommand.ExecuteNonQueryAsync();
             }
         }
 
@@ -134,10 +134,10 @@ namespace TeamNut.Repositories
             using var conn = new SqliteConnection(connectionString);
             await conn.OpenAsync();
 
-            using (var cmd = new SqliteCommand(sql, conn))
+            using (var deleteMealPlanCommand = new SqliteCommand(sql, conn))
             {
-                cmd.Parameters.AddWithValue("@id", id);
-                await cmd.ExecuteNonQueryAsync();
+                deleteMealPlanCommand.Parameters.AddWithValue("@id", id);
+                await deleteMealPlanCommand.ExecuteNonQueryAsync();
             }
         }
 
@@ -153,11 +153,11 @@ namespace TeamNut.Repositories
             using var conn = new SqliteConnection(connectionString);
             await conn.OpenAsync();
 
-            using (var cmd = new SqliteCommand(sql, conn))
+            using (var todaysPlanCommand = new SqliteCommand(sql, conn))
             {
-                cmd.Parameters.AddWithValue("@userId", userId);
+                todaysPlanCommand.Parameters.AddWithValue("@userId", userId);
 
-                using (var reader = await cmd.ExecuteReaderAsync())
+                using (var reader = await todaysPlanCommand.ExecuteReaderAsync())
                 {
                     if (await reader.ReadAsync())
                     {
@@ -178,187 +178,19 @@ namespace TeamNut.Repositories
             {
                 try
                 {
-                    const string checkMealsSql = "SELECT COUNT(*) FROM Meals";
-                    using (var checkCmd = new SqliteCommand(checkMealsSql, conn, transaction))
-                    {
-                        var mealCountScalar = await checkCmd.ExecuteScalarAsync();
-                        long mealCount = mealCountScalar != null ? Convert.ToInt64(mealCountScalar) : 0;
+                    await EnsureMealsExistAsync(conn, transaction);
 
-                        if (mealCount == 0)
-                        {
-                            throw new Exception("No meals found in database.");
-                        }
-                    }
+                    var nutritionTargets = await LoadUserNutritionTargetsAsync(conn, transaction, userId);
+                    int mealPlanId = await InsertMealPlanAsync(conn, transaction, userId, nutritionTargets.goalType);
+                    var favouriteMealIds = await LoadFavouriteMealIdsAsync(conn, transaction, userId);
+                    var candidateMealPool = await LoadCandidateMealPoolAsync(conn, transaction);
 
-                    int calorieNeeds = 2000;
-                    int proteinNeeds = 150;
-                    int carbohydrateNeeds = 200;
-                    int fatNeeds = 65;
-                    string goal = "general";
+                    var selectedMeals = FindBestMealCombination(
+                        candidateMealPool,
+                        nutritionTargets.calorieNeeds,
+                        favouriteMealIds);
 
-                    const string getUserDataSql = @"
-                        SELECT calorie_needs, protein_needs, carb_needs, fat_needs, goal
-                        FROM UserData
-                        WHERE user_id = @userId";
-
-                    using (var userDataCmd = new SqliteCommand(getUserDataSql, conn, transaction))
-                    {
-                        userDataCmd.Parameters.AddWithValue("@userId", userId);
-
-                        using (var udReader = await userDataCmd.ExecuteReaderAsync())
-                        {
-                            if (await udReader.ReadAsync())
-                            {
-                                int rawCalories = udReader["calorie_needs"] != DBNull.Value ? Convert.ToInt32(udReader["calorie_needs"]) : 0;
-                                int rawProtein = udReader["protein_needs"] != DBNull.Value ? Convert.ToInt32(udReader["protein_needs"]) : 0;
-                                int rawCarbohydrates = udReader["carb_needs"] != DBNull.Value ? Convert.ToInt32(udReader["carb_needs"]) : 0;
-                                int rawFat = udReader["fat_needs"] != DBNull.Value ? Convert.ToInt32(udReader["fat_needs"]) : 0;
-
-                                calorieNeeds = rawCalories > 0 ? rawCalories : 2000;
-                                proteinNeeds = rawProtein > 0 ? rawProtein : 150;
-                                carbohydrateNeeds = rawCarbohydrates > 0 ? rawCarbohydrates : 200;
-                                fatNeeds = rawFat > 0 ? rawFat : 65;
-                                goal = udReader["goal"]?.ToString() ?? "general";
-                            }
-                        }
-                    }
-
-                    const string insertPlanSql = @"
-                        INSERT INTO MealPlan (user_id, created_at, goal_type)
-                        VALUES (@uid, @created, @goal);
-                        SELECT last_insert_rowid();";
-
-                    int mealPlanId;
-                    using (var planCmd = new SqliteCommand(insertPlanSql, conn, transaction))
-                    {
-                        planCmd.Parameters.AddWithValue("@uid", userId);
-                        planCmd.Parameters.AddWithValue("@created", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
-                        planCmd.Parameters.AddWithValue("@goal", goal);
-                        mealPlanId = Convert.ToInt32(await planCmd.ExecuteScalarAsync());
-                    }
-
-                    var favouriteIds = new HashSet<int>();
-                    const string favSql = @"
-                        SELECT DISTINCT f.mealId
-                        FROM Favorites f
-                        WHERE f.userId = @userId
-                          AND NOT EXISTS (
-                              SELECT 1
-                              FROM MealPlan mp
-                              INNER JOIN MealPlanMeal mpm ON mp.mealplan_id = mpm.mealPlanId
-                              WHERE mp.user_id = @userId
-                                AND mpm.mealId = f.mealId
-                                AND mp.created_at >= DATE('now', '-3 days', 'localtime')
-                          )";
-
-                    try
-                    {
-                        using (var favCmd = new SqliteCommand(favSql, conn, transaction))
-                        {
-                            favCmd.Parameters.AddWithValue("@userId", userId);
-                            using (var favReader = await favCmd.ExecuteReaderAsync())
-                            {
-                                while (await favReader.ReadAsync())
-                                {
-                                    favouriteIds.Add(Convert.ToInt32(favReader["mealId"]));
-                                }
-                            }
-                        }
-                    }
-                    catch
-                    {
-                        // Ignore favorites parsing issues
-                    }
-
-                    const string poolSql = @"
-                        SELECT meal_id, total_calories, total_protein, total_carbohydrates, total_fat
-                        FROM (
-                            SELECT m.meal_id,
-                                   CAST(COALESCE(SUM(i.calories_per_100g * mi.quantity / 100), 0) AS INT) AS total_calories,
-                                   CAST(COALESCE(SUM(i.protein_per_100g  * mi.quantity / 100), 0) AS INT) AS total_protein,
-                                   CAST(COALESCE(SUM(i.carbs_per_100g    * mi.quantity / 100), 0) AS INT) AS total_carbohydrates,
-                                   CAST(COALESCE(SUM(i.fat_per_100g      * mi.quantity / 100), 0) AS INT) AS total_fat
-                            FROM Meals m
-                            LEFT JOIN MealsIngredients mi ON m.meal_id = mi.meal_id
-                            LEFT JOIN Ingredients i ON mi.food_id = i.food_id
-                            GROUP BY m.meal_id
-                        )
-                        ORDER BY RANDOM()
-                        LIMIT 50";
-
-                    var pool = new List<(int id, int calories, int protein, int carbohydrates, int fat)>();
-                    using (var poolCmd = new SqliteCommand(poolSql, conn, transaction))
-                    {
-                        using (var poolReader = await poolCmd.ExecuteReaderAsync())
-                        {
-                            while (await poolReader.ReadAsync())
-                            {
-                                pool.Add((
-                                    Convert.ToInt32(poolReader["meal_id"]),
-                                    Convert.ToInt32(poolReader["total_calories"]),
-                                    Convert.ToInt32(poolReader["total_protein"]),
-                                    Convert.ToInt32(poolReader["total_carbohydrates"]),
-                                    Convert.ToInt32(poolReader["total_fat"])));
-                            }
-                        }
-                    }
-
-                    if (pool.Count < 3)
-                    {
-                        throw new Exception("Not enough meals in the database to generate a plan.");
-                    }
-
-                    int bestBreakfastIndex = 0;
-                    int bestLunchIndex = 1;
-                    int bestDinnerIndex = 2;
-                    int bestScore = int.MaxValue;
-                    bool bestHasFavourite = false;
-
-                    for (int i = 0; i < pool.Count - 2; i++)
-                    {
-                        for (int j = i + 1; j < pool.Count - 1; j++)
-                        {
-                            for (int k = j + 1; k < pool.Count; k++)
-                            {
-                                int score = Math.Abs(pool[i].calories + pool[j].calories + pool[k].calories - calorieNeeds);
-
-                                bool hasFav = favouriteIds.Contains(pool[i].id)
-                                           || favouriteIds.Contains(pool[j].id)
-                                           || favouriteIds.Contains(pool[k].id);
-
-                                bool better = score < bestScore
-                                           || (hasFav && !bestHasFavourite && score <= bestScore + 100);
-
-                                if (better)
-                                {
-                                    bestScore = score;
-                                    bestHasFavourite = hasFav;
-                                    bestBreakfastIndex = i;
-                                    bestLunchIndex = j;
-                                    bestDinnerIndex = k;
-                                }
-                            }
-                        }
-                    }
-
-                    var selected = new[] { pool[bestBreakfastIndex], pool[bestLunchIndex], pool[bestDinnerIndex] };
-                    var mealTypes = new[] { "breakfast", "lunch", "dinner" };
-
-                    const string insertMealPlanMealSql = @"
-                        INSERT INTO MealPlanMeal (mealPlanId, mealId, mealType, assigned_at, isConsumed)
-                        VALUES (@planId, @mealId, @mealType, @assignedAt, 0)";
-
-                    for (int i = 0; i < selected.Length; i++)
-                    {
-                        using (var mpmCmd = new SqliteCommand(insertMealPlanMealSql, conn, transaction))
-                        {
-                            mpmCmd.Parameters.AddWithValue("@planId", mealPlanId);
-                            mpmCmd.Parameters.AddWithValue("@mealId", selected[i].id);
-                            mpmCmd.Parameters.AddWithValue("@mealType", mealTypes[i]);
-                            mpmCmd.Parameters.AddWithValue("@assignedAt", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
-                            await mpmCmd.ExecuteNonQueryAsync();
-                        }
-                    }
+                    await InsertMealPlanMealsAsync(conn, transaction, mealPlanId, selectedMeals);
 
                     transaction.Commit();
                     return mealPlanId;
@@ -368,6 +200,213 @@ namespace TeamNut.Repositories
                     transaction.Rollback();
                     throw new Exception($"Generation Failed: {ex.Message}");
                 }
+            }
+        }
+
+        private async Task EnsureMealsExistAsync(SqliteConnection connection, SqliteTransaction transaction)
+        {
+            const string checkMealsSql = "SELECT COUNT(*) FROM Meals";
+            using var checkCommand = new SqliteCommand(checkMealsSql, connection, transaction);
+            var mealCountScalar = await checkCommand.ExecuteScalarAsync();
+            long mealCount = mealCountScalar != null ? Convert.ToInt64(mealCountScalar) : 0;
+
+            if (mealCount == 0)
+            {
+                throw new Exception("No meals found in database.");
+            }
+        }
+
+        private async Task<(int calorieNeeds, string goalType)> LoadUserNutritionTargetsAsync(
+            SqliteConnection connection,
+            SqliteTransaction transaction,
+            int userId)
+        {
+            int calorieNeeds = 2000;
+            string goalType = "general";
+
+            const string getUserDataSql = @"
+                SELECT calorie_needs, goal
+                FROM UserData
+                WHERE user_id = @userId";
+
+            using var userDataCommand = new SqliteCommand(getUserDataSql, connection, transaction);
+            userDataCommand.Parameters.AddWithValue("@userId", userId);
+
+            using var userDataReader = await userDataCommand.ExecuteReaderAsync();
+            if (await userDataReader.ReadAsync())
+            {
+                int rawCalories = userDataReader["calorie_needs"] != DBNull.Value
+                    ? Convert.ToInt32(userDataReader["calorie_needs"])
+                    : 0;
+
+                calorieNeeds = rawCalories > 0 ? rawCalories : 2000;
+                goalType = userDataReader["goal"]?.ToString() ?? "general";
+            }
+
+            return (calorieNeeds, goalType);
+        }
+
+        private async Task<int> InsertMealPlanAsync(
+            SqliteConnection connection,
+            SqliteTransaction transaction,
+            int userId,
+            string goalType)
+        {
+            const string insertPlanSql = @"
+                INSERT INTO MealPlan (user_id, created_at, goal_type)
+                VALUES (@userId, @createdAt, @goalType);
+                SELECT last_insert_rowid();";
+
+            using var mealPlanCommand = new SqliteCommand(insertPlanSql, connection, transaction);
+            mealPlanCommand.Parameters.AddWithValue("@userId", userId);
+            mealPlanCommand.Parameters.AddWithValue("@createdAt", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+            mealPlanCommand.Parameters.AddWithValue("@goalType", goalType);
+
+            return Convert.ToInt32(await mealPlanCommand.ExecuteScalarAsync());
+        }
+
+        private async Task<HashSet<int>> LoadFavouriteMealIdsAsync(
+            SqliteConnection connection,
+            SqliteTransaction transaction,
+            int userId)
+        {
+            var favouriteMealIds = new HashSet<int>();
+
+            const string favoritesSql = @"
+                SELECT DISTINCT favorite.mealId
+                FROM Favorites favorite
+                WHERE favorite.userId = @userId
+                  AND NOT EXISTS (
+                      SELECT 1
+                      FROM MealPlan mealPlan
+                      INNER JOIN MealPlanMeal mealPlanMeal ON mealPlan.mealplan_id = mealPlanMeal.mealPlanId
+                      WHERE mealPlan.user_id = @userId
+                        AND mealPlanMeal.mealId = favorite.mealId
+                        AND mealPlan.created_at >= DATE('now', '-3 days', 'localtime')
+                  )";
+
+            try
+            {
+                using var favoritesCommand = new SqliteCommand(favoritesSql, connection, transaction);
+                favoritesCommand.Parameters.AddWithValue("@userId", userId);
+                using var favoritesReader = await favoritesCommand.ExecuteReaderAsync();
+                while (await favoritesReader.ReadAsync())
+                {
+                    favouriteMealIds.Add(Convert.ToInt32(favoritesReader["mealId"]));
+                }
+            }
+            catch
+            {
+            }
+
+            return favouriteMealIds;
+        }
+
+        private async Task<List<(int mealId, int calories)>> LoadCandidateMealPoolAsync(
+            SqliteConnection connection,
+            SqliteTransaction transaction)
+        {
+            const string mealPoolSql = @"
+                SELECT meal_id, total_calories
+                FROM (
+                    SELECT meal.meal_id,
+                           CAST(COALESCE(SUM(ingredient.calories_per_100g * mealIngredient.quantity / 100), 0) AS INT) AS total_calories
+                    FROM Meals meal
+                    LEFT JOIN MealsIngredients mealIngredient ON meal.meal_id = mealIngredient.meal_id
+                    LEFT JOIN Ingredients ingredient ON mealIngredient.food_id = ingredient.food_id
+                    GROUP BY meal.meal_id
+                )
+                ORDER BY RANDOM()
+                LIMIT 50";
+
+            var mealPool = new List<(int mealId, int calories)>();
+            using var mealPoolCommand = new SqliteCommand(mealPoolSql, connection, transaction);
+            using var mealPoolReader = await mealPoolCommand.ExecuteReaderAsync();
+            while (await mealPoolReader.ReadAsync())
+            {
+                mealPool.Add((
+                    Convert.ToInt32(mealPoolReader["meal_id"]),
+                    Convert.ToInt32(mealPoolReader["total_calories"])));
+            }
+
+            if (mealPool.Count < 3)
+            {
+                throw new Exception("Not enough meals in the database to generate a plan.");
+            }
+
+            return mealPool;
+        }
+
+        private (int mealId, int calories)[] FindBestMealCombination(
+            List<(int mealId, int calories)> mealPool,
+            int calorieNeeds,
+            HashSet<int> favouriteMealIds)
+        {
+            int bestBreakfastIndex = 0;
+            int bestLunchIndex = 1;
+            int bestDinnerIndex = 2;
+            int bestScore = int.MaxValue;
+            bool bestIncludesFavorite = false;
+
+            for (int breakfastCandidateIndex = 0; breakfastCandidateIndex < mealPool.Count - 2; breakfastCandidateIndex++)
+            {
+                for (int lunchCandidateIndex = breakfastCandidateIndex + 1; lunchCandidateIndex < mealPool.Count - 1; lunchCandidateIndex++)
+                {
+                    for (int dinnerCandidateIndex = lunchCandidateIndex + 1; dinnerCandidateIndex < mealPool.Count; dinnerCandidateIndex++)
+                    {
+                        int score = Math.Abs(
+                            mealPool[breakfastCandidateIndex].calories +
+                            mealPool[lunchCandidateIndex].calories +
+                            mealPool[dinnerCandidateIndex].calories -
+                            calorieNeeds);
+
+                        bool includesFavoriteMeal =
+                            favouriteMealIds.Contains(mealPool[breakfastCandidateIndex].mealId) ||
+                            favouriteMealIds.Contains(mealPool[lunchCandidateIndex].mealId) ||
+                            favouriteMealIds.Contains(mealPool[dinnerCandidateIndex].mealId);
+
+                        bool isBetterCombination = score < bestScore ||
+                            (includesFavoriteMeal && !bestIncludesFavorite && score <= bestScore + 100);
+
+                        if (isBetterCombination)
+                        {
+                            bestScore = score;
+                            bestIncludesFavorite = includesFavoriteMeal;
+                            bestBreakfastIndex = breakfastCandidateIndex;
+                            bestLunchIndex = lunchCandidateIndex;
+                            bestDinnerIndex = dinnerCandidateIndex;
+                        }
+                    }
+                }
+            }
+
+            return new[]
+            {
+                mealPool[bestBreakfastIndex],
+                mealPool[bestLunchIndex],
+                mealPool[bestDinnerIndex],
+            };
+        }
+
+        private async Task InsertMealPlanMealsAsync(
+            SqliteConnection connection,
+            SqliteTransaction transaction,
+            int mealPlanId,
+            (int mealId, int calories)[] selectedMeals)
+        {
+            string[] mealTypes = { "breakfast", "lunch", "dinner" };
+            const string insertMealPlanMealSql = @"
+                INSERT INTO MealPlanMeal (mealPlanId, mealId, mealType, assigned_at, isConsumed)
+                VALUES (@mealPlanId, @mealId, @mealType, @assignedAt, 0)";
+
+            for (int mealIndex = 0; mealIndex < selectedMeals.Length; mealIndex++)
+            {
+                using var mealPlanMealCommand = new SqliteCommand(insertMealPlanMealSql, connection, transaction);
+                mealPlanMealCommand.Parameters.AddWithValue("@mealPlanId", mealPlanId);
+                mealPlanMealCommand.Parameters.AddWithValue("@mealId", selectedMeals[mealIndex].mealId);
+                mealPlanMealCommand.Parameters.AddWithValue("@mealType", mealTypes[mealIndex]);
+                mealPlanMealCommand.Parameters.AddWithValue("@assignedAt", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+                await mealPlanMealCommand.ExecuteNonQueryAsync();
             }
         }
 
@@ -409,11 +448,11 @@ namespace TeamNut.Repositories
             using var conn = new SqliteConnection(connectionString);
             await conn.OpenAsync();
 
-            using (var cmd = new SqliteCommand(sql, conn))
+            using (var mealsForPlanCommand = new SqliteCommand(sql, conn))
             {
-                cmd.Parameters.AddWithValue("@planId", mealPlanId);
+                mealsForPlanCommand.Parameters.AddWithValue("@planId", mealPlanId);
 
-                using (var reader = await cmd.ExecuteReaderAsync())
+                using (var reader = await mealsForPlanCommand.ExecuteReaderAsync())
                 {
                     while (await reader.ReadAsync())
                     {
@@ -460,11 +499,11 @@ namespace TeamNut.Repositories
             using var conn = new SqliteConnection(connectionString);
             await conn.OpenAsync();
 
-            using (var cmd = new SqliteCommand(sql, conn))
+            using (var ingredientsForMealCommand = new SqliteCommand(sql, conn))
             {
-                cmd.Parameters.AddWithValue("@mealId", mealId);
+                ingredientsForMealCommand.Parameters.AddWithValue("@mealId", mealId);
 
-                using (var reader = await cmd.ExecuteReaderAsync())
+                using (var reader = await ingredientsForMealCommand.ExecuteReaderAsync())
                 {
                     while (await reader.ReadAsync())
                     {
@@ -519,13 +558,13 @@ namespace TeamNut.Repositories
 
             foreach (var meal in meals)
             {
-                using (var cmd = new SqliteCommand(sql, conn))
+                using (var insertDailyLogCommand = new SqliteCommand(sql, conn))
                 {
-                    cmd.Parameters.AddWithValue("@userId", userId);
-                    cmd.Parameters.AddWithValue("@mealId", meal.Id);
-                    cmd.Parameters.AddWithValue("@calories", meal.Calories);
-                    cmd.Parameters.AddWithValue("@loggedAt", DateTime.Now);
-                    await cmd.ExecuteNonQueryAsync();
+                    insertDailyLogCommand.Parameters.AddWithValue("@userId", userId);
+                    insertDailyLogCommand.Parameters.AddWithValue("@mealId", meal.Id);
+                    insertDailyLogCommand.Parameters.AddWithValue("@calories", meal.Calories);
+                    insertDailyLogCommand.Parameters.AddWithValue("@loggedAt", DateTime.Now);
+                    await insertDailyLogCommand.ExecuteNonQueryAsync();
                 }
             }
         }
@@ -539,13 +578,13 @@ namespace TeamNut.Repositories
             using var conn = new SqliteConnection(connectionString);
             await conn.OpenAsync();
 
-            using (var cmd = new SqliteCommand(sql, conn))
+            using (var insertSingleDailyLogCommand = new SqliteCommand(sql, conn))
             {
-                cmd.Parameters.AddWithValue("@userId", userId);
-                cmd.Parameters.AddWithValue("@mealId", mealId);
-                cmd.Parameters.AddWithValue("@calories", calories);
-                cmd.Parameters.AddWithValue("@loggedAt", DateTime.Now);
-                await cmd.ExecuteNonQueryAsync();
+                insertSingleDailyLogCommand.Parameters.AddWithValue("@userId", userId);
+                insertSingleDailyLogCommand.Parameters.AddWithValue("@mealId", mealId);
+                insertSingleDailyLogCommand.Parameters.AddWithValue("@calories", calories);
+                insertSingleDailyLogCommand.Parameters.AddWithValue("@loggedAt", DateTime.Now);
+                await insertSingleDailyLogCommand.ExecuteNonQueryAsync();
             }
         }
     }

@@ -26,14 +26,14 @@ namespace TeamNut.Repositories
             using var conn = new SqliteConnection(connectionString);
             await conn.OpenAsync();
 
-            using (var cmd = new SqliteCommand(query, conn))
+            using (var command = new SqliteCommand(query, conn))
             {
-                cmd.Parameters.AddWithValue("@userId", item.UserId);
-                cmd.Parameters.AddWithValue("@ingredientId", item.IngredientId);
-                cmd.Parameters.AddWithValue("@quantityGrams", item.QuantityGrams);
-                cmd.Parameters.AddWithValue("@isChecked", item.IsChecked ? 1 : 0);
+                command.Parameters.AddWithValue("@userId", item.UserId);
+                command.Parameters.AddWithValue("@ingredientId", item.IngredientId);
+                command.Parameters.AddWithValue("@quantityGrams", item.QuantityGrams);
+                command.Parameters.AddWithValue("@isChecked", item.IsChecked ? 1 : 0);
 
-                var result = await cmd.ExecuteScalarAsync();
+                var result = await command.ExecuteScalarAsync();
 
                 if (result != null)
                 {
@@ -54,9 +54,9 @@ namespace TeamNut.Repositories
             using var conn = new SqliteConnection(connectionString);
             await conn.OpenAsync();
 
-            using (var cmd = new SqliteCommand(query, conn))
+            using (var command = new SqliteCommand(query, conn))
             {
-                using (var reader = await cmd.ExecuteReaderAsync())
+                using (var reader = await command.ExecuteReaderAsync())
                 {
                     while (await reader.ReadAsync())
                     {
@@ -79,11 +79,11 @@ namespace TeamNut.Repositories
             using var conn = new SqliteConnection(connectionString);
             await conn.OpenAsync();
 
-            using (var cmd = new SqliteCommand(query, conn))
+            using (var command = new SqliteCommand(query, conn))
             {
-                cmd.Parameters.AddWithValue("@id", id);
+                command.Parameters.AddWithValue("@id", id);
 
-                using (var reader = await cmd.ExecuteReaderAsync())
+                using (var reader = await command.ExecuteReaderAsync())
                 {
                     if (await reader.ReadAsync())
                     {
@@ -106,12 +106,12 @@ namespace TeamNut.Repositories
             using var conn = new SqliteConnection(connectionString);
             await conn.OpenAsync();
 
-            using (var cmd = new SqliteCommand(query, conn))
+            using (var command = new SqliteCommand(query, conn))
             {
-                cmd.Parameters.AddWithValue("@userId", userId);
-                cmd.Parameters.AddWithValue("@ingredientId", ingredientId);
+                command.Parameters.AddWithValue("@userId", userId);
+                command.Parameters.AddWithValue("@ingredientId", ingredientId);
 
-                using (var reader = await cmd.ExecuteReaderAsync())
+                using (var reader = await command.ExecuteReaderAsync())
                 {
                     if (await reader.ReadAsync())
                     {
@@ -136,11 +136,11 @@ namespace TeamNut.Repositories
             using var conn = new SqliteConnection(connectionString);
             await conn.OpenAsync();
 
-            using (var cmd = new SqliteCommand(query, conn))
+            using (var command = new SqliteCommand(query, conn))
             {
-                cmd.Parameters.AddWithValue("@userId", userId);
+                command.Parameters.AddWithValue("@userId", userId);
 
-                using (var reader = await cmd.ExecuteReaderAsync())
+                using (var reader = await command.ExecuteReaderAsync())
                 {
                     while (await reader.ReadAsync())
                     {
@@ -162,14 +162,14 @@ namespace TeamNut.Repositories
             using var conn = new SqliteConnection(connectionString);
             await conn.OpenAsync();
 
-            using (var cmd = new SqliteCommand(query, conn))
+            using (var command = new SqliteCommand(query, conn))
             {
-                cmd.Parameters.AddWithValue("@id", item.Id);
-                cmd.Parameters.AddWithValue("@ingredientId", item.IngredientId);
-                cmd.Parameters.AddWithValue("@quantityGrams", item.QuantityGrams);
-                cmd.Parameters.AddWithValue("@isChecked", item.IsChecked ? 1 : 0);
+                command.Parameters.AddWithValue("@id", item.Id);
+                command.Parameters.AddWithValue("@ingredientId", item.IngredientId);
+                command.Parameters.AddWithValue("@quantityGrams", item.QuantityGrams);
+                command.Parameters.AddWithValue("@isChecked", item.IsChecked ? 1 : 0);
 
-                await cmd.ExecuteNonQueryAsync();
+                await command.ExecuteNonQueryAsync();
             }
         }
 
@@ -180,10 +180,10 @@ namespace TeamNut.Repositories
             using var conn = new SqliteConnection(connectionString);
             await conn.OpenAsync();
 
-            using (var cmd = new SqliteCommand(query, conn))
+            using (var command = new SqliteCommand(query, conn))
             {
-                cmd.Parameters.AddWithValue("@id", id);
-                await cmd.ExecuteNonQueryAsync();
+                command.Parameters.AddWithValue("@id", id);
+                await command.ExecuteNonQueryAsync();
             }
         }
 
@@ -215,11 +215,11 @@ namespace TeamNut.Repositories
             using var conn = new SqliteConnection(connectionString);
             await conn.OpenAsync();
 
-            using (var cmd = new SqliteCommand(query, conn))
+            using (var command = new SqliteCommand(query, conn))
             {
-                cmd.Parameters.AddWithValue("@userId", userId);
+                command.Parameters.AddWithValue("@userId", userId);
 
-                using (var reader = await cmd.ExecuteReaderAsync())
+                using (var reader = await command.ExecuteReaderAsync())
                 {
                     while (await reader.ReadAsync())
                     {
