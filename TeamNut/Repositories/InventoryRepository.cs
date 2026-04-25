@@ -82,12 +82,12 @@ namespace TeamNut.Repositories
 
             var items = new List<Inventory>();
             using var conn = new SqliteConnection(connectionString);
-            using var cmd = new SqliteCommand(sql, conn);
+            using var command = new SqliteCommand(sql, conn);
 
-            cmd.Parameters.AddWithValue("@uid", userId);
+            command.Parameters.AddWithValue("@uid", userId);
 
             await conn.OpenAsync();
-            using var reader = await cmd.ExecuteReaderAsync();
+            using var reader = await command.ExecuteReaderAsync();
 
             while (await reader.ReadAsync())
             {
@@ -104,12 +104,12 @@ namespace TeamNut.Repositories
             const string sql = "DELETE FROM Inventory WHERE id = @id";
 
             using var conn = new SqliteConnection(connectionString);
-            using var cmd = new SqliteCommand(sql, conn);
+            using var command = new SqliteCommand(sql, conn);
 
-            cmd.Parameters.AddWithValue("@id", id);
+            command.Parameters.AddWithValue("@id", id);
 
             await conn.OpenAsync();
-            await cmd.ExecuteNonQueryAsync();
+            await command.ExecuteNonQueryAsync();
         }
 
         public async Task<Inventory?> GetById(int id)
@@ -117,12 +117,12 @@ namespace TeamNut.Repositories
             const string sql = "SELECT * FROM Inventory WHERE id = @id";
 
             using var conn = new SqliteConnection(connectionString);
-            using var cmd = new SqliteCommand(sql, conn);
+            using var command = new SqliteCommand(sql, conn);
 
-            cmd.Parameters.AddWithValue("@id", id);
+            command.Parameters.AddWithValue("@id", id);
 
             await conn.OpenAsync();
-            using var reader = await cmd.ExecuteReaderAsync();
+            using var reader = await command.ExecuteReaderAsync();
 
             if (await reader.ReadAsync())
             {
@@ -137,13 +137,13 @@ namespace TeamNut.Repositories
             const string sql = "UPDATE Inventory SET quantity_grams = @qty WHERE id = @id";
 
             using var conn = new SqliteConnection(connectionString);
-            using var cmd = new SqliteCommand(sql, conn);
+            using var command = new SqliteCommand(sql, conn);
 
-            cmd.Parameters.AddWithValue("@id", entity.Id);
-            cmd.Parameters.AddWithValue("@qty", entity.QuantityGrams);
+            command.Parameters.AddWithValue("@id", entity.Id);
+            command.Parameters.AddWithValue("@qty", entity.QuantityGrams);
 
             await conn.OpenAsync();
-            await cmd.ExecuteNonQueryAsync();
+            await command.ExecuteNonQueryAsync();
         }
 
         public Task<IEnumerable<Inventory>> GetAll()

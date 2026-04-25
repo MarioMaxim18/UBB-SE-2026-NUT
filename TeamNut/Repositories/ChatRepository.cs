@@ -65,12 +65,12 @@ namespace TeamNut.Repositories
 
             var list = new List<Conversation>();
             using var conn = new SqliteConnection(connectionString);
-            using var cmd = new SqliteCommand(sql, conn);
+            using var command = new SqliteCommand(sql, conn);
 
-            cmd.Parameters.AddWithValue("@nid", nutritionistId);
+            command.Parameters.AddWithValue("@nid", nutritionistId);
 
             await conn.OpenAsync();
-            using var reader = await cmd.ExecuteReaderAsync();
+            using var reader = await command.ExecuteReaderAsync();
 
             while (await reader.ReadAsync())
             {
@@ -132,12 +132,12 @@ namespace TeamNut.Repositories
 
             var list = new List<Message>();
             using var conn = new SqliteConnection(connectionString);
-            using var cmd = new SqliteCommand(sql, conn);
+            using var command = new SqliteCommand(sql, conn);
 
-            cmd.Parameters.AddWithValue("@cid", conversationId);
+            command.Parameters.AddWithValue("@cid", conversationId);
 
             await conn.OpenAsync();
-            using var reader = await cmd.ExecuteReaderAsync();
+            using var reader = await command.ExecuteReaderAsync();
 
             while (await reader.ReadAsync())
             {
@@ -168,12 +168,12 @@ namespace TeamNut.Repositories
                 INSERT INTO Messages (conversation_id, sender_id, text_content) 
                 VALUES (@cid, @sid, @txt)";
 
-            using (var cmd = new SqliteCommand(insertSql, conn))
+            using (var command = new SqliteCommand(insertSql, conn))
             {
-                cmd.Parameters.AddWithValue("@cid", conversationId);
-                cmd.Parameters.AddWithValue("@sid", senderId);
-                cmd.Parameters.AddWithValue("@txt", text);
-                await cmd.ExecuteNonQueryAsync();
+                command.Parameters.AddWithValue("@cid", conversationId);
+                command.Parameters.AddWithValue("@sid", senderId);
+                command.Parameters.AddWithValue("@txt", text);
+                await command.ExecuteNonQueryAsync();
             }
 
             const string updateSql = @"
@@ -193,10 +193,10 @@ namespace TeamNut.Repositories
         {
             var list = new List<Conversation>();
             using var conn = new SqliteConnection(connectionString);
-            using var cmd = new SqliteCommand(query, conn);
+            using var command = new SqliteCommand(query, conn);
 
             await conn.OpenAsync();
-            using var reader = await cmd.ExecuteReaderAsync();
+            using var reader = await command.ExecuteReaderAsync();
 
             while (await reader.ReadAsync())
             {

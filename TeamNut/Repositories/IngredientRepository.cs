@@ -62,12 +62,12 @@ namespace TeamNut.Repositories
 
             var results = new List<KeyValuePair<int, string>>();
             using var conn = new SqliteConnection(connectionString);
-            using var cmd = new SqliteCommand(sql, conn);
+            using var command = new SqliteCommand(sql, conn);
 
-            cmd.Parameters.AddWithValue("@search", $"%{search}%");
+            command.Parameters.AddWithValue("@search", $"%{search}%");
 
             await conn.OpenAsync();
-            using var reader = await cmd.ExecuteReaderAsync();
+            using var reader = await command.ExecuteReaderAsync();
 
             while (await reader.ReadAsync())
             {
@@ -88,10 +88,10 @@ namespace TeamNut.Repositories
 
             var ingredients = new List<Ingredient>();
             using var conn = new SqliteConnection(connectionString);
-            using var cmd = new SqliteCommand(sql, conn);
+            using var command = new SqliteCommand(sql, conn);
 
             await conn.OpenAsync();
-            using var reader = await cmd.ExecuteReaderAsync();
+            using var reader = await command.ExecuteReaderAsync();
 
             while (await reader.ReadAsync())
             {

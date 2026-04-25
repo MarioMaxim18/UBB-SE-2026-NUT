@@ -23,11 +23,11 @@ namespace TeamNut.Repositories
             using var conn = new SqliteConnection(connectionString);
             await conn.OpenAsync();
 
-            using (var cmd = new SqliteCommand(sql, conn))
+            using (var command = new SqliteCommand(sql, conn))
             {
-                cmd.Parameters.AddWithValue("@id", id);
+                command.Parameters.AddWithValue("@id", id);
 
-                using (var reader = await cmd.ExecuteReaderAsync())
+                using (var reader = await command.ExecuteReaderAsync())
                 {
                     if (await reader.ReadAsync())
                     {
@@ -47,9 +47,9 @@ namespace TeamNut.Repositories
             using var conn = new SqliteConnection(connectionString);
             await conn.OpenAsync();
 
-            using (var cmd = new SqliteCommand(sql, conn))
+            using (var command = new SqliteCommand(sql, conn))
             {
-                using (var reader = await cmd.ExecuteReaderAsync())
+                using (var reader = await command.ExecuteReaderAsync())
                 {
                     while (await reader.ReadAsync())
                     {
@@ -69,11 +69,11 @@ namespace TeamNut.Repositories
             using var conn = new SqliteConnection(connectionString);
             await conn.OpenAsync();
 
-            using (var cmd = new SqliteCommand(sql, conn))
+            using (var command = new SqliteCommand(sql, conn))
             {
-                cmd.Parameters.AddWithValue("@uid", userId);
+                command.Parameters.AddWithValue("@uid", userId);
 
-                using (var reader = await cmd.ExecuteReaderAsync())
+                using (var reader = await command.ExecuteReaderAsync())
                 {
                     while (await reader.ReadAsync())
                     {
@@ -94,16 +94,16 @@ namespace TeamNut.Repositories
             using var conn = new SqliteConnection(connectionString);
             await conn.OpenAsync();
 
-            using (var cmd = new SqliteCommand(sql, conn))
+            using (var command = new SqliteCommand(sql, conn))
             {
-                cmd.Parameters.AddWithValue("@uid", entity.UserId);
-                cmd.Parameters.AddWithValue("@name", entity.Name);
-                cmd.Parameters.AddWithValue("@sound", entity.HasSound ? 1 : 0);
-                cmd.Parameters.AddWithValue("@time", entity.Time.ToString());
-                cmd.Parameters.AddWithValue("@date", entity.ReminderDate);
-                cmd.Parameters.AddWithValue("@freq", entity.Frequency ?? string.Empty);
+                command.Parameters.AddWithValue("@uid", entity.UserId);
+                command.Parameters.AddWithValue("@name", entity.Name);
+                command.Parameters.AddWithValue("@sound", entity.HasSound ? 1 : 0);
+                command.Parameters.AddWithValue("@time", entity.Time.ToString());
+                command.Parameters.AddWithValue("@date", entity.ReminderDate);
+                command.Parameters.AddWithValue("@freq", entity.Frequency ?? string.Empty);
 
-                await cmd.ExecuteNonQueryAsync();
+                await command.ExecuteNonQueryAsync();
             }
 
             using (var idCmd = new SqliteCommand("SELECT last_insert_rowid();", conn))
@@ -128,17 +128,17 @@ namespace TeamNut.Repositories
             using var conn = new SqliteConnection(connectionString);
             await conn.OpenAsync();
 
-            using (var cmd = new SqliteCommand(sql, conn))
+            using (var command = new SqliteCommand(sql, conn))
             {
-                cmd.Parameters.AddWithValue("@id", entity.Id);
-                cmd.Parameters.AddWithValue("@name", entity.Name);
-                cmd.Parameters.AddWithValue("@sound", entity.HasSound ? 1 : 0);
-                cmd.Parameters.AddWithValue("@time", entity.Time.ToString());
-                cmd.Parameters.AddWithValue("@date", entity.ReminderDate);
-                cmd.Parameters.AddWithValue("@freq", entity.Frequency ?? string.Empty);
-                cmd.Parameters.AddWithValue("@uid", entity.UserId);
+                command.Parameters.AddWithValue("@id", entity.Id);
+                command.Parameters.AddWithValue("@name", entity.Name);
+                command.Parameters.AddWithValue("@sound", entity.HasSound ? 1 : 0);
+                command.Parameters.AddWithValue("@time", entity.Time.ToString());
+                command.Parameters.AddWithValue("@date", entity.ReminderDate);
+                command.Parameters.AddWithValue("@freq", entity.Frequency ?? string.Empty);
+                command.Parameters.AddWithValue("@uid", entity.UserId);
 
-                await cmd.ExecuteNonQueryAsync();
+                await command.ExecuteNonQueryAsync();
             }
         }
 
@@ -149,10 +149,10 @@ namespace TeamNut.Repositories
             using var conn = new SqliteConnection(connectionString);
             await conn.OpenAsync();
 
-            using (var cmd = new SqliteCommand(sql, conn))
+            using (var command = new SqliteCommand(sql, conn))
             {
-                cmd.Parameters.AddWithValue("@id", id);
-                await cmd.ExecuteNonQueryAsync();
+                command.Parameters.AddWithValue("@id", id);
+                await command.ExecuteNonQueryAsync();
             }
         }
 
@@ -169,11 +169,11 @@ namespace TeamNut.Repositories
             using var conn = new SqliteConnection(connectionString);
             await conn.OpenAsync();
 
-            using (var cmd = new SqliteCommand(sql, conn))
+            using (var command = new SqliteCommand(sql, conn))
             {
-                cmd.Parameters.AddWithValue("@uid", userId);
+                command.Parameters.AddWithValue("@uid", userId);
 
-                using (var reader = await cmd.ExecuteReaderAsync())
+                using (var reader = await command.ExecuteReaderAsync())
                 {
                     if (await reader.ReadAsync())
                     {

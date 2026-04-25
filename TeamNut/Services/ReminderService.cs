@@ -61,7 +61,6 @@ namespace TeamNut.Services
             }
             catch
             {
-                // Ignored to prevent crashing the UI thread on event failures (Idk what is going on with this catchs cant remove them neither)
             }
 
             return ResultSuccess;
@@ -104,7 +103,6 @@ namespace TeamNut.Services
             }
             catch
             {
-                // Ignored to prevent crash (It crashes idk why sorry I keep this one like this)
             }
         }
     }
