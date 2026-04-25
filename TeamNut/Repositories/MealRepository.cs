@@ -16,14 +16,14 @@ namespace TeamNut.Repositories
 
         public MealRepository(IDbConfig dbConfig)
         {
-            this.connectionString = dbConfig.ConnectionString;
+            connectionString = dbConfig.ConnectionString;
         }
 
         public List<Meal> GetMeals()
         {
             try
             {
-                return this.GetAll().Result.ToList();
+                return GetAll().Result.ToList();
             }
             catch
             {
@@ -37,27 +37,31 @@ namespace TeamNut.Repositories
             var meals = new List<Meal>();
 
             string baseSql = @"
-        SELECT
-            m.meal_id, m.imageUrl, m.name, m.isKeto, m.isLactoseFree,
-            m.isNutFree, m.isVegan, m.isGlutenFree, m.description,
-            MAX(CASE WHEN f.id IS NOT NULL THEN 1 ELSE 0 END) AS isFavorite,
-            CAST(IFNULL(SUM(i.calories_per_100g * mi.quantity / 100.0), 0) AS INT) AS calories,
-            CAST(IFNULL(SUM(i.protein_per_100g * mi.quantity / 100.0), 0) AS INT) AS protein,
-            CAST(IFNULL(SUM(i.carbs_per_100g * mi.quantity / 100.0), 0) AS INT) AS carbs,
-            CAST(IFNULL(SUM(i.fat_per_100g * mi.quantity / 100.0), 0) AS INT) AS fat
-        FROM Meals m
-        LEFT JOIN Favorites f ON f.mealId = m.meal_id AND f.userId = @userId
-        LEFT JOIN MealsIngredients mi ON m.meal_id = mi.meal_id
-        LEFT JOIN Ingredients i ON mi.food_id = i.food_id
-        WHERE 1=1";
+                SELECT
+                    m.meal_id, m.imageUrl, m.name, m.isKeto, m.isLactoseFree,
+                    m.isNutFree, m.isVegan, m.isGlutenFree, m.description,
+                    MAX(CASE WHEN f.id IS NOT NULL THEN 1 ELSE 0 END) AS isFavorite,
+                    CAST(IFNULL(SUM(i.calories_per_100g * mi.quantity / 100.0), 0) AS INT) AS calories,
+                    CAST(IFNULL(SUM(i.protein_per_100g * mi.quantity / 100.0), 0) AS INT) AS protein,
+                    CAST(IFNULL(SUM(i.carbs_per_100g * mi.quantity / 100.0), 0) AS INT) AS carbs,
+                    CAST(IFNULL(SUM(i.fat_per_100g * mi.quantity / 100.0), 0) AS INT) AS fat
+                FROM Meals m
+                LEFT JOIN Favorites f ON f.mealId = m.meal_id AND f.userId = @userId
+                LEFT JOIN MealsIngredients mi ON m.meal_id = mi.meal_id
+                LEFT JOIN Ingredients i ON mi.food_id = i.food_id
+                WHERE 1=1";
 
-            StringBuilder sql = new StringBuilder(baseSql);
-            var cmd = new SqliteCommand();
+            var sql = new StringBuilder(baseSql);
+
+            using var conn = new SqliteConnection(connectionString);
+            using var cmd = new SqliteCommand();
+            cmd.Connection = conn;
 
             if (filter.IsKeto)
             {
                 sql.Append(" AND m.isKeto = 1");
             }
+
             if (filter.IsVegan)
             {
                 sql.Append(" AND m.isVegan = 1");
@@ -85,20 +89,22 @@ namespace TeamNut.Repositories
             }
 
             sql.Append(@" GROUP BY
-        m.meal_id, m.imageUrl, m.name, m.isKeto, m.isLactoseFree,
-        m.isNutFree, m.isVegan, m.isGlutenFree, m.description");
+                m.meal_id, m.imageUrl, m.name, m.isKeto, m.isLactoseFree,
+                m.isNutFree, m.isVegan, m.isGlutenFree, m.description");
 
-            using var conn = new SqliteConnection(connectionString);
-            cmd.Connection = conn;
             cmd.CommandText = sql.ToString();
             cmd.Parameters.AddWithValue("@userId", userId);
 
             await conn.OpenAsync();
-            using var reader = await cmd.ExecuteReaderAsync();
-            while (await reader.ReadAsync())
+
+            using (var reader = await cmd.ExecuteReaderAsync())
             {
-                meals.Add(this.MapReaderToMeal(reader));
+                while (await reader.ReadAsync())
+                {
+                    meals.Add(MapReaderToMeal(reader));
+                }
             }
+
             return meals;
         }
 
@@ -109,66 +115,86 @@ namespace TeamNut.Repositories
 
             if (isFavorite)
             {
-                // SQLite uses INSERT OR IGNORE instead of IF NOT EXISTS
                 const string insertSql = "INSERT OR IGNORE INTO Favorites (userId, mealId) VALUES (@userId, @mealId)";
-                using var insertCmd = new SqliteCommand(insertSql, conn);
-                insertCmd.Parameters.AddWithValue("@userId", userId);
-                insertCmd.Parameters.AddWithValue("@mealId", mealId);
-                await insertCmd.ExecuteNonQueryAsync();
+
+                using (var insertCmd = new SqliteCommand(insertSql, conn))
+                {
+                    insertCmd.Parameters.AddWithValue("@userId", userId);
+                    insertCmd.Parameters.AddWithValue("@mealId", mealId);
+                    await insertCmd.ExecuteNonQueryAsync();
+                }
             }
             else
             {
                 const string deleteSql = "DELETE FROM Favorites WHERE userId = @userId AND mealId = @mealId";
-                using var deleteCmd = new SqliteCommand(deleteSql, conn);
-                deleteCmd.Parameters.AddWithValue("@userId", userId);
-                deleteCmd.Parameters.AddWithValue("@mealId", mealId);
-                await deleteCmd.ExecuteNonQueryAsync();
+
+                using (var deleteCmd = new SqliteCommand(deleteSql, conn))
+                {
+                    deleteCmd.Parameters.AddWithValue("@userId", userId);
+                    deleteCmd.Parameters.AddWithValue("@mealId", mealId);
+                    await deleteCmd.ExecuteNonQueryAsync();
+                }
             }
         }
 
         public async Task<IEnumerable<Meal>> GetAll()
         {
-            return await this.GetFilteredMeals(new MealFilter());
+            return await GetFilteredMeals(new MealFilter());
         }
 
         public async Task<Meal?> GetById(int id)
         {
-            var result = await this.GetFilteredMeals(new MealFilter());
+            var result = await GetFilteredMeals(new MealFilter());
             return result.FirstOrDefault(m => m.Id == id);
         }
 
         public async Task Add(Meal entity)
         {
+            const string sql = @"
+                INSERT INTO Meals (name, imageUrl, isKeto, isVegan, isNutFree, isLactoseFree, isGlutenFree, description)
+                VALUES (@name, @img, @keto, @vegan, @nut, @lac, @glu, @desc)";
+
             using var conn = new SqliteConnection(connectionString);
-            const string sql = @"INSERT INTO Meals (name, imageUrl, isKeto, isVegan, isNutFree, isLactoseFree, isGlutenFree, description)
-                                VALUES (@name, @img, @keto, @vegan, @nut, @lac, @glu, @desc)";
-            using var cmd = new SqliteCommand(sql, conn);
-            this.AddMealParameters(cmd, entity);
             await conn.OpenAsync();
-            await cmd.ExecuteNonQueryAsync();
+
+            using (var cmd = new SqliteCommand(sql, conn))
+            {
+                AddMealParameters(cmd, entity);
+                await cmd.ExecuteNonQueryAsync();
+            }
         }
 
         public async Task Update(Meal entity)
         {
+            const string sql = @"
+                UPDATE Meals 
+                SET name=@name, imageUrl=@img, isKeto=@keto, isVegan=@vegan,
+                    isNutFree=@nut, isLactoseFree=@lac, isGlutenFree=@glu, description=@desc
+                WHERE meal_id=@id";
+
             using var conn = new SqliteConnection(connectionString);
-            const string sql = @"UPDATE Meals SET name=@name, imageUrl=@img, isKeto=@keto, isVegan=@vegan,
-                                 isNutFree=@nut, isLactoseFree=@lac, isGlutenFree=@glu, description=@desc
-                                 WHERE meal_id=@id";
-            using var cmd = new SqliteCommand(sql, conn);
-            cmd.Parameters.AddWithValue("@id", entity.Id);
-            this.AddMealParameters(cmd, entity);
             await conn.OpenAsync();
-            await cmd.ExecuteNonQueryAsync();
+
+            using (var cmd = new SqliteCommand(sql, conn))
+            {
+                cmd.Parameters.AddWithValue("@id", entity.Id);
+                AddMealParameters(cmd, entity);
+                await cmd.ExecuteNonQueryAsync();
+            }
         }
 
         public async Task Delete(int id)
         {
-            using var conn = new SqliteConnection(connectionString);
             const string sql = "DELETE FROM Meals WHERE meal_id = @id";
-            using var cmd = new SqliteCommand(sql, conn);
-            cmd.Parameters.AddWithValue("@id", id);
+
+            using var conn = new SqliteConnection(connectionString);
             await conn.OpenAsync();
-            await cmd.ExecuteNonQueryAsync();
+
+            using (var cmd = new SqliteCommand(sql, conn))
+            {
+                cmd.Parameters.AddWithValue("@id", id);
+                await cmd.ExecuteNonQueryAsync();
+            }
         }
 
         private void AddMealParameters(SqliteCommand cmd, Meal meal)
@@ -190,43 +216,49 @@ namespace TeamNut.Repositories
                 Id = (int)Convert.ToInt64(reader["meal_id"]),
                 Name = reader["name"]?.ToString() ?? string.Empty,
                 ImageUrl = reader["imageUrl"]?.ToString() ?? string.Empty,
-
                 Calories = (int)Math.Round(Convert.ToDouble(reader["calories"])),
                 Protein = (int)Math.Round(Convert.ToDouble(reader["protein"])),
                 Carbs = (int)Math.Round(Convert.ToDouble(reader["carbs"])),
                 Fat = (int)Math.Round(Convert.ToDouble(reader["fat"])),
-
                 IsKeto = Convert.ToInt64(reader["isKeto"]) == 1,
                 IsVegan = Convert.ToInt64(reader["isVegan"]) == 1,
                 IsNutFree = Convert.ToInt64(reader["isNutFree"]) == 1,
                 IsLactoseFree = Convert.ToInt64(reader["isLactoseFree"]) == 1,
                 IsGlutenFree = Convert.ToInt64(reader["isGlutenFree"]) == 1,
                 IsFavorite = Convert.ToInt64(reader["isFavorite"]) == 1,
-
                 Description = reader["description"]?.ToString() ?? string.Empty,
             };
         }
 
         public async Task<List<string>> GetIngredientLinesForMealAsync(int mealId)
         {
-            var ingredients = new List<string>();
-            using var conn = new SqliteConnection(connectionString);
             const string sql = @"
                 SELECT i.name, mi.quantity
                 FROM MealsIngredients mi
                 INNER JOIN Ingredients i ON i.food_id = mi.food_id
                 WHERE mi.meal_id = @mealId
                 ORDER BY mi.quantity DESC, i.name";
-            using var cmd = new SqliteCommand(sql, conn);
-            cmd.Parameters.AddWithValue("@mealId", mealId);
+
+            var ingredients = new List<string>();
+
+            using var conn = new SqliteConnection(connectionString);
             await conn.OpenAsync();
-            using var reader = await cmd.ExecuteReaderAsync();
-            while (await reader.ReadAsync())
+
+            using (var cmd = new SqliteCommand(sql, conn))
             {
-                var name = reader["name"]?.ToString() ?? "Unknown ingredient";
-                var quantity = Convert.ToDouble(reader["quantity"]);
-                ingredients.Add($"- {name} ({quantity:0.#}g)");
+                cmd.Parameters.AddWithValue("@mealId", mealId);
+
+                using (var reader = await cmd.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        var name = reader["name"]?.ToString() ?? "Unknown ingredient";
+                        var quantity = Convert.ToDouble(reader["quantity"]);
+                        ingredients.Add($"- {name} ({quantity:0.#}g)");
+                    }
+                }
             }
+
             return ingredients;
         }
     }

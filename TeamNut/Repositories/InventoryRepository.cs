@@ -13,7 +13,7 @@ namespace TeamNut.Repositories
 
         public InventoryRepository(IDbConfig dbConfig)
         {
-            connectionString = dbConfig.ConnectionString;
+            this.connectionString = dbConfig.ConnectionString;
         }
 
         public async Task Add(Inventory entity)
@@ -22,74 +22,90 @@ namespace TeamNut.Repositories
             await conn.OpenAsync();
 
             const string checkSql = @"
-        SELECT id, quantity_grams
-        FROM Inventory
-        WHERE user_id = @uid AND ingredient_id = @iid LIMIT 1";
+                SELECT id, quantity_grams
+                FROM Inventory
+                WHERE user_id = @uid AND ingredient_id = @iid 
+                LIMIT 1";
 
-            using var checkCmd = new SqliteCommand(checkSql, conn);
-            checkCmd.Parameters.AddWithValue("@uid", entity.UserId);
-            checkCmd.Parameters.AddWithValue("@iid", entity.IngredientId);
+            int? existingId = null;
+            int existingQty = 0;
 
-            using var reader = await checkCmd.ExecuteReaderAsync();
-
-            if (await reader.ReadAsync())
+            using (var checkCmd = new SqliteCommand(checkSql, conn))
             {
-                int existingId = Convert.ToInt32(reader["id"]);
-                int existingQty = Convert.ToInt32(reader["quantity_grams"]);
-                int newQty = existingQty + entity.QuantityGrams;
+                checkCmd.Parameters.AddWithValue("@uid", entity.UserId);
+                checkCmd.Parameters.AddWithValue("@iid", entity.IngredientId);
 
+                using (var reader = await checkCmd.ExecuteReaderAsync())
+                {
+                    if (await reader.ReadAsync())
+                    {
+                        existingId = Convert.ToInt32(reader["id"]);
+                        existingQty = Convert.ToInt32(reader["quantity_grams"]);
+                    }
+                }
+            }
+
+            if (existingId.HasValue)
+            {
                 const string updateSql = "UPDATE Inventory SET quantity_grams = @qty WHERE id = @id";
                 using var updateCmd = new SqliteCommand(updateSql, conn);
-                updateCmd.Parameters.AddWithValue("@qty", newQty);
-                updateCmd.Parameters.AddWithValue("@id", existingId);
 
-                await reader.CloseAsync();
+                int newQty = existingQty + entity.QuantityGrams;
+                updateCmd.Parameters.AddWithValue("@qty", newQty);
+                updateCmd.Parameters.AddWithValue("@id", existingId.Value);
+
                 await updateCmd.ExecuteNonQueryAsync();
             }
             else
             {
                 const string insertSql = @"
-            INSERT INTO Inventory (user_id, ingredient_id, quantity_grams)
-            VALUES (@uid, @iid, @qty)";
+                    INSERT INTO Inventory (user_id, ingredient_id, quantity_grams)
+                    VALUES (@uid, @iid, @qty)";
 
                 using var insertCmd = new SqliteCommand(insertSql, conn);
+
                 insertCmd.Parameters.AddWithValue("@uid", entity.UserId);
                 insertCmd.Parameters.AddWithValue("@iid", entity.IngredientId);
                 insertCmd.Parameters.AddWithValue("@qty", entity.QuantityGrams);
 
-                await reader.CloseAsync();
                 await insertCmd.ExecuteNonQueryAsync();
             }
         }
 
         public async Task<IEnumerable<Inventory>> GetAllByUserId(int userId)
         {
-            var items = new List<Inventory>();
-            const string sql = @"SELECT inv.*, ing.name
-                                 FROM Inventory inv
-                                 JOIN Ingredients ing ON inv.ingredient_id = ing.food_id
-                                 WHERE inv.user_id = @uid";
+            const string sql = @"
+                SELECT inv.*, ing.name
+                FROM Inventory inv
+                JOIN Ingredients ing ON inv.ingredient_id = ing.food_id
+                WHERE inv.user_id = @uid";
 
+            var items = new List<Inventory>();
             using var conn = new SqliteConnection(connectionString);
             using var cmd = new SqliteCommand(sql, conn);
+
             cmd.Parameters.AddWithValue("@uid", userId);
 
             await conn.OpenAsync();
             using var reader = await cmd.ExecuteReaderAsync();
+
             while (await reader.ReadAsync())
             {
                 var item = MapReaderToInventory(reader);
                 item.IngredientName = reader["name"]?.ToString() ?? string.Empty;
                 items.Add(item);
             }
+
             return items;
         }
 
         public async Task Delete(int id)
         {
-            using var conn = new SqliteConnection(connectionString);
             const string sql = "DELETE FROM Inventory WHERE id = @id";
+
+            using var conn = new SqliteConnection(connectionString);
             using var cmd = new SqliteCommand(sql, conn);
+
             cmd.Parameters.AddWithValue("@id", id);
 
             await conn.OpenAsync();
@@ -98,22 +114,34 @@ namespace TeamNut.Repositories
 
         public async Task<Inventory?> GetById(int id)
         {
-            using var conn = new SqliteConnection(connectionString);
             const string sql = "SELECT * FROM Inventory WHERE id = @id";
+
+            using var conn = new SqliteConnection(connectionString);
             using var cmd = new SqliteCommand(sql, conn);
+
             cmd.Parameters.AddWithValue("@id", id);
+
             await conn.OpenAsync();
             using var reader = await cmd.ExecuteReaderAsync();
-            return await reader.ReadAsync() ? MapReaderToInventory(reader) : null;
+
+            if (await reader.ReadAsync())
+            {
+                return MapReaderToInventory(reader);
+            }
+
+            return null;
         }
 
         public async Task Update(Inventory entity)
         {
-            using var conn = new SqliteConnection(connectionString);
             const string sql = "UPDATE Inventory SET quantity_grams = @qty WHERE id = @id";
+
+            using var conn = new SqliteConnection(connectionString);
             using var cmd = new SqliteCommand(sql, conn);
+
             cmd.Parameters.AddWithValue("@id", entity.Id);
             cmd.Parameters.AddWithValue("@qty", entity.QuantityGrams);
+
             await conn.OpenAsync();
             await cmd.ExecuteNonQueryAsync();
         }
