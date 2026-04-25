@@ -18,32 +18,44 @@ namespace TeamNut.Repositories
 
         public async Task<User?> GetById(int id)
         {
-            using var conn = new SqliteConnection(connectionString);
-            using var cmd = new SqliteCommand("SELECT id, username, password, role FROM Users WHERE id = @id", conn);
-            cmd.Parameters.AddWithValue("@id", id);
-            await conn.OpenAsync();
-            using var reader = await cmd.ExecuteReaderAsync();
+            const string sql = "SELECT id, username, password, role FROM Users WHERE id = @id";
 
-                if (await reader.ReadAsync())
+            using var conn = new SqliteConnection(connectionString);
+            await conn.OpenAsync();
+
+            using (var cmd = new SqliteCommand(sql, conn))
+            {
+                cmd.Parameters.AddWithValue("@id", id);
+
+                using (var reader = await cmd.ExecuteReaderAsync())
                 {
-                    return new User
+                    if (await reader.ReadAsync())
                     {
-                        Id = Convert.ToInt32(reader[0]),
-                        Username = reader.GetString(1),
-                        Password = reader.GetString(2),
-                        Role = reader.GetString(3),
-                    };
+                        return new User
+                        {
+                            Id = Convert.ToInt32(reader[0]),
+                            Username = reader.GetString(1),
+                            Password = reader.GetString(2),
+                            Role = reader.GetString(3),
+                        };
+                    }
                 }
-                return null;
             }
 
-            public async Task AddUserData(UserData data)
-            {
-                using var conn = new SqliteConnection(connectionString);
-                using var cmd = new SqliteCommand(@"
-                INSERT INTO UserData (user_id, weight, height, age, gender, goal, bmi, calorie_needs, protein_needs, carb_needs, fat_needs)
-                VALUES (@userId, @weight, @height, @age, @gender, @goal, @bmi, @calories, @protein, @carbohydrates, @fat)", conn);
+            return null;
+        }
 
+        public async Task AddUserData(UserData data)
+        {
+            const string sql = @"
+                INSERT INTO UserData (user_id, weight, height, age, gender, goal, bmi, calorie_needs, protein_needs, carb_needs, fat_needs)
+                VALUES (@userId, @weight, @height, @age, @gender, @goal, @bmi, @calories, @protein, @carbohydrates, @fat)";
+
+            using var conn = new SqliteConnection(connectionString);
+            await conn.OpenAsync();
+
+            using (var cmd = new SqliteCommand(sql, conn))
+            {
                 cmd.Parameters.AddWithValue("@userId", data.UserId);
                 cmd.Parameters.AddWithValue("@weight", data.Weight);
                 cmd.Parameters.AddWithValue("@height", data.Height);
@@ -56,21 +68,25 @@ namespace TeamNut.Repositories
                 cmd.Parameters.AddWithValue("@carbohydrates", data.CarbohydrateNeeds);
                 cmd.Parameters.AddWithValue("@fat", data.FatNeeds);
 
-                await conn.OpenAsync();
                 await cmd.ExecuteNonQueryAsync();
             }
+        }
 
-            public async Task Add(User entity)
+        public async Task Add(User entity)
+        {
+            const string sql = @"
+                INSERT INTO Users (username, password, role)
+                VALUES (@username, @password, @role);
+                SELECT last_insert_rowid();";
+
+            using var conn = new SqliteConnection(connectionString);
+            await conn.OpenAsync();
+
+            using (var cmd = new SqliteCommand(sql, conn))
             {
-                using var conn = new SqliteConnection(connectionString);
-                string sql = "INSERT INTO Users (username, password, role) VALUES (@username, @password, @role); SELECT last_insert_rowid();";
-
-                using var cmd = new SqliteCommand(sql, conn);
                 cmd.Parameters.AddWithValue("@username", entity.Username);
                 cmd.Parameters.AddWithValue("@password", entity.Password);
                 cmd.Parameters.AddWithValue("@role", entity.Role);
-
-                await conn.OpenAsync();
 
                 var result = await cmd.ExecuteScalarAsync();
 
@@ -79,120 +95,159 @@ namespace TeamNut.Repositories
                     entity.Id = Convert.ToInt32(result);
                 }
             }
+        }
 
-            public async Task Update(User entity)
+        public async Task Update(User entity)
+        {
+            const string sql = "UPDATE Users SET username=@username, password=@password, role=@role WHERE id=@id";
+
+            using var conn = new SqliteConnection(connectionString);
+            await conn.OpenAsync();
+
+            using (var cmd = new SqliteCommand(sql, conn))
             {
-                using var conn = new SqliteConnection(connectionString);
-                using var cmd = new SqliteCommand("UPDATE Users SET username=@username, password=@password, role=@role WHERE id=@id", conn);
-
                 cmd.Parameters.AddWithValue("@username", entity.Username);
                 cmd.Parameters.AddWithValue("@password", entity.Password);
                 cmd.Parameters.AddWithValue("@role", entity.Role);
                 cmd.Parameters.AddWithValue("@id", entity.Id);
 
-                await conn.OpenAsync();
                 await cmd.ExecuteNonQueryAsync();
             }
+        }
 
-            public async Task Delete(int id)
+        public async Task Delete(int id)
+        {
+            const string sql = "DELETE FROM Users WHERE id = @id";
+
+            using var conn = new SqliteConnection(connectionString);
+            await conn.OpenAsync();
+
+            using (var cmd = new SqliteCommand(sql, conn))
             {
-                using var conn = new SqliteConnection(connectionString);
-                using var cmd = new SqliteCommand("DELETE FROM Users WHERE id = @id", conn);
                 cmd.Parameters.AddWithValue("@id", id);
-
-                await conn.OpenAsync();
                 await cmd.ExecuteNonQueryAsync();
             }
+        }
 
-            public async Task<User?> GetByUsernameAndPassword(string username, string password)
+        public async Task<User?> GetByUsernameAndPassword(string username, string password)
+        {
+            const string sql = "SELECT id, username, password, role FROM Users WHERE username = @username AND password = @password";
+
+            using var conn = new SqliteConnection(connectionString);
+            await conn.OpenAsync();
+
+            using (var cmd = new SqliteCommand(sql, conn))
             {
-                using var conn = new SqliteConnection(connectionString);
-                using var cmd = new SqliteCommand("SELECT id, username, password, role FROM Users WHERE username = @username AND password = @password", conn);
                 cmd.Parameters.AddWithValue("@username", username);
                 cmd.Parameters.AddWithValue("@password", password);
-                await conn.OpenAsync();
-                using var reader = await cmd.ExecuteReaderAsync();
-                if (await reader.ReadAsync())
+
+                using (var reader = await cmd.ExecuteReaderAsync())
                 {
-                    return new User
+                    if (await reader.ReadAsync())
                     {
-                        Id = Convert.ToInt32(reader[0]),
-                        Username = reader.GetString(1),
-                        Password = reader.GetString(2),
-                        Role = reader.GetString(3),
-                    };
-                }
-                return null;
-            }
-
-            public async Task<IEnumerable<User>> GetAll()
-            {
-                if (string.IsNullOrEmpty(connectionString))
-                {
-                    throw new InvalidOperationException("Connection string is not initialized.");
-                }
-
-                var users = new List<User>();
-
-                using (var connection = new SqliteConnection(connectionString))
-                {
-                    await connection.OpenAsync();
-                    using var command = new SqliteCommand("SELECT id, username, password, role FROM Users", connection);
-                    using var reader = await command.ExecuteReaderAsync();
-
-                    while (await reader.ReadAsync())
-                    {
-                        users.Add(new User
+                        return new User
                         {
                             Id = Convert.ToInt32(reader[0]),
                             Username = reader.GetString(1),
                             Password = reader.GetString(2),
                             Role = reader.GetString(3),
-                        });
+                        };
                     }
                 }
-                return users;
             }
 
-            public async Task<UserData?> GetUserDataByUserId(int userId)
-            {
-                using var conn = new SqliteConnection(connectionString);
-                using var cmd = new SqliteCommand("SELECT id, user_id, weight, height, age, gender, goal, bmi, calorie_needs, protein_needs, carb_needs, fat_needs FROM UserData WHERE user_id = @userId", conn);
-                cmd.Parameters.AddWithValue("@userId", userId);
-                await conn.OpenAsync();
-                using var reader = await cmd.ExecuteReaderAsync();
+            return null;
+        }
 
-                if (await reader.ReadAsync())
+        public async Task<IEnumerable<User>> GetAll()
+        {
+            if (string.IsNullOrEmpty(connectionString))
+            {
+                throw new InvalidOperationException("Connection string is not initialized.");
+            }
+
+            const string sql = "SELECT id, username, password, role FROM Users";
+            var users = new List<User>();
+
+            using (var connection = new SqliteConnection(connectionString))
+            {
+                await connection.OpenAsync();
+
+                using (var command = new SqliteCommand(sql, connection))
                 {
-                    return new UserData
+                    using (var reader = await command.ExecuteReaderAsync())
                     {
-                        Id = Convert.ToInt32(reader[0]),
-                        UserId = reader.GetInt32(1),
-                        Weight = Convert.ToInt32(reader.GetValue(2)),
-                        Height = Convert.ToInt32(reader.GetValue(3)),
-                        Age = reader.GetInt32(4),
-                        Gender = reader.GetString(5),
-                        Goal = reader.GetString(6),
-                        Bmi = Convert.ToInt32(reader.GetValue(7)),
-                        CalorieNeeds = Convert.ToInt32(reader.GetValue(8)),
-                        ProteinNeeds = Convert.ToInt32(reader.GetValue(9)),
-                        CarbohydrateNeeds = Convert.ToInt32(reader.GetValue(10)),
-                        FatNeeds = Convert.ToInt32(reader.GetValue(11)),
-                    };
+                        while (await reader.ReadAsync())
+                        {
+                            users.Add(new User
+                            {
+                                Id = Convert.ToInt32(reader[0]),
+                                Username = reader.GetString(1),
+                                Password = reader.GetString(2),
+                                Role = reader.GetString(3),
+                            });
+                        }
+                    }
                 }
-                return null;
             }
 
-            public async Task UpdateUserData(UserData data)
+            return users;
+        }
+
+        public async Task<UserData?> GetUserDataByUserId(int userId)
+        {
+            const string sql = @"
+                SELECT id, user_id, weight, height, age, gender, goal, bmi, calorie_needs, protein_needs, carb_needs, fat_needs 
+                FROM UserData 
+                WHERE user_id = @userId";
+
+            using var conn = new SqliteConnection(connectionString);
+            await conn.OpenAsync();
+
+            using (var cmd = new SqliteCommand(sql, conn))
             {
-                using var conn = new SqliteConnection(connectionString);
-                using var cmd = new SqliteCommand(@"
+                cmd.Parameters.AddWithValue("@userId", userId);
+
+                using (var reader = await cmd.ExecuteReaderAsync())
+                {
+                    if (await reader.ReadAsync())
+                    {
+                        return new UserData
+                        {
+                            Id = Convert.ToInt32(reader[0]),
+                            UserId = reader.GetInt32(1),
+                            Weight = Convert.ToInt32(reader.GetValue(2)),
+                            Height = Convert.ToInt32(reader.GetValue(3)),
+                            Age = reader.GetInt32(4),
+                            Gender = reader.GetString(5),
+                            Goal = reader.GetString(6),
+                            Bmi = Convert.ToInt32(reader.GetValue(7)),
+                            CalorieNeeds = Convert.ToInt32(reader.GetValue(8)),
+                            ProteinNeeds = Convert.ToInt32(reader.GetValue(9)),
+                            CarbohydrateNeeds = Convert.ToInt32(reader.GetValue(10)),
+                            FatNeeds = Convert.ToInt32(reader.GetValue(11)),
+                        };
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        public async Task UpdateUserData(UserData data)
+        {
+            const string sql = @"
                 UPDATE UserData
                 SET weight = @weight, height = @height, age = @age, gender = @gender, goal = @goal,
                     bmi = @bmi, calorie_needs = @calories, protein_needs = @protein,
                     carb_needs = @carbohydrates, fat_needs = @fat
-                WHERE user_id = @userId", conn);
+                WHERE user_id = @userId";
 
+            using var conn = new SqliteConnection(connectionString);
+            await conn.OpenAsync();
+
+            using (var cmd = new SqliteCommand(sql, conn))
+            {
                 cmd.Parameters.AddWithValue("@userId", data.UserId);
                 cmd.Parameters.AddWithValue("@weight", data.Weight);
                 cmd.Parameters.AddWithValue("@height", data.Height);
@@ -205,8 +260,8 @@ namespace TeamNut.Repositories
                 cmd.Parameters.AddWithValue("@carbohydrates", data.CarbohydrateNeeds);
                 cmd.Parameters.AddWithValue("@fat", data.FatNeeds);
 
-                await conn.OpenAsync();
                 await cmd.ExecuteNonQueryAsync();
             }
+        }
     }
 }

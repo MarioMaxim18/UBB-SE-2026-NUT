@@ -1,33 +1,26 @@
-﻿using System;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Threading.Tasks;
-using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
-using Microsoft.UI.Dispatching;
-using TeamNut.Models;
-using TeamNut.Services;
-using TeamNut.Services.Interfaces;
-namespace TeamNut.ViewModels
+﻿namespace TeamNut.ViewModels
 {
-    /// <summary>
-    /// RemindersViewModel.
-    /// </summary>
+    using System;
+    using System.Collections.ObjectModel;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using CommunityToolkit.Mvvm.ComponentModel;
+    using CommunityToolkit.Mvvm.Input;
+    using Microsoft.UI.Dispatching;
+    using TeamNut.Models;
+    using TeamNut.Services;
+    using TeamNut.Services.Interfaces;
+
     public partial class RemindersViewModel : ObservableObject, IDisposable
     {
         private bool disposed;
-
         private readonly IReminderService reminderService;
-
         private readonly DispatcherQueue? dispatcher;
 
         private const int InvalidUserId = 0;
-
         private const string SaveSuccessResult = "Success";
-
         private const string InvalidReminderResult = "Error: invalid reminder";
-
-        private const string LoadErrorLogFormat = "this.Reminders Load Error: {0}";
+        private const string LoadErrorLogFormat = "Reminders Load Error: {0}";
 
         public ObservableCollection<Reminder> Reminders { get; } = new ObservableCollection<Reminder>();
 
@@ -45,13 +38,13 @@ namespace TeamNut.ViewModels
             this.reminderService = reminderService;
             try
             {
-                this.dispatcher = DispatcherQueue.GetForCurrentThread();
+                dispatcher = DispatcherQueue.GetForCurrentThread();
             }
             catch
             {
-                this.dispatcher = null;
+                dispatcher = null;
             }
-            this.reminderService.RemindersChanged += this.OnRemindersChanged;
+            this.reminderService.RemindersChanged += OnRemindersChanged;
         }
 
         private async void OnRemindersChanged(object? sender, int userId)
@@ -60,7 +53,7 @@ namespace TeamNut.ViewModels
 
             if (currentUserId == userId)
             {
-                await this.LoadReminders();
+                await LoadReminders();
             }
         }
 
@@ -72,11 +65,11 @@ namespace TeamNut.ViewModels
                 return;
             }
 
-            await this.reminderService.DeleteReminder(reminder.Id);
+            await reminderService.DeleteReminder(reminder.Id);
 
-            this.EnqueueUI(() => this.Reminders.Remove(reminder));
+            EnqueueUI(() => Reminders.Remove(reminder));
 
-            this.reminderService.NotifyRemindersChangedForUser(
+            reminderService.NotifyRemindersChangedForUser(
                 UserSession.UserId ?? InvalidUserId);
         }
 
@@ -88,7 +81,7 @@ namespace TeamNut.ViewModels
                 return;
             }
 
-            await this.SaveReminderAsync(reminder);
+            await SaveReminderAsync(reminder);
         }
 
         public async Task<string> SaveReminderAsync(Reminder reminder)
@@ -98,11 +91,11 @@ namespace TeamNut.ViewModels
                 return InvalidReminderResult;
             }
 
-            string result = await this.reminderService.SaveReminder(reminder);
+            string result = await reminderService.SaveReminder(reminder);
 
             if (result == SaveSuccessResult)
             {
-                await this.LoadReminders();
+                await LoadReminders();
             }
 
             return result;
@@ -111,14 +104,14 @@ namespace TeamNut.ViewModels
         [RelayCommand]
         public async Task LoadReminders()
         {
-            if (this.IsBusy)
+            if (IsBusy)
             {
                 return;
             }
 
             try
             {
-                this.IsBusy = true;
+                IsBusy = true;
 
                 int userId = UserSession.UserId ?? InvalidUserId;
                 if (userId == InvalidUserId)
@@ -126,18 +119,18 @@ namespace TeamNut.ViewModels
                     return;
                 }
 
-                var reminders = (await this.reminderService.GetUserReminders(userId)).ToList();
-                var next = await this.reminderService.GetNextReminder(userId);
+                var reminders = (await reminderService.GetUserReminders(userId)).ToList();
+                var next = await reminderService.GetNextReminder(userId);
 
-                this.EnqueueUI(() =>
+                EnqueueUI(() =>
                 {
-                    this.Reminders.Clear();
+                    Reminders.Clear();
                     foreach (var reminder in reminders)
                     {
-                        this.Reminders.Add(reminder);
+                        Reminders.Add(reminder);
                     }
 
-                    this.NextReminder = next;
+                    NextReminder = next;
                 });
             }
             catch (Exception ex)
@@ -147,7 +140,7 @@ namespace TeamNut.ViewModels
             }
             finally
             {
-                this.IsBusy = false;
+                IsBusy = false;
             }
         }
 
@@ -159,7 +152,7 @@ namespace TeamNut.ViewModels
                 UserId = UserSession.UserId ?? InvalidUserId
             };
 
-            this.EnqueueUI(() => this.SelectedReminder = reminder);
+            EnqueueUI(() => SelectedReminder = reminder);
         }
 
         [RelayCommand]
@@ -170,14 +163,14 @@ namespace TeamNut.ViewModels
                 return;
             }
 
-            this.EnqueueUI(() => this.SelectedReminder = reminder);
+            EnqueueUI(() => SelectedReminder = reminder);
         }
 
         private void EnqueueUI(Action action)
         {
-            if (this.dispatcher != null)
+            if (dispatcher != null)
             {
-                this.dispatcher.TryEnqueue(() => action());
+                dispatcher.TryEnqueue(() => action());
             }
             else
             {
@@ -187,10 +180,10 @@ namespace TeamNut.ViewModels
 
         public void Dispose()
         {
-            if (!this.disposed)
+            if (!disposed)
             {
-                this.reminderService.RemindersChanged -= this.OnRemindersChanged;
-                this.disposed = true;
+                reminderService.RemindersChanged -= OnRemindersChanged;
+                disposed = true;
             }
         }
     }

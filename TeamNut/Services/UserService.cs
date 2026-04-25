@@ -4,14 +4,12 @@ namespace TeamNut.Services
     using System.Linq;
     using System.Threading.Tasks;
     using TeamNut.Models;
-    using TeamNut.Repositories;
     using TeamNut.Repositories.Interfaces;
     using TeamNut.Services.Interfaces;
 
     public class UserService : IUserService
     {
         private readonly IUserRepository userRepository;
-
         private readonly INutritionCalculationService nutritionCalculationService;
 
         public UserService(
@@ -25,12 +23,14 @@ namespace TeamNut.Services
         public async Task<bool> CheckIfUsernameExistsAsync(string username)
         {
             var users = await userRepository.GetAll();
+
             return users.Any(u => string.Equals(u.Username, username, StringComparison.OrdinalIgnoreCase));
         }
 
         public async Task<User?> LoginAsync(string username, string password)
         {
             var user = await userRepository.GetByUsernameAndPassword(username, password);
+
             if (user != null)
             {
                 UserSession.Login(user.Id, user.Username, user.Role);
@@ -42,13 +42,16 @@ namespace TeamNut.Services
 
         public async Task<User?> RegisterUserAsync(User user)
         {
-            if (await CheckIfUsernameExistsAsync(user.Username))
+            bool userExists = await CheckIfUsernameExistsAsync(user.Username);
+
+            if (userExists)
             {
                 return null;
             }
 
             await userRepository.Add(user);
             UserSession.Login(user.Id, user.Username, user.Role);
+
             return user;
         }
 
@@ -56,6 +59,7 @@ namespace TeamNut.Services
         {
             nutritionCalculationService.ApplyCalculations(data, birthDate);
             await userRepository.AddUserData(data);
+
             return data;
         }
 

@@ -16,83 +16,68 @@ namespace TeamNut.ViewModels
     public partial class InventoryViewModel : ObservableObject
     {
         private readonly IInventoryService inventoryService;
-
         private readonly IFilteringService filteringService;
-
         private readonly int currentUserId;
 
         private const double DefaultQuantityToAdd = 100;
-
         private const double MinQuantityAllowed = 0;
 
         private const string EmptyInventoryMessage = "Your pantry is empty. Start adding items!";
-
         private const string SelectIngredientMessage = "Please choose an ingredient from suggestions.";
-
         private const string InvalidQuantityMessage = "Quantity must be greater than 0.";
-
         private const string LoadInventoryErrorMessage = "Error loading inventory: {0}";
-
         private const string LoadIngredientsErrorMessage = "Error loading ingredients: {0}";
-
         private const string DeleteItemErrorMessage = "Could not delete item: {0}";
-
         private const string AddItemErrorMessage = "Could not add item: {0}";
-
         private const string AddItemSuccessMessage = "Added {0}g of {1}.";
 
         private bool isBusy;
-
         private string emptyListMessage = EmptyInventoryMessage;
-
         private string statusMessage = string.Empty;
-
         private string ingredientSearchText = string.Empty;
-
         private Ingredient? selectedIngredient;
-
         private double quantityToAdd = DefaultQuantityToAdd;
 
         public bool IsBusy
         {
-            get => this.isBusy;
-            set => SetProperty(ref this.isBusy, value);
+            get => isBusy;
+            set => SetProperty(ref isBusy, value);
         }
 
         public string EmptyListMessage
         {
-            get => this.emptyListMessage;
-            set => SetProperty(ref this.emptyListMessage, value);
+            get => emptyListMessage;
+            set => SetProperty(ref emptyListMessage, value);
         }
 
         public string StatusMessage
         {
-            get => this.statusMessage;
-            set => SetProperty(ref this.statusMessage, value);
+            get => statusMessage;
+            set => SetProperty(ref statusMessage, value);
         }
 
         public string IngredientSearchText
         {
-            get => this.ingredientSearchText;
+            get => ingredientSearchText;
             set
             {
-                if (SetProperty(ref this.ingredientSearchText, value))
+                if (SetProperty(ref ingredientSearchText, value))
                 {
-                    this.UpdateFilteredIngredients();
+                    UpdateFilteredIngredients();
                 }
             }
         }
 
         public Ingredient? SelectedIngredient
         {
-            get => this.selectedIngredient;
-            set => SetProperty(ref this.selectedIngredient, value);
+            get => selectedIngredient;
+            set => SetProperty(ref selectedIngredient, value);
         }
 
         public double QuantityToAdd
         {
-            get => this.quantityToAdd;
-            set => SetProperty(ref this.quantityToAdd, value);
+            get => quantityToAdd;
+            set => SetProperty(ref quantityToAdd, value);
         }
 
         public ObservableCollection<Inventory> Items { get; } = new ObservableCollection<Inventory>();
@@ -101,16 +86,18 @@ namespace TeamNut.ViewModels
 
         public ObservableCollection<Ingredient> FilteredIngredients { get; } = new ObservableCollection<Ingredient>();
 
+        public bool IsListEmpty => !Items.Any();
+
         public InventoryViewModel(
             IInventoryService inventoryService,
             IFilteringService filteringService)
         {
             this.inventoryService = inventoryService;
             this.filteringService = filteringService;
-            this.currentUserId = Models.UserSession.UserId ?? 0;
+            currentUserId = Models.UserSession.UserId ?? 0;
 
-            _ = this.LoadInventoryAsync();
-            _ = this.LoadIngredientsAsync();
+            _ = LoadInventoryAsync();
+            _ = LoadIngredientsAsync();
         }
 
         [RelayCommand]
@@ -124,15 +111,15 @@ namespace TeamNut.ViewModels
             try
             {
                 IsBusy = true;
-                var inventoryItems = await this.inventoryService.GetUserInventory(this.currentUserId);
+                var inventoryItems = await inventoryService.GetUserInventory(currentUserId);
 
-                this.Items.Clear();
+                Items.Clear();
                 foreach (var item in inventoryItems)
                 {
-                    this.Items.Add(item);
+                    Items.Add(item);
                 }
 
-                OnPropertyChanged(nameof(this.IsListEmpty));
+                OnPropertyChanged(nameof(IsListEmpty));
             }
             catch (Exception ex)
             {
@@ -154,9 +141,9 @@ namespace TeamNut.ViewModels
 
             try
             {
-                await this.inventoryService.RemoveItem(item.Id);
-                this.Items.Remove(item);
-                OnPropertyChanged(nameof(this.IsListEmpty));
+                await inventoryService.RemoveItem(item.Id);
+                Items.Remove(item);
+                OnPropertyChanged(nameof(IsListEmpty));
             }
             catch (Exception ex)
             {
@@ -182,12 +169,12 @@ namespace TeamNut.ViewModels
             try
             {
                 int roundedQuantity = (int)Math.Round(QuantityToAdd);
-                await this.inventoryService.AddToPantry(
-                    this.currentUserId,
+                await inventoryService.AddToPantry(
+                    currentUserId,
                     SelectedIngredient.FoodId,
                     roundedQuantity);
 
-                await this.LoadInventoryAsync();
+                await LoadInventoryAsync();
 
                 StatusMessage = string.Format(
                     AddItemSuccessMessage,
@@ -196,7 +183,7 @@ namespace TeamNut.ViewModels
 
                 IngredientSearchText = string.Empty;
                 SelectedIngredient = null;
-                this.UpdateFilteredIngredients();
+                UpdateFilteredIngredients();
             }
             catch (Exception ex)
             {
@@ -209,15 +196,15 @@ namespace TeamNut.ViewModels
         {
             try
             {
-                var ingredients = await this.inventoryService.GetAllIngredients();
-                this.AvailableIngredients.Clear();
+                var ingredients = await inventoryService.GetAllIngredients();
+                AvailableIngredients.Clear();
 
                 foreach (var ingredient in ingredients)
                 {
-                    this.AvailableIngredients.Add(ingredient);
+                    AvailableIngredients.Add(ingredient);
                 }
 
-                this.UpdateFilteredIngredients();
+                UpdateFilteredIngredients();
             }
             catch (Exception ex)
             {
@@ -227,18 +214,15 @@ namespace TeamNut.ViewModels
 
         private void UpdateFilteredIngredients()
         {
-            this.FilteredIngredients.Clear();
+            FilteredIngredients.Clear();
 
             var query = IngredientSearchText?.Trim() ?? string.Empty;
-
-            var filtered = this.filteringService.FilterIngredients(this.AvailableIngredients, query);
+            var filtered = filteringService.FilterIngredients(AvailableIngredients, query);
 
             foreach (var ingredient in filtered)
             {
-                this.FilteredIngredients.Add(ingredient);
+                FilteredIngredients.Add(ingredient);
             }
         }
-
-        public bool IsListEmpty => !Items.Any();
     }
 }

@@ -4,7 +4,6 @@ namespace TeamNut.Services
     using System.Linq;
     using System.Threading.Tasks;
     using TeamNut.Models;
-    using TeamNut.Repositories;
     using TeamNut.Repositories.Interfaces;
     using TeamNut.Services.Interfaces;
 

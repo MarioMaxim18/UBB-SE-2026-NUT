@@ -10,24 +10,21 @@ using TeamNut.Services.Interfaces;
 public partial class MainViewModel : ObservableObject
 {
     private const int InvalidUserId = 0;
-
     private const string LoadingReminderText = "Loading...";
-
     private const string NoUpcomingMealsText = "No upcoming meals";
-
     private const string ReminderDisplayFormat = "{0} at {1}";
-
     private const string ReminderTimeFormat = @"hh\:mm";
 
     private readonly IReminderService? reminderService;
 
-    public MainViewModel(IReminderService rreminderService)
-    {
-        reminderService = rreminderService;
-    }
-
     [ObservableProperty]
     public partial string NextReminderText { get; set; }
+
+    public MainViewModel(IReminderService reminderService)
+    {
+        this.reminderService = reminderService;
+        NextReminderText = LoadingReminderText;
+    }
 
     public MainViewModel()
     {

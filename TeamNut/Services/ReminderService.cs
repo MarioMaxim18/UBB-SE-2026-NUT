@@ -4,7 +4,6 @@ namespace TeamNut.Services
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using TeamNut.Models;
-    using TeamNut.Repositories;
     using TeamNut.Repositories.Interfaces;
     using TeamNut.Services.Interfaces;
 
@@ -15,13 +14,9 @@ namespace TeamNut.Services
         public event EventHandler<int>? RemindersChanged;
 
         private const int MaxReminderNameLength = 50;
-
         private const int InvalidUserId = 0;
-
         private const string ResultSuccess = "Success";
-
         private const string ErrorInvalidName = "Error: Name must be between 1 and 50 characters.";
-
         private const string ConfirmConsumptionLogFormat = "User {0} confirmed meal {1}. Updating logs...";
 
         public ReminderService(IReminderRepository reminderRepository)
@@ -41,16 +36,12 @@ namespace TeamNut.Services
 
         public async Task<string> SaveReminder(Reminder reminder)
         {
-            if ((reminder.UserId == InvalidUserId ||
-                 reminder.UserId == default) &&
-                UserSession.UserId != null)
+            if ((reminder.UserId == InvalidUserId || reminder.UserId == default) && UserSession.UserId != null)
             {
-                reminder.UserId =
-                    UserSession.UserId ?? reminder.UserId;
+                reminder.UserId = UserSession.UserId ?? reminder.UserId;
             }
 
-            if (string.IsNullOrWhiteSpace(reminder.Name) ||
-                reminder.Name.Length > MaxReminderNameLength)
+            if (string.IsNullOrWhiteSpace(reminder.Name) || reminder.Name.Length > MaxReminderNameLength)
             {
                 return ErrorInvalidName;
             }
@@ -70,6 +61,7 @@ namespace TeamNut.Services
             }
             catch
             {
+                // Ignored to prevent crashing the UI thread on event failures (Idk what is going on with this catchs cant remove them neither)
             }
 
             return ResultSuccess;
@@ -77,11 +69,8 @@ namespace TeamNut.Services
 
         public async Task ConfirmConsumption(int userId, int mealId)
         {
-            Console.WriteLine(
-                string.Format(
-                    ConfirmConsumptionLogFormat,
-                    userId,
-                    mealId));
+            Console.WriteLine(string.Format(ConfirmConsumptionLogFormat, userId, mealId));
+            await Task.CompletedTask;
         }
 
         public async Task<IEnumerable<Reminder>> GetUserReminders(int userId)
@@ -91,9 +80,7 @@ namespace TeamNut.Services
 
         public async Task DeleteReminder(int id)
         {
-            var existing =
-                await reminderRepository.GetById(id);
-
+            var existing = await reminderRepository.GetById(id);
             await reminderRepository.Delete(id);
 
             if (existing != null)
@@ -117,6 +104,7 @@ namespace TeamNut.Services
             }
             catch
             {
+                // Ignored to prevent crash (It crashes idk why sorry I keep this one like this)
             }
         }
     }
