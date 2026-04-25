@@ -42,7 +42,7 @@ namespace TeamNut.ModelViews
         private const string ErrorMealNotFound = "Meal not found in current meal plan.";
         private const string GoalSuffix = " Goal";
         private const string StatusMealPlanTitleFormat = "Your meal plan for today ({0} goal)";
-        private const string NutritionSummaryFormat = "Daily Total: {0} kcal | {1}g protein | {2}g carbs | {3}g fat";
+        private const string NutritionSummaryFormat = "Daily Total: {0} kcal | {1}g protein | {2}g carbohydrates | {3}g fat";
         private const string MealSavedSuccessFormat = "All {0} meals saved to daily log!";
 
         private static readonly Dictionary<int, string> MealTypes = new Dictionary<int, string>
@@ -82,11 +82,11 @@ namespace TeamNut.ModelViews
             set => SetProperty(ref totalProtein, value);
         }
 
-        private int totalCarbs;
-        public int TotalCarbs
+        private int totalCarbohydrates;
+        public int TotalCarbohydrates
         {
-            get => totalCarbs;
-            set => SetProperty(ref totalCarbs, value);
+            get => totalCarbohydrates;
+            set => SetProperty(ref totalCarbohydrates, value);
         }
 
         private int totalFat;
@@ -255,7 +255,7 @@ namespace TeamNut.ModelViews
                 NutritionSummaryFormat,
                 TotalCalories,
                 TotalProtein,
-                TotalCarbs,
+                TotalCarbohydrates,
                 TotalFat);
 
             GoalDescription = goalName + GoalSuffix;
@@ -284,7 +284,7 @@ namespace TeamNut.ModelViews
         {
             TotalCalories = GeneratedMeals.Sum(m => m.Calories);
             TotalProtein = GeneratedMeals.Sum(m => m.Protein);
-            TotalCarbs = GeneratedMeals.Sum(m => m.Carbs);
+            TotalCarbohydrates = GeneratedMeals.Sum(m => m.Carbohydrates);
             TotalFat = GeneratedMeals.Sum(m => m.Fat);
         }
 

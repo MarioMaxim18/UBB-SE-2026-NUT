@@ -132,8 +132,8 @@
 
                                         <StackPanel Orientation="Horizontal" Spacing="5">
                                             <TextBlock>
-                                                <Run Text="{Binding Carbs}"/>
-                                                <Run Text="g carbs"/>
+                                                <Run Text="{Binding Carbohydrates}"/>
+                                                <Run Text="g carbohydrates"/>
                                             </TextBlock>
                                         </StackPanel>
 

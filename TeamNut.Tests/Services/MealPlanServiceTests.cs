@@ -31,16 +31,16 @@ namespace TeamNut.Tests.Services
         {
             var meals = new List<Meal>
             {
-                new Meal { Calories = 500, Protein = 30, Carbs = 50, Fat = 20 },
-                new Meal { Calories = 600, Protein = 40, Carbs = 60, Fat = 25 },
-                new Meal { Calories = 700, Protein = 35, Carbs = 70, Fat = 30 }
+                new Meal { Calories = 500, Protein = 30, Carbohydrates = 50, Fat = 20 },
+                new Meal { Calories = 600, Protein = 40, Carbohydrates = 60, Fat = 25 },
+                new Meal { Calories = 700, Protein = 35, Carbohydrates = 70, Fat = 30 }
             };
 
             var result = service.CalculateTotalNutrition(meals);
 
             result.totalCalories.Should().Be(1800);
             result.totalProtein.Should().Be(105);
-            result.totalCarbs.Should().Be(180);
+            result.totalCarbohydrates.Should().Be(180);
             result.totalFat.Should().Be(75);
         }
 
@@ -53,7 +53,7 @@ namespace TeamNut.Tests.Services
 
             result.totalCalories.Should().Be(0);
             result.totalProtein.Should().Be(0);
-            result.totalCarbs.Should().Be(0);
+            result.totalCarbohydrates.Should().Be(0);
             result.totalFat.Should().Be(0);
         }
 
@@ -64,7 +64,7 @@ namespace TeamNut.Tests.Services
 
             result.totalCalories.Should().Be(0);
             result.totalProtein.Should().Be(0);
-            result.totalCarbs.Should().Be(0);
+            result.totalCarbohydrates.Should().Be(0);
             result.totalFat.Should().Be(0);
         }
 
@@ -73,14 +73,14 @@ namespace TeamNut.Tests.Services
         {
             var meals = new List<Meal>
             {
-                new Meal { Calories = 500, Protein = 30, Carbs = 50, Fat = 20 }
+                new Meal { Calories = 500, Protein = 30, Carbohydrates = 50, Fat = 20 }
             };
 
             var result = service.CalculateTotalNutrition(meals);
 
             result.totalCalories.Should().Be(500);
             result.totalProtein.Should().Be(30);
-            result.totalCarbs.Should().Be(50);
+            result.totalCarbohydrates.Should().Be(50);
             result.totalFat.Should().Be(20);
         }
 
@@ -92,11 +92,11 @@ namespace TeamNut.Tests.Services
         public void ValidateMealPlan_WithVariousTotals_ReturnsExpected(
             int targetCal,
             int targetProtein,
-            int targetCarbs,
+            int targetCarbohydrates,
             int targetFat,
             int actualCal,
             int actualProtein,
-            int actualCarbs,
+            int actualCarbohydrates,
             int actualFat,
             double tolerance,
             bool expected)
@@ -107,7 +107,7 @@ namespace TeamNut.Tests.Services
                 {
                     Calories = actualCal,
                     Protein = actualProtein,
-                    Carbs = actualCarbs,
+                    Carbohydrates = actualCarbohydrates,
                     Fat = actualFat
                 }
             };
@@ -116,7 +116,7 @@ namespace TeamNut.Tests.Services
                 meals,
                 targetCal,
                 targetProtein,
-                targetCarbs,
+                targetCarbohydrates,
                 targetFat,
                 tolerance);
 
@@ -128,7 +128,7 @@ namespace TeamNut.Tests.Services
         {
             var meals = new List<Meal>
             {
-                new Meal { Calories = 2000, Protein = 150, Carbs = 200, Fat = 70 }
+                new Meal { Calories = 2000, Protein = 150, Carbohydrates = 200, Fat = 70 }
             };
 
             var result = service.ValidateMealPlan(meals, 2000, 150, 200, 70);
@@ -141,7 +141,7 @@ namespace TeamNut.Tests.Services
         {
             var meals = new List<Meal>
             {
-                new Meal { Calories = 2050, Protein = 155, Carbs = 205, Fat = 72 }
+                new Meal { Calories = 2050, Protein = 155, Carbohydrates = 205, Fat = 72 }
             };
 
             var result = service.ValidateMealPlan(meals, 2000, 150, 200, 70);
@@ -154,7 +154,7 @@ namespace TeamNut.Tests.Services
         {
             var meals = new List<Meal>
             {
-                new Meal { Calories = 2500, Protein = 150, Carbs = 200, Fat = 70 }
+                new Meal { Calories = 2500, Protein = 150, Carbohydrates = 200, Fat = 70 }
             };
 
             var result = service.ValidateMealPlan(meals, 2000, 150, 200, 70);
@@ -259,17 +259,17 @@ namespace TeamNut.Tests.Services
         {
             var meals = new List<Meal>
             {
-                new Meal { Calories = 100, Protein = 10, Carbs = 20, Fat = 5 },
-                new Meal { Calories = 200, Protein = 15, Carbs = 30, Fat = 8 },
-                new Meal { Calories = 300, Protein = 20, Carbs = 40, Fat = 12 },
-                new Meal { Calories = 400, Protein = 25, Carbs = 50, Fat = 15 }
+                new Meal { Calories = 100, Protein = 10, Carbohydrates = 20, Fat = 5 },
+                new Meal { Calories = 200, Protein = 15, Carbohydrates = 30, Fat = 8 },
+                new Meal { Calories = 300, Protein = 20, Carbohydrates = 40, Fat = 12 },
+                new Meal { Calories = 400, Protein = 25, Carbohydrates = 50, Fat = 15 }
             };
 
             var result = service.CalculateTotalNutrition(meals);
 
             result.totalCalories.Should().Be(1000);
             result.totalProtein.Should().Be(70);
-            result.totalCarbs.Should().Be(140);
+            result.totalCarbohydrates.Should().Be(140);
             result.totalFat.Should().Be(40);
         }
 
@@ -281,7 +281,7 @@ namespace TeamNut.Tests.Services
         {
             var meals = new List<Meal>
             {
-                new Meal { Calories = 2100, Protein = 150, Carbs = 200, Fat = 70 }
+                new Meal { Calories = 2100, Protein = 150, Carbohydrates = 200, Fat = 70 }
             };
 
             var withinTolerance = 2000 * tolerance >= 100;
@@ -296,8 +296,8 @@ namespace TeamNut.Tests.Services
         {
             var meals = new List<Meal>
             {
-                new Meal { Calories = 1000, Protein = 75, Carbs = 100, Fat = 35 },
-                new Meal { Calories = 1000, Protein = 75, Carbs = 100, Fat = 35 }
+                new Meal { Calories = 1000, Protein = 75, Carbohydrates = 100, Fat = 35 },
+                new Meal { Calories = 1000, Protein = 75, Carbohydrates = 100, Fat = 35 }
             };
 
             var result = service.ValidateMealPlan(meals, 2000, 150, 200, 70);

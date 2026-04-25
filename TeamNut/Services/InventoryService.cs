@@ -34,14 +34,14 @@ namespace TeamNut.Services
             foreach (var req in requiredIngredients)
             {
                 var stock = inventoryItems.FirstOrDefault(i => i.IngredientId == req.IngredientId);
-                int qtyToRemove = (int)Math.Round(req.Quantity);
+                int quantityToRemove = (int)Math.Round(req.Quantity);
 
-                if (stock == null || stock.QuantityGrams < qtyToRemove)
+                if (stock == null || stock.QuantityGrams < quantityToRemove)
                 {
                     return false;
                 }
 
-                stock.QuantityGrams -= qtyToRemove;
+                stock.QuantityGrams -= quantityToRemove;
 
                 if (stock.QuantityGrams <= 0)
                 {

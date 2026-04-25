@@ -17,7 +17,7 @@ namespace TeamNut.ViewModels
         {
             public const double DefaultDailyCaloriesGoal = 2000;
             public const double DefaultDailyProteinGoal = 150;
-            public const double DefaultDailyCarbsGoal = 250;
+            public const double DefaultDailyCarbohydratesGoal = 250;
             public const double DefaultDailyFatsGoal = 70;
             public const int DaysPerWeek = 7;
 
@@ -42,17 +42,17 @@ namespace TeamNut.ViewModels
 
         private double dailyCaloriesGoal = Constants.DefaultDailyCaloriesGoal;
         private double dailyProteinGoal = Constants.DefaultDailyProteinGoal;
-        private double dailyCarbsGoal = Constants.DefaultDailyCarbsGoal;
+        private double dailyCarbohydratesGoal = Constants.DefaultDailyCarbohydratesGoal;
         private double dailyFatsGoal = Constants.DefaultDailyFatsGoal;
 
         private string dailyCaloriesText = Constants.Empty;
         private string dailyProteinText = Constants.Empty;
-        private string dailyCarbsText = Constants.Empty;
+        private string dailyCarbohydratesText = Constants.Empty;
         private string dailyFatsText = Constants.Empty;
 
         private string weeklyCaloriesText = Constants.Empty;
         private string weeklyProteinText = Constants.Empty;
-        private string weeklyCarbsText = Constants.Empty;
+        private string weeklyCarbohydratesText = Constants.Empty;
         private string weeklyFatsText = Constants.Empty;
 
         private string dailyBurnedCaloriesText = Constants.Empty;
@@ -123,14 +123,14 @@ namespace TeamNut.ViewModels
             }
         }
 
-        public double DailyCarbsGoal
+        public double DailyCarbohydratesGoal
         {
-            get => dailyCarbsGoal;
+            get => dailyCarbohydratesGoal;
             set
             {
-                if (SetProperty(ref dailyCarbsGoal, value))
+                if (SetProperty(ref dailyCarbohydratesGoal, value))
                 {
-                    OnPropertyChanged(nameof(WeeklyCarbsGoal));
+                    OnPropertyChanged(nameof(WeeklyCarbohydratesGoal));
                 }
             }
         }
@@ -149,7 +149,7 @@ namespace TeamNut.ViewModels
 
         public double WeeklyCaloriesGoal => DailyCaloriesGoal * Constants.DaysPerWeek;
         public double WeeklyProteinGoal => DailyProteinGoal * Constants.DaysPerWeek;
-        public double WeeklyCarbsGoal => DailyCarbsGoal * Constants.DaysPerWeek;
+        public double WeeklyCarbohydratesGoal => DailyCarbohydratesGoal * Constants.DaysPerWeek;
         public double WeeklyFatsGoal => DailyFatsGoal * Constants.DaysPerWeek;
 
         public string MealSearchText
@@ -188,10 +188,10 @@ namespace TeamNut.ViewModels
             set => SetProperty(ref dailyProteinText, value);
         }
 
-        public string DailyCarbsText
+        public string DailyCarbohydratesText
         {
-            get => dailyCarbsText;
-            set => SetProperty(ref dailyCarbsText, value);
+            get => dailyCarbohydratesText;
+            set => SetProperty(ref dailyCarbohydratesText, value);
         }
 
         public string DailyFatsText
@@ -218,10 +218,10 @@ namespace TeamNut.ViewModels
             set => SetProperty(ref weeklyProteinText, value);
         }
 
-        public string WeeklyCarbsText
+        public string WeeklyCarbohydratesText
         {
-            get => weeklyCarbsText;
-            set => SetProperty(ref weeklyCarbsText, value);
+            get => weeklyCarbohydratesText;
+            set => SetProperty(ref weeklyCarbohydratesText, value);
         }
 
         public string WeeklyFatsText
@@ -289,7 +289,7 @@ namespace TeamNut.ViewModels
             {
                 DailyCaloriesGoal = userData.CalorieNeeds > 0 ? userData.CalorieNeeds : DailyCaloriesGoal;
                 DailyProteinGoal = userData.ProteinNeeds > 0 ? userData.ProteinNeeds : DailyProteinGoal;
-                DailyCarbsGoal = userData.CarbNeeds > 0 ? userData.CarbNeeds : DailyCarbsGoal;
+                DailyCarbohydratesGoal = userData.CarbohydrateNeeds > 0 ? userData.CarbohydrateNeeds : DailyCarbohydratesGoal;
                 DailyFatsGoal = userData.FatNeeds > 0 ? userData.FatNeeds : DailyFatsGoal;
             }
 
@@ -298,7 +298,7 @@ namespace TeamNut.ViewModels
 
             DailyCaloriesText = formattingService.FormatMetricWithGoal(DailyTotals.Calories, DailyCaloriesGoal, Constants.CaloriesUnit);
             DailyProteinText = formattingService.FormatMetricWithGoal(DailyTotals.Protein, DailyProteinGoal, Constants.GramsUnit);
-            DailyCarbsText = formattingService.FormatMetricWithGoal(DailyTotals.Carbs, DailyCarbsGoal, Constants.GramsUnit);
+            DailyCarbohydratesText = formattingService.FormatMetricWithGoal(DailyTotals.Carbohydrates, DailyCarbohydratesGoal, Constants.GramsUnit);
             DailyFatsText = formattingService.FormatMetricWithGoal(DailyTotals.Fats, DailyFatsGoal, Constants.GramsUnit);
 
             var burnedCalories = await service.GetTodayBurnedCaloriesAsync();
@@ -306,7 +306,7 @@ namespace TeamNut.ViewModels
 
             WeeklyCaloriesText = formattingService.FormatMetricWithGoal(WeeklyTotals.Calories, WeeklyCaloriesGoal, Constants.CaloriesUnit);
             WeeklyProteinText = formattingService.FormatMetricWithGoal(WeeklyTotals.Protein, WeeklyProteinGoal, Constants.GramsUnit);
-            WeeklyCarbsText = formattingService.FormatMetricWithGoal(WeeklyTotals.Carbs, WeeklyCarbsGoal, Constants.GramsUnit);
+            WeeklyCarbohydratesText = formattingService.FormatMetricWithGoal(WeeklyTotals.Carbohydrates, WeeklyCarbohydratesGoal, Constants.GramsUnit);
             WeeklyFatsText = formattingService.FormatMetricWithGoal(WeeklyTotals.Fats, WeeklyFatsGoal, Constants.GramsUnit);
         }
     }

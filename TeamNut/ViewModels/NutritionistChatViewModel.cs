@@ -135,9 +135,9 @@
             }
 
             Conversations.Clear();
-            foreach (var c in convs)
+            foreach (var conversation in convs)
             {
-                Conversations.Add(c);
+                Conversations.Add(conversation);
             }
 
             if (UserSession.Role != NutritionistRole
@@ -159,7 +159,7 @@
             var msgs = (await chatService.GetMessagesForConversationAsync(conversationId)).ToList();
 
             if (Messages.Count == msgs.Count
-                && Messages.Zip(msgs, (a, b) => a.Id == b.Id).All(eq => eq))
+                && Messages.Zip(msgs, (existingMessage, newMessage) => existingMessage.Id == newMessage.Id).All(eq => eq))
             {
                 HasMessages = Messages.Count > 0;
                 return;
@@ -167,9 +167,9 @@
 
             Messages.Clear();
 
-            foreach (var m in msgs)
+            foreach (var message in msgs)
             {
-                Messages.Add(m);
+                Messages.Add(message);
             }
 
             HasMessages = Messages.Count > 0;

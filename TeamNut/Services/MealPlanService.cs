@@ -73,9 +73,9 @@ namespace TeamNut.Services
                     var existing = await reminderService.GetUserReminders(userId);
 
                     bool alreadyHasTodayReminder = false;
-                    foreach (var r in existing)
+                    foreach (var reminder in existing)
                     {
-                        if (r.ReminderDate == today)
+                        if (reminder.ReminderDate == today)
                         {
                             alreadyHasTodayReminder = true;
                             break;
@@ -227,41 +227,41 @@ namespace TeamNut.Services
             }
         }
 
-        public (int totalCalories, int totalProtein, int totalCarbs, int totalFat) CalculateTotalNutrition(List<Meal> meals)
+        public (int totalCalories, int totalProtein, int totalCarbohydrates, int totalFat) CalculateTotalNutrition(List<Meal> meals)
         {
             if (meals == null || meals.Count == 0)
             {
                 return (0, 0, 0, 0);
             }
 
-            int calories = 0, protein = 0, carbs = 0, fat = 0;
+            int calories = 0, protein = 0, carbohydrates = 0, fat = 0;
 
             foreach (var meal in meals)
             {
                 calories += meal.Calories;
                 protein += meal.Protein;
-                carbs += meal.Carbs;
+                carbohydrates += meal.Carbohydrates;
                 fat += meal.Fat;
             }
 
-            return (totalCalories: calories, totalProtein: protein, totalCarbs: carbs, totalFat: fat);
+            return (totalCalories: calories, totalProtein: protein, totalCarbohydrates: carbohydrates, totalFat: fat);
         }
 
         public bool ValidateMealPlan(
             List<Meal> meals,
             int targetCalories,
             int targetProtein,
-            int targetCarbs,
+            int targetCarbohydrates,
             int targetFat,
             double tolerance = DefaultTolerance)
         {
-            var (cal, p, c, f) = CalculateTotalNutrition(meals);
+            var (calories, protein, carbohydrates, fat) = CalculateTotalNutrition(meals);
 
             return
-                Math.Abs(cal - targetCalories) <= targetCalories * tolerance &&
-                Math.Abs(p - targetProtein) <= targetProtein * tolerance &&
-                Math.Abs(c - targetCarbs) <= targetCarbs * tolerance &&
-                Math.Abs(f - targetFat) <= targetFat * tolerance;
+                Math.Abs(calories - targetCalories) <= targetCalories * tolerance &&
+                Math.Abs(protein - targetProtein) <= targetProtein * tolerance &&
+                Math.Abs(carbohydrates - targetCarbohydrates) <= targetCarbohydrates * tolerance &&
+                Math.Abs(fat - targetFat) <= targetFat * tolerance;
         }
 
         public string GetCalorieAdjustmentDescription(string goal, int baseTdee)

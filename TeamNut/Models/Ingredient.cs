@@ -11,7 +11,7 @@ namespace TeamNut.Models
 
         public double ProteinPer100g { get; set; }
 
-        public double CarbsPer100g { get; set; }
+        public double CarbohydratesPer100g { get; set; }
 
         public double FatPer100g { get; set; }
     }

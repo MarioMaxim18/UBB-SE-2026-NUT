@@ -192,13 +192,13 @@ namespace TeamNut.Repositories
 
                     int calorieNeeds = 2000;
                     int proteinNeeds = 150;
-                    int carbNeeds = 200;
+                    int carbohydrateNeeds = 200;
                     int fatNeeds = 65;
                     string goal = "general";
 
                     const string getUserDataSql = @"
                         SELECT calorie_needs, protein_needs, carb_needs, fat_needs, goal
-                        FROM UserData 
+                        FROM UserData
                         WHERE user_id = @userId";
 
                     using (var userDataCmd = new SqliteCommand(getUserDataSql, conn, transaction))
@@ -209,14 +209,14 @@ namespace TeamNut.Repositories
                         {
                             if (await udReader.ReadAsync())
                             {
-                                int rawCal = udReader["calorie_needs"] != DBNull.Value ? Convert.ToInt32(udReader["calorie_needs"]) : 0;
-                                int rawPro = udReader["protein_needs"] != DBNull.Value ? Convert.ToInt32(udReader["protein_needs"]) : 0;
-                                int rawCarb = udReader["carb_needs"] != DBNull.Value ? Convert.ToInt32(udReader["carb_needs"]) : 0;
+                                int rawCalories = udReader["calorie_needs"] != DBNull.Value ? Convert.ToInt32(udReader["calorie_needs"]) : 0;
+                                int rawProtein = udReader["protein_needs"] != DBNull.Value ? Convert.ToInt32(udReader["protein_needs"]) : 0;
+                                int rawCarbohydrates = udReader["carb_needs"] != DBNull.Value ? Convert.ToInt32(udReader["carb_needs"]) : 0;
                                 int rawFat = udReader["fat_needs"] != DBNull.Value ? Convert.ToInt32(udReader["fat_needs"]) : 0;
 
-                                calorieNeeds = rawCal > 0 ? rawCal : 2000;
-                                proteinNeeds = rawPro > 0 ? rawPro : 150;
-                                carbNeeds = rawCarb > 0 ? rawCarb : 200;
+                                calorieNeeds = rawCalories > 0 ? rawCalories : 2000;
+                                proteinNeeds = rawProtein > 0 ? rawProtein : 150;
+                                carbohydrateNeeds = rawCarbohydrates > 0 ? rawCarbohydrates : 200;
                                 fatNeeds = rawFat > 0 ? rawFat : 65;
                                 goal = udReader["goal"]?.ToString() ?? "general";
                             }
@@ -271,12 +271,12 @@ namespace TeamNut.Repositories
                     }
 
                     const string poolSql = @"
-                        SELECT meal_id, total_calories, total_protein, total_carbs, total_fat
+                        SELECT meal_id, total_calories, total_protein, total_carbohydrates, total_fat
                         FROM (
                             SELECT m.meal_id,
                                    CAST(COALESCE(SUM(i.calories_per_100g * mi.quantity / 100), 0) AS INT) AS total_calories,
                                    CAST(COALESCE(SUM(i.protein_per_100g  * mi.quantity / 100), 0) AS INT) AS total_protein,
-                                   CAST(COALESCE(SUM(i.carbs_per_100g    * mi.quantity / 100), 0) AS INT) AS total_carbs,
+                                   CAST(COALESCE(SUM(i.carbs_per_100g    * mi.quantity / 100), 0) AS INT) AS total_carbohydrates,
                                    CAST(COALESCE(SUM(i.fat_per_100g      * mi.quantity / 100), 0) AS INT) AS total_fat
                             FROM Meals m
                             LEFT JOIN MealsIngredients mi ON m.meal_id = mi.meal_id
@@ -286,7 +286,7 @@ namespace TeamNut.Repositories
                         ORDER BY RANDOM()
                         LIMIT 50";
 
-                    var pool = new List<(int id, int cal, int pro, int carb, int fat)>();
+                    var pool = new List<(int id, int calories, int protein, int carbohydrates, int fat)>();
                     using (var poolCmd = new SqliteCommand(poolSql, conn, transaction))
                     {
                         using (var poolReader = await poolCmd.ExecuteReaderAsync())
@@ -297,7 +297,7 @@ namespace TeamNut.Repositories
                                     Convert.ToInt32(poolReader["meal_id"]),
                                     Convert.ToInt32(poolReader["total_calories"]),
                                     Convert.ToInt32(poolReader["total_protein"]),
-                                    Convert.ToInt32(poolReader["total_carbs"]),
+                                    Convert.ToInt32(poolReader["total_carbohydrates"]),
                                     Convert.ToInt32(poolReader["total_fat"])));
                             }
                         }
@@ -308,9 +308,9 @@ namespace TeamNut.Repositories
                         throw new Exception("Not enough meals in the database to generate a plan.");
                     }
 
-                    int bi = 0;
-                    int bj = 1;
-                    int bk = 2;
+                    int bestBreakfastIndex = 0;
+                    int bestLunchIndex = 1;
+                    int bestDinnerIndex = 2;
                     int bestScore = int.MaxValue;
                     bool bestHasFavourite = false;
 
@@ -320,7 +320,7 @@ namespace TeamNut.Repositories
                         {
                             for (int k = j + 1; k < pool.Count; k++)
                             {
-                                int score = Math.Abs(pool[i].cal + pool[j].cal + pool[k].cal - calorieNeeds);
+                                int score = Math.Abs(pool[i].calories + pool[j].calories + pool[k].calories - calorieNeeds);
 
                                 bool hasFav = favouriteIds.Contains(pool[i].id)
                                            || favouriteIds.Contains(pool[j].id)
@@ -333,15 +333,15 @@ namespace TeamNut.Repositories
                                 {
                                     bestScore = score;
                                     bestHasFavourite = hasFav;
-                                    bi = i;
-                                    bj = j;
-                                    bk = k;
+                                    bestBreakfastIndex = i;
+                                    bestLunchIndex = j;
+                                    bestDinnerIndex = k;
                                 }
                             }
                         }
                     }
 
-                    var selected = new[] { pool[bi], pool[bj], pool[bk] };
+                    var selected = new[] { pool[bestBreakfastIndex], pool[bestLunchIndex], pool[bestDinnerIndex] };
                     var mealTypes = new[] { "breakfast", "lunch", "dinner" };
 
                     const string insertMealPlanMealSql = @"
@@ -388,7 +388,7 @@ namespace TeamNut.Repositories
                     mpm.isConsumed,
                     COALESCE(SUM(i.calories_per_100g * mi.quantity / 100), 0) as total_calories,
                     COALESCE(SUM(i.protein_per_100g * mi.quantity / 100), 0) as total_protein,
-                    COALESCE(SUM(i.carbs_per_100g * mi.quantity / 100), 0) as total_carbs,
+                    COALESCE(SUM(i.carbs_per_100g * mi.quantity / 100), 0) as total_carbohydrates,
                     COALESCE(SUM(i.fat_per_100g * mi.quantity / 100), 0) as total_fat
                 FROM Meals m
                 INNER JOIN MealPlanMeal mpm ON m.meal_id = mpm.mealId
@@ -430,7 +430,7 @@ namespace TeamNut.Repositories
                             Description = reader["description"]?.ToString() ?? string.Empty,
                             Calories = Convert.ToInt32(reader["total_calories"]),
                             Protein = Convert.ToInt32(reader["total_protein"]),
-                            Carbs = Convert.ToInt32(reader["total_carbs"]),
+                            Carbohydrates = Convert.ToInt32(reader["total_carbohydrates"]),
                             Fat = Convert.ToInt32(reader["total_fat"]),
                         });
                     }
@@ -472,7 +472,7 @@ namespace TeamNut.Repositories
                         double quantity = Convert.ToDouble(reader["quantity"]);
                         double caloriesPer100g = Convert.ToDouble(reader["calories_per_100g"]);
                         double proteinPer100g = Convert.ToDouble(reader["protein_per_100g"]);
-                        double carbsPer100g = Convert.ToDouble(reader["carbs_per_100g"]);
+                        double carbohydratesPer100g = Convert.ToDouble(reader["carbs_per_100g"]);
                         double fatPer100g = Convert.ToDouble(reader["fat_per_100g"]);
 
                         ingredients.Add(new IngredientViewModel
@@ -482,7 +482,7 @@ namespace TeamNut.Repositories
                             Quantity = quantity,
                             Calories = Math.Round(caloriesPer100g * quantity / 100, 1),
                             Protein = Math.Round(proteinPer100g * quantity / 100, 1),
-                            Carbs = Math.Round(carbsPer100g * quantity / 100, 1),
+                            Carbohydrates = Math.Round(carbohydratesPer100g * quantity / 100, 1),
                             Fat = Math.Round(fatPer100g * quantity / 100, 1),
                         });
                     }

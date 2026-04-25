@@ -76,7 +76,7 @@
                                 <Run Text="g  •  "/>
 
                                 <Run Text="C " Foreground="Orange"/>
-                                <Run Text="{Binding Carbs}" Foreground="Orange"/>
+                                <Run Text="{Binding Carbohydrates}" Foreground="Orange"/>
                                 <Run Text="g  •  "/>
 
                                 <Run Text="F " Foreground="Crimson"/>

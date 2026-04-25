@@ -74,9 +74,9 @@ namespace TeamNut.Views.RemindersView
 
             this.Loaded += async (_, _) => await this.ViewModel.LoadReminders();
 
-            this.ViewModel.PropertyChanged += async (s, e) =>
+            this.ViewModel.PropertyChanged += async (sender, eventArgs) =>
             {
-                if (e.PropertyName != nameof(this.ViewModel.SelectedReminder))
+                if (eventArgs.PropertyName != nameof(this.ViewModel.SelectedReminder))
                 {
                     return;
                 }

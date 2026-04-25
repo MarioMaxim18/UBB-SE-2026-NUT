@@ -25,7 +25,7 @@
             var existingPlan = new MealPlan { Id = 15 };
             var meals = new List<Meal>
             {
-                new Meal { Id = 1, Name = "Breakfast", Calories = 400, Protein = 30, Carbs = 40, Fat = 15 },
+                new Meal { Id = 1, Name = "Breakfast", Calories = 400, Protein = 30, Carbohydrates = 40, Fat = 15 },
             };
 
             UserSession.Login(1, "MarcelCroitoru", "User");

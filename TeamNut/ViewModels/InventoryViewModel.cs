@@ -168,17 +168,17 @@ namespace TeamNut.ViewModels
 
             try
             {
-                int qty = (int)Math.Round(QuantityToAdd);
+                int roundedQuantity = (int)Math.Round(QuantityToAdd);
                 await inventoryService.AddToPantry(
                     currentUserId,
                     SelectedIngredient.FoodId,
-                    qty);
+                    roundedQuantity);
 
                 await LoadInventoryAsync();
 
                 StatusMessage = string.Format(
                     AddItemSuccessMessage,
-                    qty,
+                    roundedQuantity,
                     SelectedIngredient.Name);
 
                 IngredientSearchText = string.Empty;

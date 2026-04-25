@@ -14,11 +14,11 @@ namespace TeamNut.Services
         private readonly IInventoryRepository inventoryRepository;
 
         public ShoppingListService(
-            IShoppingListRepository repository,
+            IShoppingListRepository shoppingListRepository,
             IIngredientRepository ingredientRepository,
             IInventoryRepository inventoryRepository)
         {
-            this.repository = repository;
+            this.repository = shoppingListRepository;
             this.ingredientRepository = ingredientRepository;
             this.inventoryRepository = inventoryRepository;
         }

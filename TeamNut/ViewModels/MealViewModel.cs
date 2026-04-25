@@ -20,7 +20,7 @@ namespace TeamNut.Views.MealPlanView
 
         public int Protein { get; set; }
 
-        public int Carbs { get; set; }
+        public int Carbohydrates { get; set; }
 
         public int Fat { get; set; }
 
@@ -51,7 +51,7 @@ namespace TeamNut.Views.MealPlanView
                 MealType = mealType,
                 Calories = meal.Calories,
                 Protein = meal.Protein,
-                Carbs = meal.Carbs,
+                Carbohydrates = meal.Carbohydrates,
                 Fat = meal.Fat,
                 IsVegan = meal.IsVegan,
                 IsKeto = meal.IsKeto,
@@ -75,7 +75,7 @@ namespace TeamNut.Views.MealPlanView
 
         public double Protein { get; set; }
 
-        public double Carbs { get; set; }
+        public double Carbohydrates { get; set; }
 
         public double Fat { get; set; }
     }

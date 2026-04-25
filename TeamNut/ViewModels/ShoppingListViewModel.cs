@@ -65,11 +65,11 @@ namespace TeamNut.ViewModels
 
             foreach (var item in loadedItems)
             {
-                item.PropertyChanged += async (s, e) =>
+                item.PropertyChanged += async (sender, eventArgs) =>
                 {
-                    if (e.PropertyName == nameof(ShoppingItem.IsChecked) && s is ShoppingItem si)
+                    if (eventArgs.PropertyName == nameof(ShoppingItem.IsChecked) && sender is ShoppingItem shoppingItem)
                     {
-                        await shoppingListService.UpdateItemAsync(si);
+                        await shoppingListService.UpdateItemAsync(shoppingItem);
                     }
                 };
 
@@ -100,11 +100,11 @@ namespace TeamNut.ViewModels
 
             if (existing == null)
             {
-                addedItem.PropertyChanged += async (s, e) =>
+                addedItem.PropertyChanged += async (sender, eventArgs) =>
                 {
-                    if (e.PropertyName == nameof(ShoppingItem.IsChecked) && s is ShoppingItem si)
+                    if (eventArgs.PropertyName == nameof(ShoppingItem.IsChecked) && sender is ShoppingItem shoppingItem)
                     {
-                        bool updated = await shoppingListService.UpdateItemAsync(si);
+                        bool updated = await shoppingListService.UpdateItemAsync(shoppingItem);
                         if (!updated)
                         {
                             ShowStatus(ErrorUpdateChecked, true);

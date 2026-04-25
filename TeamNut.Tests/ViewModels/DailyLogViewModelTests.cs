@@ -85,7 +85,7 @@
             var filteringService = Substitute.For<IFilteringService>();
             var vm = new DailyLogViewModel(dailyLogService, formattingService, filteringService);
 
-            var userData = new UserData { CalorieNeeds = 2500, ProteinNeeds = 180, CarbNeeds = 300, FatNeeds = 80 };
+            var userData = new UserData { CalorieNeeds = 2500, ProteinNeeds = 180, CarbohydrateNeeds = 300, FatNeeds = 80 };
             var dailyTotals = new DailyLog { Calories = 1000 };
             var weeklyTotals = new DailyLog { Calories = 5000 };
 
