@@ -8,7 +8,7 @@ namespace TeamNut.Services
 
     public class ValidationService : IValidationService
     {
-        private static readonly Regex AllowedTextInputRegex = new Regex("^[a-zA-Z0-9 .,!?'\\-()]+$", RegexOptions.Compiled);
+        private static readonly Regex AllowedTextInputRegex = new Regex("^[a-zA-Z0-9 .,!?'\\\\-()]+$", RegexOptions.Compiled);
 
         public List<string> ValidateUser(User user)
         {
